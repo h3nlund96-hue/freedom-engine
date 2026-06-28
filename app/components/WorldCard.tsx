@@ -60,31 +60,31 @@ export function WorldCard({
         aria-hidden
       />
 
-      <div className="relative flex gap-4">
+      <div className="relative flex flex-col gap-4">
         {/* Icon orb */}
         <div
-          className={`flex size-12 shrink-0 items-center justify-center rounded-full bg-linear-to-br shadow-[inset_0_1px_0_rgba(255,255,255,0.04)] transition-all duration-700 group-hover:scale-110 group-hover:shadow-[0_0_24px_rgba(212,165,116,0.15)] ${style.orb}`}
+          className={`flex size-10 items-center justify-center rounded-full bg-linear-to-br shadow-[inset_0_1px_0_rgba(255,255,255,0.04)] transition-all duration-700 group-hover:scale-110 group-hover:shadow-[0_0_20px_rgba(212,165,116,0.15)] ${style.orb}`}
         >
-          <span className="text-xl transition-transform duration-700 group-hover:scale-110">
+          <span className="text-lg transition-transform duration-700 group-hover:scale-110">
             {icon}
           </span>
         </div>
 
-        <div className="flex min-w-0 flex-1 flex-col gap-2 pt-0.5">
-          <div className="flex items-start justify-between gap-3">
+        <div className="space-y-2">
+          <div className="flex items-start justify-between gap-2">
             <h3
-              className={`font-display text-lg tracking-wide text-foreground/90 transition-colors duration-500 ${style.accent}`}
+              className={`font-display text-base tracking-wide text-foreground/90 transition-colors duration-500 ${style.accent}`}
             >
               {title}
             </h3>
             <span
-              className="mt-1 shrink-0 translate-x-1 text-xs tracking-widest uppercase text-accent/0 transition-all duration-500 group-hover:translate-x-0 group-hover:text-accent/50"
+              className="mt-0.5 shrink-0 translate-x-1 text-[0.6rem] tracking-widest uppercase text-accent/0 transition-all duration-500 group-hover:translate-x-0 group-hover:text-accent/45"
               aria-hidden
             >
               Enter
             </span>
           </div>
-          <p className="text-sm leading-relaxed text-muted/90 transition-colors duration-500 group-hover:text-foreground/60">
+          <p className="text-xs leading-relaxed text-muted/85 transition-colors duration-500 group-hover:text-foreground/60">
             {description}
           </p>
         </div>
