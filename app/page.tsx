@@ -8,7 +8,7 @@ import { WorldCard } from "./components/WorldCard";
 const worldPlaces = [
   {
     icon: "📜",
-    title: "The Founder Constitution",
+    title: "Constitution Hall",
     description:
       "A sacred hall containing the principles that guide every decision.",
     href: "/constitution",
