@@ -1,64 +1,107 @@
-import Image from "next/image";
+import { AtmosphericBackground } from "./components/AtmosphericBackground";
+import { BuildPrompt } from "./components/BuildPrompt";
+import { HQHeader } from "./components/HQHeader";
+import { PrincipleBlock } from "./components/PrincipleBlock";
+import { QuestStatus } from "./components/QuestStatus";
+import { WorldCard } from "./components/WorldCard";
+
+const worldPlaces = [
+  {
+    icon: "📜",
+    title: "The Founder Constitution",
+    description:
+      "A sacred hall containing the principles that guide every decision.",
+    href: "/constitution",
+    glow: "gold" as const,
+  },
+  {
+    icon: "⚔️",
+    title: "Quest Board",
+    description:
+      "The place where The Founder sees the active Quest and current Build.",
+    href: "/quest-board",
+    glow: "amber" as const,
+  },
+  {
+    icon: "💡",
+    title: "Idea Vault",
+    description:
+      "A safe place to capture ideas without letting them distract from the active Quest.",
+    href: "/idea-vault",
+    glow: "gold" as const,
+  },
+  {
+    icon: "🔥",
+    title: "Tend the Fire",
+    description:
+      "A place to return when motivation is low. The fire is always waiting.",
+    href: "/tend-the-fire",
+    glow: "warm" as const,
+  },
+];
 
 export default function Home() {
   return (
-    <div className="flex flex-col flex-1 items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex flex-1 w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
+    <div className="relative flex min-h-full flex-1 flex-col overflow-hidden">
+      <AtmosphericBackground />
+
+      <main className="relative mx-auto flex w-full max-w-2xl flex-1 flex-col gap-14 px-6 py-20 sm:px-8 sm:py-28 lg:max-w-3xl">
+        <HQHeader
+          title="🏛️ AI Mastery HQ"
+          welcome="Welcome back, Founder."
         />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the page.tsx file.
-          </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
-          </p>
-        </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
+
+        <PrincipleBlock principle="The system exists to serve The Founder. The Founder does not exist to serve the system." />
+
+        <QuestStatus
+          sectionTitle="🧭 Freedom Engine"
+          mainQuest="Build the Freedom Engine."
+          currentQuestline="AI Mastery HQ"
+          currentBuild="Build the first version of AI Mastery HQ."
+        />
+
+        <section className="space-y-8">
+          <div
+            className="animate-fade-up space-y-2"
+            style={{ animationDelay: "0.35s" }}
           >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={16}
+            <p className="text-[0.65rem] tracking-[0.25em] uppercase text-muted/60">
+              Within these walls
+            </p>
+            <h2 className="font-display text-2xl tracking-wide text-foreground/90">
+              Explore the World
+            </h2>
+          </div>
+
+          <nav
+            className="relative grid gap-5 sm:grid-cols-2"
+            aria-label="World navigation"
+          >
+            {/* Subtle path connector on desktop */}
+            <div
+              className="pointer-events-none absolute left-1/2 top-8 hidden h-[calc(100%-4rem)] w-px -translate-x-1/2 bg-linear-to-b from-transparent via-accent/[0.06] to-transparent sm:block"
+              aria-hidden
             />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
-        </div>
+            <div
+              className="pointer-events-none absolute left-8 right-8 top-1/2 hidden h-px -translate-y-1/2 bg-linear-to-r from-transparent via-accent/[0.05] to-transparent sm:block"
+              aria-hidden
+            />
+
+            {worldPlaces.map((place, index) => (
+              <WorldCard
+                key={place.title}
+                icon={place.icon}
+                title={place.title}
+                description={place.description}
+                href={place.href}
+                glow={place.glow}
+                delay={0.42 + index * 0.1}
+              />
+            ))}
+          </nav>
+        </section>
+
+        <BuildPrompt />
       </main>
     </div>
   );
