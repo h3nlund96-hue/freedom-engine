@@ -189,11 +189,18 @@ export const progress: FreedomEngineProgress = {
             {
               id: "023",
               title: "Build #023 — Database-backed Idea Vault",
-              status: "active",
+              status: "completed",
               description:
                 "Move Idea Vault from localStorage Alpha storage to Supabase database-backed storage connected to Founder Login.",
+            },
+            {
+              id: "024",
+              title: "Build #024 — Update Quest System After Database Memory",
+              status: "active",
+              description:
+                "Update the Quest System Layer so HQ and Quest Board reflect that Idea Vault now has database-backed memory.",
               nextStep:
-                "Run the SQL migration in Supabase, then verify ideas persist across refreshes and devices.",
+                "Review the updated HQ and Quest Board, then choose the next real Build.",
             },
           ],
         },
