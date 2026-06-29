@@ -126,11 +126,25 @@ export const progress: FreedomEngineProgress = {
             {
               id: "014",
               title: "Build #014 — Quest System Layer",
-              status: "active",
+              status: "completed",
               description:
                 "Create structured Quest data and update Quest Board so it reflects the real state of Freedom Engine Alpha.",
+            },
+            {
+              id: "015",
+              title: "Build #015 — Companion Hall",
+              status: "completed",
+              description:
+                "Create Companion Hall as the first visible entry point for Freedom Engine Companions.",
+            },
+            {
+              id: "016",
+              title: "Build #016 — Update Quest Board After Companion Hall",
+              status: "active",
+              description:
+                "Update the Quest System Layer so HQ and Quest Board reflect the completed Companion Hall Build and the current state of Freedom Engine Alpha.",
               nextStep:
-                "Review the updated Quest Board and decide the next real Build.",
+                "Review the updated Quest Board and choose the next real Build.",
             },
           ],
         },
