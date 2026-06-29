@@ -161,11 +161,18 @@ export const progress: FreedomEngineProgress = {
             {
               id: "019",
               title: "Build #019 — Activate The Steward",
-              status: "active",
+              status: "completed",
               description:
                 "Connect The Steward Console to real AI through a secure server-side API route.",
+            },
+            {
+              id: "020",
+              title: "Build #020 — Update Quest System After Steward Activation",
+              status: "active",
+              description:
+                "Update the Quest System Layer so HQ and Quest Board reflect that The Steward is now active and Freedom Engine has its first real AI Companion.",
               nextStep:
-                "Ask The Steward one real product decision question and decide if the answer feels like counsel from an ally.",
+                "Review the updated HQ and Quest Board, then choose the next real Build.",
             },
           ],
         },
