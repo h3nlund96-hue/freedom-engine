@@ -140,9 +140,16 @@ export const progress: FreedomEngineProgress = {
             {
               id: "016",
               title: "Build #016 — Update Quest Board After Companion Hall",
-              status: "active",
+              status: "completed",
               description:
                 "Update the Quest System Layer so HQ and Quest Board reflect the completed Companion Hall Build and the current state of Freedom Engine Alpha.",
+            },
+            {
+              id: "017",
+              title: "Build #017 — Steward Console",
+              status: "active",
+              description:
+                "Create the first Steward Console inside Companion Hall as a non-functional Alpha entry point toward real Companion intelligence.",
               nextStep:
                 "Review the updated Quest Board and choose the next real Build.",
             },
