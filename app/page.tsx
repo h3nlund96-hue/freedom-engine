@@ -33,6 +33,13 @@ const worldPlaces = [
     href: "/idea-vault",
     glow: "gold" as const,
   },
+  {
+    icon: "🤝",
+    title: "Companion Hall",
+    description: "Allies who walk the path with The Founder. Not bots — focused AI specialists.",
+    href: "/companions",
+    glow: "ember" as const,
+  },
 ];
 
 export default function Home() {
@@ -65,7 +72,7 @@ export default function Home() {
           </div>
 
           <nav
-            className="grid gap-5 sm:grid-cols-3"
+            className="grid gap-5 sm:grid-cols-2"
             aria-label="World navigation"
           >
             {worldPlaces.map((place, index) => (
