@@ -182,11 +182,18 @@ export const progress: FreedomEngineProgress = {
             {
               id: "022",
               title: "Build #022 — Lock Founder Access",
-              status: "active",
+              status: "completed",
               description:
                 "Remove public sign-up from Founder Login so Freedom Engine Alpha remains private.",
+            },
+            {
+              id: "023",
+              title: "Build #023 — Database-backed Idea Vault",
+              status: "active",
+              description:
+                "Move Idea Vault from localStorage Alpha storage to Supabase database-backed storage connected to Founder Login.",
               nextStep:
-                "Verify that only existing Founder credentials can enter Freedom Engine.",
+                "Run the SQL migration in Supabase, then verify ideas persist across refreshes and devices.",
             },
           ],
         },

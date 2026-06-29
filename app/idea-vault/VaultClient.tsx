@@ -4,19 +4,15 @@ import { useEffect, useState } from "react";
 import {
   type Idea,
   type IdeaStatus,
+  getIdeas,
   createIdea,
-  deleteIdea,
-  getStoredIdeas,
-  saveStoredIdeas,
   updateIdeaStatus,
-} from "./storage";
+  deleteIdea,
+} from "../lib/ideaService";
 
 /* ── STATUS CONFIG ───────────────────────────────────────────────────────── */
 
-const STATUS_CONFIG: Record<
-  IdeaStatus,
-  { label: string; description: string }
-> = {
+const STATUS_CONFIG: Record<IdeaStatus, { label: string; description: string }> = {
   raw: {
     label: "Raw Ideas",
     description: "Fresh thoughts captured before they are judged.",
@@ -46,30 +42,54 @@ const STATUS_ORDER: IdeaStatus[] = [
 
 export function VaultClient() {
   const [ideas, setIdeas] = useState<Idea[]>([]);
-  const [mounted, setMounted] = useState(false);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    setIdeas(getStoredIdeas());
-    setMounted(true);
+    getIdeas()
+      .then(setIdeas)
+      .catch(() => setError("The Vault could not be opened. Try again in a moment."))
+      .finally(() => setLoading(false));
   }, []);
 
-  function handleSeal(text: string) {
-    const idea = createIdea(text);
-    const updated = [idea, ...ideas];
-    setIdeas(updated);
-    saveStoredIdeas(updated);
+  async function handleSeal(text: string) {
+    try {
+      const idea = await createIdea(text);
+      setIdeas((prev) => [idea, ...prev]);
+    } catch {
+      // Capture failed — silently ignore so the UI doesn't break.
+    }
   }
 
-  function handleStatusChange(id: string, status: IdeaStatus) {
-    const updated = updateIdeaStatus(ideas, id, status);
-    setIdeas(updated);
-    saveStoredIdeas(updated);
+  async function handleStatusChange(id: string, status: IdeaStatus) {
+    // Optimistic update — feels instant.
+    setIdeas((prev) =>
+      prev.map((idea) => (idea.id === id ? { ...idea, status } : idea))
+    );
+    try {
+      await updateIdeaStatus(id, status);
+    } catch {
+      // Roll back on failure.
+      setIdeas((prev) =>
+        prev.map((idea) =>
+          idea.id === id
+            ? { ...idea, status: ideas.find((i) => i.id === id)?.status ?? idea.status }
+            : idea
+        )
+      );
+    }
   }
 
-  function handleDelete(id: string) {
-    const updated = deleteIdea(ideas, id);
-    setIdeas(updated);
-    saveStoredIdeas(updated);
+  async function handleDelete(id: string) {
+    // Optimistic update.
+    setIdeas((prev) => prev.filter((idea) => idea.id !== id));
+    try {
+      await deleteIdea(id);
+    } catch {
+      // Restore on failure.
+      const removed = ideas.find((i) => i.id === id);
+      if (removed) setIdeas((prev) => [...prev, removed].sort(byNewest));
+    }
   }
 
   return (
@@ -78,30 +98,51 @@ export function VaultClient() {
 
       <div className="space-y-5">
         <SectionLabel>The Vault</SectionLabel>
-        <div className="space-y-4">
-          {STATUS_ORDER.map((status) => {
-            const compartmentIdeas = ideas
-              .filter((i) => i.status === status)
-              .sort(
-                (a, b) =>
-                  new Date(b.createdAt).getTime() -
-                  new Date(a.createdAt).getTime()
+
+        {/* Loading */}
+        {loading && (
+          <div className="flex items-center gap-3 px-1 py-4">
+            <span className="relative flex size-1.5" aria-hidden>
+              <span className="absolute inline-flex size-full animate-glow-pulse rounded-full bg-accent/40" />
+              <span className="relative inline-flex size-1.5 rounded-full bg-accent/60" />
+            </span>
+            <p className="text-xs italic text-muted/40">Opening the Vault...</p>
+          </div>
+        )}
+
+        {/* Error */}
+        {error && !loading && (
+          <div className="rounded-xl border border-accent/[0.06] bg-black/20 px-5 py-4">
+            <p className="text-xs leading-relaxed text-muted/45">{error}</p>
+          </div>
+        )}
+
+        {/* Compartments */}
+        {!loading && !error && (
+          <div className="space-y-4">
+            {STATUS_ORDER.map((status) => {
+              const compartmentIdeas = ideas
+                .filter((i) => i.status === status)
+                .sort(byNewest);
+              return (
+                <VaultCompartment
+                  key={status}
+                  status={status}
+                  ideas={compartmentIdeas}
+                  onStatusChange={handleStatusChange}
+                  onDelete={handleDelete}
+                />
               );
-            return (
-              <VaultCompartment
-                key={status}
-                status={status}
-                ideas={compartmentIdeas}
-                mounted={mounted}
-                onStatusChange={handleStatusChange}
-                onDelete={handleDelete}
-              />
-            );
-          })}
-        </div>
+            })}
+          </div>
+        )}
       </div>
     </div>
   );
+}
+
+function byNewest(a: Idea, b: Idea) {
+  return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
 }
 
 /* ── CAPTURE CONSOLE ─────────────────────────────────────────────────────── */
@@ -221,7 +262,7 @@ function CaptureConsole({ onSeal }: { onSeal: (text: string) => void }) {
       </div>
 
       <p className="text-[0.65rem] text-muted/35">
-        Saved locally in this browser for Alpha.
+        Ideas now sync through Founder Login.
       </p>
     </section>
   );
@@ -232,13 +273,11 @@ function CaptureConsole({ onSeal }: { onSeal: (text: string) => void }) {
 function VaultCompartment({
   status,
   ideas,
-  mounted,
   onStatusChange,
   onDelete,
 }: {
   status: IdeaStatus;
   ideas: Idea[];
-  mounted: boolean;
   onStatusChange: (id: string, status: IdeaStatus) => void;
   onDelete: (id: string) => void;
 }) {
@@ -260,7 +299,7 @@ function VaultCompartment({
       />
 
       <div className="relative">
-        {/* Compartment header */}
+        {/* Header */}
         <div className="flex items-start justify-between gap-3 px-5 py-4">
           <div>
             <h3
@@ -280,18 +319,16 @@ function VaultCompartment({
           </div>
           <span
             className={`mt-0.5 shrink-0 rounded-full px-2 py-0.5 font-display text-[0.58rem] tracking-wider ${
-              hasItems
-                ? "bg-accent/12 text-accent/70"
-                : "bg-muted/5 text-muted/28"
+              hasItems ? "bg-accent/12 text-accent/70" : "bg-muted/5 text-muted/28"
             }`}
           >
-            {mounted ? count : "—"}
+            {count}
           </span>
         </div>
 
         {/* Ideas */}
         {hasItems && (
-          <ul className="border-t border-accent/[0.05] px-4 pb-3 pt-2 space-y-1">
+          <ul className="space-y-1 border-t border-accent/[0.05] px-4 pb-3 pt-2">
             {ideas.map((idea) => (
               <IdeaCard
                 key={idea.id}
@@ -303,8 +340,8 @@ function VaultCompartment({
           </ul>
         )}
 
-        {/* Empty state */}
-        {!hasItems && mounted && (
+        {/* Empty */}
+        {!hasItems && (
           <p className="border-t border-accent/[0.04] px-5 py-3 text-[0.65rem] italic text-muted/28">
             Empty
           </p>
@@ -327,7 +364,6 @@ function IdeaCard({
 }) {
   return (
     <li className="group flex flex-col gap-2.5 rounded-lg px-3 py-3 transition-colors duration-300 hover:bg-[rgba(212,165,116,0.03)]">
-      {/* Idea text */}
       <div className="flex items-start gap-2.5">
         <span
           className="mt-1.5 size-1.5 shrink-0 rounded-full bg-accent/30 shadow-[0_0_5px_rgba(212,165,116,0.2)]"
@@ -336,15 +372,11 @@ function IdeaCard({
         <p className="text-sm leading-relaxed text-foreground/70">{idea.text}</p>
       </div>
 
-      {/* Actions row */}
       <div className="ml-4 flex items-center gap-3">
-        {/* Status select */}
         <div className="relative">
           <select
             value={idea.status}
-            onChange={(e) =>
-              onStatusChange(idea.id, e.target.value as IdeaStatus)
-            }
+            onChange={(e) => onStatusChange(idea.id, e.target.value as IdeaStatus)}
             aria-label="Move to compartment"
             className="cursor-pointer appearance-none rounded-md bg-[rgba(212,165,116,0.05)] py-1 pl-2.5 pr-6 font-display text-[0.6rem] tracking-[0.12em] uppercase text-accent/55 outline-none transition-colors duration-300 hover:bg-[rgba(212,165,116,0.08)] hover:text-accent/75 focus:outline-none"
           >
@@ -354,7 +386,6 @@ function IdeaCard({
               </option>
             ))}
           </select>
-          {/* Dropdown arrow */}
           <span
             className="pointer-events-none absolute right-2 top-1/2 -translate-y-1/2 text-[0.5rem] text-accent/40"
             aria-hidden
@@ -363,12 +394,11 @@ function IdeaCard({
           </span>
         </div>
 
-        {/* Delete */}
         <button
           type="button"
           onClick={() => onDelete(idea.id)}
           aria-label="Remove idea"
-          className="font-display text-[0.6rem] tracking-[0.12em] uppercase text-muted/35 transition-colors duration-300 hover:text-foreground/50 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-accent/30 rounded"
+          className="rounded font-display text-[0.6rem] tracking-[0.12em] uppercase text-muted/35 transition-colors duration-300 hover:text-foreground/50 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-accent/30"
         >
           remove
         </button>
@@ -385,10 +415,7 @@ function SectionLabel({ children }: { children: React.ReactNode }) {
       <p className="font-display text-[0.65rem] tracking-[0.25em] uppercase text-muted/55">
         {children}
       </p>
-      <span
-        className="h-px flex-1 bg-linear-to-r from-accent/10 to-transparent"
-        aria-hidden
-      />
+      <span className="h-px flex-1 bg-linear-to-r from-accent/10 to-transparent" aria-hidden />
     </div>
   );
 }
