@@ -203,11 +203,18 @@ export const progress: FreedomEngineProgress = {
             {
               id: "025",
               title: "Build #025 — Founder Status Bar",
-              status: "active",
+              status: "completed",
               description:
                 "Add the first Alpha version of Founder progression, XP and Level as a top status bar and future profile entry point.",
+            },
+            {
+              id: "026",
+              title: "Build #026 — Update Quest System After Founder Status",
+              status: "active",
+              description:
+                "Update the Quest System Layer so HQ and Quest Board reflect that Founder Status, XP and Level now exist in Freedom Engine Alpha.",
               nextStep:
-                "Review the Founder Status Bar on HQ and decide the next real Build.",
+                "Review the updated HQ and Quest Board, then choose the next real Build.",
             },
           ],
         },
