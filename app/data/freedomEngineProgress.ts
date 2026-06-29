@@ -168,11 +168,18 @@ export const progress: FreedomEngineProgress = {
             {
               id: "020",
               title: "Build #020 — Update Quest System After Steward Activation",
-              status: "active",
+              status: "completed",
               description:
                 "Update the Quest System Layer so HQ and Quest Board reflect that The Steward is now active and Freedom Engine has its first real AI Companion.",
+            },
+            {
+              id: "021",
+              title: "Build #021 — Founder Login",
+              status: "active",
+              description:
+                "Add Supabase Auth so Freedom Engine is protected by Founder Login and The Steward API only answers authenticated requests.",
               nextStep:
-                "Review the updated HQ and Quest Board, then choose the next real Build.",
+                "Sign in and verify that all protected routes redirect correctly and The Steward responds only to authenticated Founders.",
             },
           ],
         },

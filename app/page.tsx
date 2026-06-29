@@ -3,6 +3,7 @@ import { AtmosphericBackground } from "./components/AtmosphericBackground";
 import { BuildPrompt } from "./components/BuildPrompt";
 import { HQHeader } from "./components/HQHeader";
 import { PrincipleBlock } from "./components/PrincipleBlock";
+import { SignOutButton } from "./components/SignOutButton";
 import { WorldCard } from "./components/WorldCard";
 import {
   progress,
@@ -93,6 +94,11 @@ export default function Home() {
         <TendTheFire />
 
         <BuildPrompt />
+
+        {/* Sign out — subtle, at the bottom of HQ */}
+        <div className="flex justify-center pb-2">
+          <SignOutButton />
+        </div>
       </main>
     </div>
   );

@@ -1,4 +1,5 @@
 import OpenAI from "openai";
+import { createClient as createSupabaseClient } from "../../../lib/supabase/server";
 import {
   progress,
   getActiveQuestline,
@@ -96,6 +97,17 @@ Do not add extra fields.`;
 
 export async function POST(request: Request) {
   try {
+    // Auth check — must come before any OpenAI call.
+    const supabase = await createSupabaseClient();
+    const { data: { user } } = await supabase.auth.getUser();
+
+    if (!user) {
+      return Response.json(
+        { error: "The Steward is only available inside the Headquarters." },
+        { status: 401 }
+      );
+    }
+
     const body = await request.json().catch(() => ({}));
     const question: unknown = body?.question;
 
