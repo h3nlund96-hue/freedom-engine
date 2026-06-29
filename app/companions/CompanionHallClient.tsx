@@ -19,7 +19,13 @@ interface Companion {
   description: string;
 }
 
-/* ── DATA ─────────────────────────────────────────────────────────────────── */
+interface StewardResponse {
+  answer: string;
+  recommendedDirection: string;
+  smallestStep: string;
+}
+
+/* ── COMPANION DATA ───────────────────────────────────────────────────────── */
 
 const companions: Companion[] = [
   {
@@ -63,27 +69,19 @@ const SUGGESTED_QUESTIONS = [
 
 const statusConfig: Record<
   CompanionStatus,
-  {
-    label: string;
-    panelClass: string;
-    glowStyle: string;
-    dotClass: string;
-    nameClass: string;
-  }
+  { label: string; panelClass: string; glowStyle: string; dotClass: string; nameClass: string }
 > = {
   awake: {
     label: "Awake",
     panelClass: "from-[rgba(26,19,11,0.94)] to-[rgba(12,9,6,0.97)]",
-    glowStyle:
-      "radial-gradient(ellipse at top left, rgba(232,132,42,0.10) 0%, transparent 60%)",
+    glowStyle: "radial-gradient(ellipse at top left, rgba(232,132,42,0.10) 0%, transparent 60%)",
     dotClass: "bg-accent-glow shadow-[0_0_10px_rgba(232,132,42,0.65)]",
     nameClass: "text-foreground",
   },
   emerging: {
     label: "Emerging",
     panelClass: "from-[rgba(20,16,10,0.90)] to-[rgba(10,8,6,0.94)]",
-    glowStyle:
-      "radial-gradient(ellipse at top left, rgba(212,165,116,0.06) 0%, transparent 60%)",
+    glowStyle: "radial-gradient(ellipse at top left, rgba(212,165,116,0.06) 0%, transparent 60%)",
     dotClass: "bg-accent/60 shadow-[0_0_6px_rgba(212,165,116,0.35)]",
     nameClass: "text-foreground/90",
   },
@@ -96,11 +94,72 @@ const statusConfig: Record<
   },
 };
 
+/* ── RESPONSE PROTOTYPE ───────────────────────────────────────────────────── */
+
+// The Founder Constitution guides these responses internally.
+// Freedom First, Build, Curiosity, and Tend the Fire shape the counsel —
+// but the framework is not surfaced to The Founder by default.
+function generateStewardResponse(question: string): StewardResponse {
+  const q = question.toLowerCase();
+
+  if (q.includes("next build")) {
+    return {
+      answer:
+        "The current Build should be reviewed and closed before choosing the next. Momentum comes from completing, not from starting. One Build at a time keeps the path clear.",
+      recommendedDirection:
+        "Review the current Build now. If it is done, mark it complete and choose the next smallest useful Build. If it is not done, finish it first.",
+      smallestStep:
+        "Open the Quest Board and decide: is the current Build complete, or does it need one more action before closing?",
+    };
+  }
+
+  if (q.includes("main quest")) {
+    return {
+      answer:
+        "Everything inside Freedom Engine should serve the Main Quest: Build the Freedom Engine. If what you are considering does not contribute to that, it is a Side Quest at best — useful, but secondary to the active path.",
+      recommendedDirection:
+        "Stay on the active Questline unless this is clearly more important than the current Build. Protect the main path.",
+      smallestStep:
+        "Ask once: does this make Freedom Engine more real and useful to The Founder today? If yes, proceed. If not, move it to the Idea Vault.",
+    };
+  }
+
+  if (q.includes("side quest")) {
+    return {
+      answer:
+        "If it does not directly advance the active Questline, it belongs outside the main path. Useful ideas are not lost when they become Side Quests — they are protected so they do not derail what matters most right now.",
+      recommendedDirection:
+        "Add it to the Idea Vault or label it a Side Quest on the Quest Board. Keep the active Build uncluttered.",
+      smallestStep:
+        "Open the Quest Board. Find the active Build. Make sure nothing is pulling focus away from it right now.",
+    };
+  }
+
+  if (q.includes("smallest")) {
+    return {
+      answer:
+        "The smallest useful step is almost always already visible inside the current Build. Look there first before planning anything larger. One small action today keeps the fire alive.",
+      recommendedDirection:
+        "Do the next tiny thing that moves the current Build forward. That is enough for today. Small progress is real progress.",
+      smallestStep:
+        "Take one action on the current Build right now — even something that takes five minutes. Then stop and notice that the fire is still burning.",
+    };
+  }
+
+  return {
+    answer:
+      "The Steward is awake but not yet connected to real intelligence. This response shows the shape of how The Steward will eventually answer — with clarity and direction, not complexity or noise.",
+    recommendedDirection:
+      "Keep this as a local Alpha prototype for now. Refine the Companion experience before connecting real AI. The response pattern matters more than the content at this stage.",
+    smallestStep:
+      "Ask The Steward one real product decision question and decide whether the answer feels like counsel from an ally.",
+  };
+}
+
 /* ── COMPANION HALL CLIENT ────────────────────────────────────────────────── */
 
 export function CompanionHallClient() {
   const [stewardOpen, setStewardOpen] = useState(false);
-
   const [steward, ...others] = companions;
 
   return (
@@ -149,26 +208,35 @@ function StewardCard({
   const cfg = statusConfig[companion.status];
 
   const [question, setQuestion] = useState("");
-  const [asked, setAsked] = useState(false);
-
-  function handleAsk() {
-    if (!question.trim()) return;
-    setAsked(true);
-  }
-
-  function handleSuggestion(q: string) {
-    setQuestion(q);
-    setAsked(false);
-  }
-
-  function handleInputChange(e: React.ChangeEvent<HTMLTextAreaElement>) {
-    setQuestion(e.target.value);
-    if (asked) setAsked(false);
-  }
+  const [response, setResponse] = useState<StewardResponse | null>(null);
+  const [askedQuestion, setAskedQuestion] = useState("");
 
   const activeQuestline = getActiveQuestline(progress);
   const activeQuest = activeQuestline ? getActiveQuest(activeQuestline) : undefined;
   const currentBuild = activeQuest ? getCurrentBuild(activeQuest) : undefined;
+
+  const ctx = {
+    questline: activeQuestline?.title ?? "—",
+    quest: activeQuest?.title ?? "—",
+    build: currentBuild?.title ?? "—",
+  };
+
+  function handleAsk() {
+    if (!question.trim()) return;
+    setAskedQuestion(question.trim());
+    setResponse(generateStewardResponse(question));
+    setQuestion("");
+  }
+
+  function handleSuggestion(q: string) {
+    setQuestion(q);
+    setResponse(null);
+  }
+
+  function handleInputChange(e: React.ChangeEvent<HTMLTextAreaElement>) {
+    setQuestion(e.target.value);
+    if (response) setResponse(null);
+  }
 
   return (
     <article className="group relative flex flex-col overflow-hidden rounded-2xl transition-all duration-700 hover:-translate-y-0.5 hover:shadow-[0_24px_60px_rgba(0,0,0,0.55)]">
@@ -185,17 +253,14 @@ function StewardCard({
       {/* Inset ring */}
       <div
         className="pointer-events-none absolute inset-0 rounded-2xl"
-        style={{
-          boxShadow:
-            "inset 0 1px 0 rgba(212,165,116,0.11), inset 0 0 0 1px rgba(212,165,116,0.05)",
-        }}
+        style={{ boxShadow: "inset 0 1px 0 rgba(212,165,116,0.11), inset 0 0 0 1px rgba(212,165,116,0.05)" }}
         aria-hidden
       />
 
-      {/* Top accent line — brightens when open */}
+      {/* Top accent line */}
       <div
-        className={`absolute inset-x-0 top-0 h-px bg-linear-to-r from-transparent via-accent-glow/0 to-transparent transition-all duration-500 ${
-          open ? "via-accent-glow/35" : "group-hover:via-accent-glow/15"
+        className={`absolute inset-x-0 top-0 h-px bg-linear-to-r from-transparent to-transparent transition-all duration-500 ${
+          open ? "via-accent-glow/35" : "via-accent-glow/0 group-hover:via-accent-glow/15"
         }`}
         aria-hidden
       />
@@ -203,44 +268,34 @@ function StewardCard({
       <div className="relative flex flex-1 flex-col gap-5 p-6 sm:p-7">
 
         {/* Status row */}
-        <div className="flex items-center justify-between gap-3">
-          <div className="flex items-center gap-2">
-            <span className="relative flex size-2" aria-hidden>
-              <span className="absolute inline-flex size-full animate-glow-pulse rounded-full bg-accent-glow/55" />
-              <span className={`relative inline-flex size-2 rounded-full ${cfg.dotClass}`} />
-            </span>
-            <span className="font-display text-[0.58rem] tracking-[0.22em] uppercase text-accent-glow/75">
-              {cfg.label}
-            </span>
-          </div>
+        <div className="flex items-center gap-2">
+          <span className="relative flex size-2" aria-hidden>
+            <span className="absolute inline-flex size-full animate-glow-pulse rounded-full bg-accent-glow/55" />
+            <span className={`relative inline-flex size-2 rounded-full ${cfg.dotClass}`} />
+          </span>
+          <span className="font-display text-[0.58rem] tracking-[0.22em] uppercase text-accent-glow/75">
+            {cfg.label}
+          </span>
         </div>
 
         {/* Name + role */}
         <div className="space-y-2">
-          <h2 className={`font-display text-2xl tracking-wide transition-colors duration-500 ${cfg.nameClass}`}>
+          <h2 className={`font-display text-2xl tracking-wide ${cfg.nameClass}`}>
             {companion.name}
           </h2>
           <p className="text-xs leading-relaxed text-muted/60">{companion.role}</p>
         </div>
 
-        {/* Divider */}
-        <div className="h-px bg-linear-to-r from-accent/12 to-transparent" aria-hidden />
-
-        {/* Description */}
-        <p className="text-sm leading-relaxed text-foreground/65">{companion.description}</p>
-
-        {/* Consult / Close toggle */}
+        {/* Toggle */}
         <div className="flex items-center">
           <button
             type="button"
             onClick={onToggle}
-            className="group/btn inline-flex items-center gap-2 rounded text-xs transition-colors duration-300"
+            className="inline-flex items-center gap-2 rounded text-xs transition-colors duration-300"
             style={{ color: open ? "rgba(212,165,116,0.50)" : "rgba(212,165,116,0.70)" }}
           >
             <span
-              className={`inline-block transition-transform duration-300 ${
-                open ? "rotate-90" : "group-hover/btn:translate-x-0.5"
-              }`}
+              className={`inline-block transition-transform duration-300 ${open ? "" : "group-hover:translate-x-0.5"}`}
               aria-hidden
             >
               {open ? "↑" : "→"}
@@ -254,40 +309,17 @@ function StewardCard({
         {/* ── INLINE CONSOLE ──────────────────────────────────────────────── */}
         <div
           className={`overflow-hidden transition-all duration-500 ${
-            open ? "max-h-[800px] opacity-100" : "max-h-0 opacity-0"
+            open ? "max-h-[1200px] opacity-100" : "max-h-0 opacity-0"
           }`}
         >
-          <div className="flex flex-col gap-6 pt-2">
-
-            {/* Console separator */}
-            <div className="flex items-center gap-4" aria-hidden>
-              <div className="h-px flex-1 bg-linear-to-r from-accent/15 to-transparent" />
-              <span className="font-display text-[0.55rem] tracking-[0.2em] uppercase text-accent-glow/40">
-                Active
-              </span>
-              <div className="h-px flex-1 bg-linear-to-l from-accent/15 to-transparent" />
-            </div>
+          <div className="flex flex-col gap-6 pt-1">
 
             {/* Console header */}
-            <div className="space-y-1">
-              <h3 className="font-display text-lg tracking-wide text-foreground/90">
-                Ask The Steward
-              </h3>
+            <div className="space-y-1 border-t border-accent/[0.07] pt-5">
+              <h3 className="font-display text-lg tracking-wide text-foreground/90">Ask The Steward</h3>
               <p className="text-xs text-muted/50">
                 A quiet place to ask for direction before choosing the next Build.
               </p>
-            </div>
-
-            {/* Context panel */}
-            <div className="space-y-2">
-              <p className="font-display text-[0.55rem] tracking-[0.2em] uppercase text-muted/35">
-                Current Context
-              </p>
-              <div className="grid grid-cols-1 gap-2 sm:grid-cols-3">
-                <ContextItem label="Active Questline" value={activeQuestline?.title ?? "—"} />
-                <ContextItem label="Active Quest" value={activeQuest?.title ?? "—"} />
-                <ContextItem label="Current Build" value={currentBuild?.title ?? "—"} highlight />
-              </div>
             </div>
 
             {/* Suggested questions */}
@@ -319,10 +351,7 @@ function StewardCard({
                 <div className="absolute inset-0 bg-black/35" />
                 <div
                   className="pointer-events-none absolute inset-0 rounded-xl"
-                  style={{
-                    boxShadow:
-                      "inset 0 1px 0 rgba(212,165,116,0.05), inset 0 0 0 1px rgba(212,165,116,0.07)",
-                  }}
+                  style={{ boxShadow: "inset 0 1px 0 rgba(212,165,116,0.05), inset 0 0 0 1px rgba(212,165,116,0.07)" }}
                   aria-hidden
                 />
                 <textarea
@@ -356,9 +385,7 @@ function StewardCard({
                     boxShadow: question.trim()
                       ? "inset 0 1px 0 rgba(212,165,116,0.15), 0 4px 16px rgba(0,0,0,0.3)"
                       : "inset 0 1px 0 rgba(212,165,116,0.04)",
-                    color: question.trim()
-                      ? "rgba(212,165,116,0.90)"
-                      : "rgba(212,165,116,0.35)",
+                    color: question.trim() ? "rgba(212,165,116,0.90)" : "rgba(212,165,116,0.35)",
                     border: question.trim()
                       ? "1px solid rgba(212,165,116,0.14)"
                       : "1px solid rgba(212,165,116,0.06)",
@@ -368,10 +395,7 @@ function StewardCard({
                   {question.trim() && (
                     <span
                       className="pointer-events-none absolute inset-0 opacity-0 transition-opacity duration-500 group-hover/ask:opacity-100"
-                      style={{
-                        background:
-                          "radial-gradient(ellipse at center, rgba(232,132,42,0.08) 0%, transparent 70%)",
-                      }}
+                      style={{ background: "radial-gradient(ellipse at center, rgba(232,132,42,0.08) 0%, transparent 70%)" }}
                       aria-hidden
                     />
                   )}
@@ -379,32 +403,20 @@ function StewardCard({
               </div>
             </div>
 
-            {/* Alpha response */}
+            {/* ── RESPONSE ──────────────────────────────────────────────── */}
             <div
-              className={`overflow-hidden rounded-xl transition-all duration-500 ${
-                asked ? "max-h-32 opacity-100" : "max-h-0 opacity-0"
+              className={`overflow-hidden transition-all duration-700 ${
+                response ? "max-h-[900px] opacity-100" : "max-h-0 opacity-0"
               }`}
             >
-              <div className="relative">
-                <div className="absolute inset-0 rounded-xl bg-black/40" />
-                <div className="absolute inset-y-0 left-0 w-px rounded-full bg-linear-to-b from-accent-glow/45 via-accent/20 to-transparent" />
-                <div className="relative flex flex-col gap-1 px-5 py-4">
-                  <p className="font-display text-[0.55rem] tracking-[0.2em] uppercase text-accent-glow/55">
-                    The Steward
-                  </p>
-                  <p className="text-sm leading-relaxed text-foreground/65">
-                    The Steward is listening.
-                  </p>
-                  <p className="text-xs leading-relaxed text-muted/40">
-                    Real Companion intelligence will be activated in a later Build.
-                  </p>
-                </div>
-              </div>
+              {response && (
+                <StewardResponsePanel question={askedQuestion} response={response} />
+              )}
             </div>
 
             {/* Alpha note */}
             <p className="text-[0.6rem] tracking-wide text-muted/28">
-              Alpha — no AI is connected yet. Real Companion intelligence will be activated in a later Build.
+              Alpha — The Steward response is a local prototype. Real Companion intelligence will be activated in a later Build.
             </p>
 
           </div>
@@ -412,6 +424,99 @@ function StewardCard({
 
       </div>
     </article>
+  );
+}
+
+/* ── STEWARD RESPONSE PANEL ───────────────────────────────────────────────── */
+
+function StewardResponsePanel({
+  question,
+  response,
+}: {
+  question: string;
+  response: StewardResponse;
+}) {
+  return (
+    <div className="relative overflow-hidden rounded-xl">
+      {/* Background */}
+      <div className="absolute inset-0 bg-linear-to-br from-[rgba(18,13,8,0.97)] to-[rgba(8,6,4,0.99)]" />
+      {/* Left accent bar */}
+      <div className="absolute inset-y-0 left-0 w-px bg-linear-to-b from-accent-glow/50 via-accent/25 to-transparent" />
+      {/* Top glow */}
+      <div
+        className="pointer-events-none absolute inset-0"
+        style={{ background: "radial-gradient(ellipse at top left, rgba(232,132,42,0.06) 0%, transparent 50%)" }}
+        aria-hidden
+      />
+      <div
+        className="pointer-events-none absolute inset-0 rounded-xl"
+        style={{ boxShadow: "inset 0 1px 0 rgba(212,165,116,0.08), inset 0 0 0 1px rgba(212,165,116,0.04)" }}
+        aria-hidden
+      />
+
+      <div className="relative flex flex-col gap-5 px-6 py-5 sm:px-7 sm:py-6">
+
+        {/* Header */}
+        <div className="flex items-center justify-between gap-3">
+          <div className="flex items-center gap-2.5">
+            <span className="relative flex size-1.5" aria-hidden>
+              <span className="absolute inline-flex size-full animate-glow-pulse rounded-full bg-accent-glow/55" />
+              <span className="relative inline-flex size-1.5 rounded-full bg-accent-glow shadow-[0_0_6px_rgba(232,132,42,0.6)]" />
+            </span>
+            <p className="font-display text-[0.58rem] tracking-[0.22em] uppercase text-accent-glow/65">
+              The Steward
+            </p>
+          </div>
+          <p className="text-[0.55rem] italic text-muted/30 max-w-[55%] truncate">
+            &ldquo;{question}&rdquo;
+          </p>
+        </div>
+
+        <div className="h-px bg-linear-to-r from-accent/10 to-transparent" aria-hidden />
+
+        {/* Steward's Answer */}
+        <ResponseSection label="Steward's Answer">
+          <p className="text-sm leading-relaxed text-foreground/72">{response.answer}</p>
+        </ResponseSection>
+
+        <div className="h-px bg-linear-to-r from-accent/7 to-transparent" aria-hidden />
+
+        {/* Recommended Direction */}
+        <ResponseSection label="Recommended Direction">
+          <p className="text-sm leading-relaxed text-foreground/65">{response.recommendedDirection}</p>
+        </ResponseSection>
+
+        <div className="h-px bg-linear-to-r from-accent/7 to-transparent" aria-hidden />
+
+        {/* Smallest Useful Step */}
+        <ResponseSection label="Smallest Useful Step">
+          <p className="text-sm leading-relaxed text-accent/78">{response.smallestStep}</p>
+        </ResponseSection>
+
+        {/* Constitution attribution */}
+        <p className="pt-1 text-[0.55rem] tracking-[0.14em] text-muted/28 italic">
+          Guided by the Founder Constitution.
+        </p>
+
+      </div>
+    </div>
+  );
+}
+
+/* ── RESPONSE SECTION ─────────────────────────────────────────────────────── */
+
+function ResponseSection({
+  label,
+  children,
+}: {
+  label: string;
+  children: React.ReactNode;
+}) {
+  return (
+    <div className="space-y-2">
+      <p className="font-display text-[0.52rem] tracking-[0.2em] uppercase text-muted/35">{label}</p>
+      {children}
+    </div>
   );
 }
 
@@ -436,10 +541,8 @@ function CompanionCard({
       }`}
       style={{ animationDelay: `${delay}s` }}
     >
-      {/* Base */}
       <div className={`absolute inset-0 bg-linear-to-br ${cfg.panelClass}`} />
 
-      {/* Glow */}
       {cfg.glowStyle !== "none" && (
         <div
           className="pointer-events-none absolute inset-0 transition-opacity duration-700 group-hover:opacity-125"
@@ -448,7 +551,6 @@ function CompanionCard({
         />
       )}
 
-      {/* Inset ring */}
       <div
         className="pointer-events-none absolute inset-0 rounded-2xl"
         style={{
@@ -460,12 +562,8 @@ function CompanionCard({
       />
 
       <div className="relative flex flex-1 flex-col gap-5 p-6 sm:p-7">
-        {/* Status row */}
         <div className="flex items-center gap-2">
-          <span
-            className={`size-1.5 rounded-full ${cfg.dotClass}`}
-            aria-hidden
-          />
+          <span className={`size-1.5 rounded-full ${cfg.dotClass}`} aria-hidden />
           <span
             className={`font-display text-[0.58rem] tracking-[0.22em] uppercase ${
               isEmerging ? "text-accent/55" : "text-muted/35"
@@ -475,72 +573,24 @@ function CompanionCard({
           </span>
         </div>
 
-        {/* Name */}
         <div className="space-y-2">
-          <h2
-            className={`font-display text-2xl tracking-wide transition-colors duration-500 ${cfg.nameClass}`}
-          >
+          <h2 className={`font-display text-2xl tracking-wide ${cfg.nameClass}`}>
             {companion.name}
           </h2>
-          <p
-            className={`text-xs leading-relaxed ${
-              isEmerging ? "text-muted/60" : "text-muted/35"
-            }`}
-          >
+          <p className={`text-xs leading-relaxed ${isEmerging ? "text-muted/60" : "text-muted/35"}`}>
             {companion.role}
           </p>
         </div>
 
-        {/* Divider */}
         <div
           className={`h-px bg-linear-to-r from-accent/12 to-transparent ${isEmerging ? "" : "opacity-50"}`}
           aria-hidden
         />
 
-        {/* Description */}
-        <p
-          className={`text-sm leading-relaxed ${
-            isEmerging ? "text-foreground/50" : "text-foreground/35"
-          }`}
-        >
+        <p className={`text-sm leading-relaxed ${isEmerging ? "text-foreground/50" : "text-foreground/35"}`}>
           {companion.description}
         </p>
       </div>
     </article>
-  );
-}
-
-/* ── CONTEXT ITEM ─────────────────────────────────────────────────────────── */
-
-function ContextItem({
-  label,
-  value,
-  highlight = false,
-}: {
-  label: string;
-  value: string;
-  highlight?: boolean;
-}) {
-  return (
-    <div
-      className="rounded-lg px-3 py-2.5"
-      style={{
-        background: highlight ? "rgba(212,165,116,0.05)" : "rgba(0,0,0,0.25)",
-        border: highlight
-          ? "1px solid rgba(212,165,116,0.10)"
-          : "1px solid rgba(212,165,116,0.05)",
-      }}
-    >
-      <p className="font-display text-[0.52rem] tracking-[0.18em] uppercase text-muted/35">
-        {label}
-      </p>
-      <p
-        className={`mt-1 text-xs leading-snug ${
-          highlight ? "text-accent/80" : "text-foreground/55"
-        }`}
-      >
-        {value}
-      </p>
-    </div>
   );
 }

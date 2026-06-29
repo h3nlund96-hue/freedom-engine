@@ -147,11 +147,18 @@ export const progress: FreedomEngineProgress = {
             {
               id: "017",
               title: "Build #017 — Steward Console",
-              status: "active",
+              status: "completed",
               description:
                 "Create the first Steward Console inside Companion Hall as a non-functional Alpha entry point toward real Companion intelligence.",
+            },
+            {
+              id: "018",
+              title: "Build #018 — Steward Response Prototype",
+              status: "active",
+              description:
+                "Create a local Alpha response pattern for The Steward before connecting real Companion intelligence.",
               nextStep:
-                "Review the updated Quest Board and choose the next real Build.",
+                "Ask one real product decision question and see if the response format feels useful.",
             },
           ],
         },
