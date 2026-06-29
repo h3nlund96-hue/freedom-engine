@@ -154,11 +154,18 @@ export const progress: FreedomEngineProgress = {
             {
               id: "018",
               title: "Build #018 — Steward Response Prototype",
-              status: "active",
+              status: "completed",
               description:
                 "Create a local Alpha response pattern for The Steward before connecting real Companion intelligence.",
+            },
+            {
+              id: "019",
+              title: "Build #019 — Activate The Steward",
+              status: "active",
+              description:
+                "Connect The Steward Console to real AI through a secure server-side API route.",
               nextStep:
-                "Ask one real product decision question and see if the response format feels useful.",
+                "Ask The Steward one real product decision question and decide if the answer feels like counsel from an ally.",
             },
           ],
         },

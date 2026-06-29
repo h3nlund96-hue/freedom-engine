@@ -1,12 +1,6 @@
 "use client";
 
 import { useState } from "react";
-import {
-  progress,
-  getActiveQuestline,
-  getActiveQuest,
-  getCurrentBuild,
-} from "../data/freedomEngineProgress";
 
 /* ── TYPES ────────────────────────────────────────────────────────────────── */
 
@@ -96,63 +90,25 @@ const statusConfig: Record<
 
 /* ── RESPONSE PROTOTYPE ───────────────────────────────────────────────────── */
 
-// The Founder Constitution guides these responses internally.
-// Freedom First, Build, Curiosity, and Tend the Fire shape the counsel —
-// but the framework is not surfaced to The Founder by default.
-function generateStewardResponse(question: string): StewardResponse {
-  const q = question.toLowerCase();
+async function fetchStewardResponse(question: string): Promise<StewardResponse> {
+  const res = await fetch("/api/steward", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ question }),
+  });
 
-  if (q.includes("next build")) {
-    return {
-      answer:
-        "The current Build should be reviewed and closed before choosing the next. Momentum comes from completing, not from starting. One Build at a time keeps the path clear.",
-      recommendedDirection:
-        "Review the current Build now. If it is done, mark it complete and choose the next smallest useful Build. If it is not done, finish it first.",
-      smallestStep:
-        "Open the Quest Board and decide: is the current Build complete, or does it need one more action before closing?",
-    };
-  }
+  const data = await res.json();
 
-  if (q.includes("main quest")) {
-    return {
-      answer:
-        "Everything inside Freedom Engine should serve the Main Quest: Build the Freedom Engine. If what you are considering does not contribute to that, it is a Side Quest at best — useful, but secondary to the active path.",
-      recommendedDirection:
-        "Stay on the active Questline unless this is clearly more important than the current Build. Protect the main path.",
-      smallestStep:
-        "Ask once: does this make Freedom Engine more real and useful to The Founder today? If yes, proceed. If not, move it to the Idea Vault.",
-    };
-  }
-
-  if (q.includes("side quest")) {
-    return {
-      answer:
-        "If it does not directly advance the active Questline, it belongs outside the main path. Useful ideas are not lost when they become Side Quests — they are protected so they do not derail what matters most right now.",
-      recommendedDirection:
-        "Add it to the Idea Vault or label it a Side Quest on the Quest Board. Keep the active Build uncluttered.",
-      smallestStep:
-        "Open the Quest Board. Find the active Build. Make sure nothing is pulling focus away from it right now.",
-    };
-  }
-
-  if (q.includes("smallest")) {
-    return {
-      answer:
-        "The smallest useful step is almost always already visible inside the current Build. Look there first before planning anything larger. One small action today keeps the fire alive.",
-      recommendedDirection:
-        "Do the next tiny thing that moves the current Build forward. That is enough for today. Small progress is real progress.",
-      smallestStep:
-        "Take one action on the current Build right now — even something that takes five minutes. Then stop and notice that the fire is still burning.",
-    };
+  if (!res.ok || data.error) {
+    throw new Error(
+      data.error ?? "The Steward could not answer right now. The fire is still burning."
+    );
   }
 
   return {
-    answer:
-      "The Steward is awake but not yet connected to real intelligence. This response shows the shape of how The Steward will eventually answer — with clarity and direction, not complexity or noise.",
-    recommendedDirection:
-      "Keep this as a local Alpha prototype for now. Refine the Companion experience before connecting real AI. The response pattern matters more than the content at this stage.",
-    smallestStep:
-      "Ask The Steward one real product decision question and decide whether the answer feels like counsel from an ally.",
+    answer: data.answer,
+    recommendedDirection: data.recommendedDirection,
+    smallestStep: data.smallestStep,
   };
 }
 
@@ -210,32 +166,41 @@ function StewardCard({
   const [question, setQuestion] = useState("");
   const [response, setResponse] = useState<StewardResponse | null>(null);
   const [askedQuestion, setAskedQuestion] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
-  const activeQuestline = getActiveQuestline(progress);
-  const activeQuest = activeQuestline ? getActiveQuest(activeQuestline) : undefined;
-  const currentBuild = activeQuest ? getCurrentBuild(activeQuest) : undefined;
-
-  const ctx = {
-    questline: activeQuestline?.title ?? "—",
-    quest: activeQuest?.title ?? "—",
-    build: currentBuild?.title ?? "—",
-  };
-
-  function handleAsk() {
-    if (!question.trim()) return;
-    setAskedQuestion(question.trim());
-    setResponse(generateStewardResponse(question));
+  async function handleAsk() {
+    const trimmed = question.trim();
+    if (!trimmed || loading) return;
+    setAskedQuestion(trimmed);
     setQuestion("");
+    setResponse(null);
+    setError(null);
+    setLoading(true);
+    try {
+      const result = await fetchStewardResponse(trimmed);
+      setResponse(result);
+    } catch (err) {
+      setError(
+        err instanceof Error
+          ? err.message
+          : "The Steward could not answer right now. The fire is still burning."
+      );
+    } finally {
+      setLoading(false);
+    }
   }
 
   function handleSuggestion(q: string) {
     setQuestion(q);
     setResponse(null);
+    setError(null);
   }
 
   function handleInputChange(e: React.ChangeEvent<HTMLTextAreaElement>) {
     setQuestion(e.target.value);
     if (response) setResponse(null);
+    if (error) setError(null);
   }
 
   return (
@@ -360,39 +325,48 @@ function StewardCard({
                   onKeyDown={(e) => {
                     if (e.key === "Enter" && !e.shiftKey) {
                       e.preventDefault();
-                      handleAsk();
+                      void handleAsk();
                     }
                   }}
                   rows={3}
+                  disabled={loading}
                   placeholder="Ask about the next Build, a product decision, or where to focus..."
-                  className="relative w-full resize-none bg-transparent px-5 py-4 text-sm leading-relaxed text-foreground/80 placeholder:text-muted/30 focus:outline-none"
+                  className="relative w-full resize-none bg-transparent px-5 py-4 text-sm leading-relaxed text-foreground/80 placeholder:text-muted/30 focus:outline-none disabled:opacity-50"
                 />
               </div>
 
               <div className="flex items-center justify-between gap-4">
                 <p className="text-[0.6rem] tracking-wide text-muted/30">
-                  Shift+Enter for new line · Enter to ask
+                  {loading ? "The Steward is listening..." : "Shift+Enter for new line · Enter to ask"}
                 </p>
                 <button
                   type="button"
-                  onClick={handleAsk}
-                  disabled={!question.trim()}
+                  onClick={() => void handleAsk()}
+                  disabled={!question.trim() || loading}
                   className="group/ask relative overflow-hidden rounded-lg px-4 py-2 text-xs font-medium tracking-wide transition-all duration-300 disabled:cursor-not-allowed disabled:opacity-40"
                   style={{
-                    background: question.trim()
-                      ? "linear-gradient(135deg, rgba(212,165,116,0.18) 0%, rgba(232,132,42,0.12) 100%)"
-                      : "rgba(255,255,255,0.02)",
-                    boxShadow: question.trim()
-                      ? "inset 0 1px 0 rgba(212,165,116,0.15), 0 4px 16px rgba(0,0,0,0.3)"
-                      : "inset 0 1px 0 rgba(212,165,116,0.04)",
-                    color: question.trim() ? "rgba(212,165,116,0.90)" : "rgba(212,165,116,0.35)",
-                    border: question.trim()
-                      ? "1px solid rgba(212,165,116,0.14)"
-                      : "1px solid rgba(212,165,116,0.06)",
+                    background:
+                      question.trim() && !loading
+                        ? "linear-gradient(135deg, rgba(212,165,116,0.18) 0%, rgba(232,132,42,0.12) 100%)"
+                        : "rgba(255,255,255,0.02)",
+                    boxShadow:
+                      question.trim() && !loading
+                        ? "inset 0 1px 0 rgba(212,165,116,0.15), 0 4px 16px rgba(0,0,0,0.3)"
+                        : "inset 0 1px 0 rgba(212,165,116,0.04)",
+                    color:
+                      question.trim() && !loading
+                        ? "rgba(212,165,116,0.90)"
+                        : "rgba(212,165,116,0.35)",
+                    border:
+                      question.trim() && !loading
+                        ? "1px solid rgba(212,165,116,0.14)"
+                        : "1px solid rgba(212,165,116,0.06)",
                   }}
                 >
-                  <span className="relative z-10">Ask The Steward</span>
-                  {question.trim() && (
+                  <span className="relative z-10">
+                    {loading ? "Listening..." : "Ask The Steward"}
+                  </span>
+                  {question.trim() && !loading && (
                     <span
                       className="pointer-events-none absolute inset-0 opacity-0 transition-opacity duration-500 group-hover/ask:opacity-100"
                       style={{ background: "radial-gradient(ellipse at center, rgba(232,132,42,0.08) 0%, transparent 70%)" }}
@@ -403,21 +377,44 @@ function StewardCard({
               </div>
             </div>
 
-            {/* ── RESPONSE ──────────────────────────────────────────────── */}
+            {/* ── LOADING ────────────────────────────────────────────────── */}
+            <div
+              className={`overflow-hidden transition-all duration-500 ${
+                loading ? "max-h-20 opacity-100" : "max-h-0 opacity-0"
+              }`}
+            >
+              <div className="flex items-center gap-3 px-1 py-2">
+                <span className="relative flex size-1.5" aria-hidden>
+                  <span className="absolute inline-flex size-full animate-glow-pulse rounded-full bg-accent-glow/55" />
+                  <span className="relative inline-flex size-1.5 rounded-full bg-accent-glow" />
+                </span>
+                <p className="text-xs text-muted/45 italic">The Steward is listening...</p>
+              </div>
+            </div>
+
+            {/* ── ERROR ──────────────────────────────────────────────────── */}
+            <div
+              className={`overflow-hidden transition-all duration-500 ${
+                error && !loading ? "max-h-24 opacity-100" : "max-h-0 opacity-0"
+              }`}
+            >
+              {error && (
+                <div className="rounded-lg border border-accent/[0.07] bg-black/20 px-4 py-3">
+                  <p className="text-xs leading-relaxed text-muted/50">{error}</p>
+                </div>
+              )}
+            </div>
+
+            {/* ── RESPONSE ───────────────────────────────────────────────── */}
             <div
               className={`overflow-hidden transition-all duration-700 ${
-                response ? "max-h-[900px] opacity-100" : "max-h-0 opacity-0"
+                response && !loading ? "max-h-[900px] opacity-100" : "max-h-0 opacity-0"
               }`}
             >
               {response && (
                 <StewardResponsePanel question={askedQuestion} response={response} />
               )}
             </div>
-
-            {/* Alpha note */}
-            <p className="text-[0.6rem] tracking-wide text-muted/28">
-              Alpha — The Steward response is a local prototype. Real Companion intelligence will be activated in a later Build.
-            </p>
 
           </div>
         </div>
