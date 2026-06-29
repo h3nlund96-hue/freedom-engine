@@ -210,11 +210,18 @@ export const progress: FreedomEngineProgress = {
             {
               id: "026",
               title: "Build #026 — Update Quest System After Founder Status",
-              status: "active",
+              status: "completed",
               description:
                 "Update the Quest System Layer so HQ and Quest Board reflect that Founder Status, XP and Level now exist in Freedom Engine Alpha.",
+            },
+            {
+              id: "028",
+              title: "Build #028 — Animated Atmosphere Pass",
+              status: "active",
+              description:
+                "Add subtle animated fog and atmospheric movement to AI Mastery HQ to make Freedom Engine feel more alive.",
               nextStep:
-                "Review the updated HQ and Quest Board, then choose the next real Build.",
+                "Review the updated atmosphere on HQ, then choose the next real Build.",
             },
           ],
         },

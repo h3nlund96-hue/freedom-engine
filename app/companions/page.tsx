@@ -13,7 +13,7 @@ export const metadata: Metadata = {
 export default function CompanionHallPage() {
   return (
     <div className="relative flex min-h-full flex-1 flex-col overflow-hidden">
-      <AtmosphericBackground />
+      <AtmosphericBackground variant="companions" />
 
       <main className="relative mx-auto flex w-full max-w-2xl flex-1 flex-col gap-14 px-6 py-20 sm:px-8 sm:py-28 lg:max-w-3xl">
 

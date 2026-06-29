@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { CornerMarks } from "./CornerMarks";
 
 type WorldCardProps = {
   icon: string;
@@ -53,6 +54,12 @@ export function WorldCard({
         className="pointer-events-none absolute inset-0 bg-linear-to-br from-accent/[0.04] via-transparent to-transparent opacity-0 transition-opacity duration-700 group-hover:opacity-100"
         aria-hidden
       />
+
+      {/* Panel surface texture */}
+      <span className="noise-overlay-card pointer-events-none absolute inset-0 rounded-2xl opacity-[0.038] mix-blend-overlay" aria-hidden />
+
+      {/* Corner marks */}
+      <CornerMarks size={8} inset="6px" />
 
       {/* Bottom glow line */}
       <span
