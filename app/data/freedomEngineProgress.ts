@@ -175,11 +175,18 @@ export const progress: FreedomEngineProgress = {
             {
               id: "021",
               title: "Build #021 — Founder Login",
-              status: "active",
+              status: "completed",
               description:
                 "Add Supabase Auth so Freedom Engine is protected by Founder Login and The Steward API only answers authenticated requests.",
+            },
+            {
+              id: "022",
+              title: "Build #022 — Lock Founder Access",
+              status: "active",
+              description:
+                "Remove public sign-up from Founder Login so Freedom Engine Alpha remains private.",
               nextStep:
-                "Sign in and verify that all protected routes redirect correctly and The Steward responds only to authenticated Founders.",
+                "Verify that only existing Founder credentials can enter Freedom Engine.",
             },
           ],
         },
