@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { AtmosphericBackground } from "./components/AtmosphericBackground";
 import { BuildPrompt } from "./components/BuildPrompt";
+import { FounderStatusBar } from "./components/FounderStatusBar";
 import { HQHeader } from "./components/HQHeader";
 import { PrincipleBlock } from "./components/PrincipleBlock";
 import { SignOutButton } from "./components/SignOutButton";
@@ -48,7 +49,9 @@ export default function Home() {
     <div className="relative flex min-h-full flex-1 flex-col overflow-hidden">
       <AtmosphericBackground />
 
-      <main className="relative mx-auto flex w-full max-w-2xl flex-1 flex-col gap-14 px-6 py-20 sm:px-8 sm:py-28 lg:max-w-3xl">
+      <FounderStatusBar />
+
+      <main className="relative mx-auto flex w-full max-w-2xl flex-1 flex-col gap-14 px-6 py-14 sm:px-8 sm:py-20 lg:max-w-3xl">
         <HQHeader
           title="🏛️ AI Mastery HQ"
           welcome="Welcome back, Founder."

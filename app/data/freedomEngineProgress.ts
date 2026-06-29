@@ -196,11 +196,18 @@ export const progress: FreedomEngineProgress = {
             {
               id: "024",
               title: "Build #024 — Update Quest System After Database Memory",
-              status: "active",
+              status: "completed",
               description:
                 "Update the Quest System Layer so HQ and Quest Board reflect that Idea Vault now has database-backed memory.",
+            },
+            {
+              id: "025",
+              title: "Build #025 — Founder Status Bar",
+              status: "active",
+              description:
+                "Add the first Alpha version of Founder progression, XP and Level as a top status bar and future profile entry point.",
               nextStep:
-                "Review the updated HQ and Quest Board, then choose the next real Build.",
+                "Review the Founder Status Bar on HQ and decide the next real Build.",
             },
           ],
         },
