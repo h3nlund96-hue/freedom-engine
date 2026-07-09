@@ -7,11 +7,12 @@ import { PrincipleBlock } from "./components/PrincipleBlock";
 import { SignOutButton } from "./components/SignOutButton";
 import { WorldCard } from "./components/WorldCard";
 import {
-  progress,
   getActiveQuestline,
   getActiveQuest,
   getCurrentBuild,
+  type FreedomEngineProgress,
 } from "./data/freedomEngineProgress";
+import { getProgress } from "./lib/questService";
 
 const worldPlaces = [
   {
@@ -44,12 +45,14 @@ const worldPlaces = [
   },
 ];
 
-export default function Home() {
+export default async function Home() {
+  const progress = await getProgress();
+
   return (
     <div className="relative flex min-h-full flex-1 flex-col overflow-hidden">
       <AtmosphericBackground />
 
-      <FounderStatusBar />
+      <FounderStatusBar progress={progress} />
 
       <main className="relative mx-auto flex w-full max-w-2xl flex-1 flex-col gap-14 px-6 py-14 sm:px-8 sm:py-20 lg:max-w-3xl">
         <HQHeader
@@ -59,7 +62,7 @@ export default function Home() {
 
         <PrincipleBlock principle="The system exists to serve The Founder. The Founder does not exist to serve the system." />
 
-        <CurrentFocus />
+        <CurrentFocus progress={progress} />
 
         {/* World navigation — three locations */}
         <section className="space-y-8">
@@ -108,7 +111,7 @@ export default function Home() {
 }
 
 /* ── CURRENT FOCUS ───────────────────────────────────────────────────────── */
-function CurrentFocus() {
+function CurrentFocus({ progress }: { progress: FreedomEngineProgress }) {
   const activeQuestline = getActiveQuestline(progress);
   const activeQuest = activeQuestline ? getActiveQuest(activeQuestline) : undefined;
   const currentBuild = activeQuest ? getCurrentBuild(activeQuest) : undefined;
