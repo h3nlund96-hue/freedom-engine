@@ -55,10 +55,10 @@ export default function CompanionHallPage() {
 
         {/* Core principle */}
         <div className="animate-fade-up" style={{ animationDelay: "0.16s" }}>
-          <div className="relative overflow-hidden rounded-xl">
+          <div className="relative overflow-hidden rounded-md border border-white/[0.07]">
             <div className="absolute inset-0 bg-linear-to-r from-[rgba(10,17,30,0.90)] to-[rgba(6,9,16,0.85)]" />
             <div className="absolute inset-y-0 left-0 w-1 bg-linear-to-b from-accent/50 via-accent/25 to-transparent" />
-            <div className="pointer-events-none absolute inset-0 rounded-xl shadow-[inset_0_1px_0_rgba(255,171,74,0.07)]" aria-hidden />
+            <div className="pointer-events-none absolute inset-0 rounded-md shadow-[inset_0_1px_0_rgba(255,171,74,0.07)]" aria-hidden />
             <div className="relative flex flex-col gap-1.5 px-6 py-5 sm:flex-row sm:items-center sm:gap-8 sm:px-7">
               <div className="shrink-0">
                 <p className="font-display text-[0.6rem] tracking-[0.25em] uppercase text-accent/50">Core Principle</p>
@@ -78,7 +78,7 @@ export default function CompanionHallPage() {
 
         {/* Alpha notice */}
         <div className="animate-fade-up" style={{ animationDelay: "0.62s" }}>
-          <div className="flex items-start gap-4 rounded-xl border border-dashed border-accent/[0.08] px-5 py-4">
+          <div className="flex items-start gap-4 rounded-md border border-dashed border-accent/[0.08] px-5 py-4">
             <span className="mt-0.5 font-display text-xs text-accent/40">Alpha</span>
             <p className="text-xs leading-relaxed text-muted/45">
               Companions are visible in Alpha, but real AI interaction will be added in a future Questline. For now, The Steward already works through the current Cursor workflow.

@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { AtmosphericBackground } from "./AtmosphericBackground";
+import { CornerMarks } from "./CornerMarks";
 
 type LocationShellProps = {
   icon: string;
@@ -52,12 +53,9 @@ export function LocationShell({
           style={{ animationDelay: "0.1s" }}
         >
           <div className="flex items-start gap-5">
-            <div className="relative mt-1 flex size-16 shrink-0 items-center justify-center rounded-2xl bg-linear-to-br from-[rgba(18,25,38,0.9)] to-[rgba(8,10,16,0.95)] shadow-[0_8px_32px_rgba(0,0,0,0.4),inset_0_1px_0_rgba(255,171,74,0.06)]">
+            <div className="relative mt-1 flex size-16 shrink-0 items-center justify-center rounded-md border border-white/[0.07] bg-linear-to-br from-[rgba(18,25,38,0.9)] to-[rgba(8,10,16,0.95)] shadow-[0_8px_32px_rgba(0,0,0,0.4),inset_0_1px_0_rgba(255,171,74,0.06)]">
               <span className="text-3xl">{icon}</span>
-              <span
-                className="pointer-events-none absolute inset-0 rounded-2xl border border-accent/[0.06]"
-                aria-hidden
-              />
+              <CornerMarks size={6} inset="5px" />
             </div>
 
             <div className="space-y-2">

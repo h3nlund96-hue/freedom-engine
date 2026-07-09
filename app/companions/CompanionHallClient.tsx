@@ -204,7 +204,7 @@ function StewardCard({
   }
 
   return (
-    <article className="group relative flex flex-col overflow-hidden rounded-2xl transition-all duration-700 hover:-translate-y-0.5 hover:shadow-[0_24px_60px_rgba(0,0,0,0.55)]">
+    <article className="group relative flex flex-col overflow-hidden rounded-md border border-white/[0.07] transition-all duration-700 hover:-translate-y-0.5 hover:shadow-[0_24px_60px_rgba(0,0,0,0.55)]">
       {/* Base */}
       <div className={`absolute inset-0 bg-linear-to-br ${cfg.panelClass}`} />
 
@@ -217,7 +217,7 @@ function StewardCard({
 
       {/* Inset ring */}
       <div
-        className="pointer-events-none absolute inset-0 rounded-2xl"
+        className="pointer-events-none absolute inset-0 rounded-md"
         style={{ boxShadow: "inset 0 1px 0 rgba(255,171,74,0.11), inset 0 0 0 1px rgba(255,171,74,0.05)" }}
         aria-hidden
       />
@@ -298,7 +298,7 @@ function StewardCard({
                     key={q}
                     type="button"
                     onClick={() => handleSuggestion(q)}
-                    className={`rounded-lg border px-3 py-1.5 text-xs leading-snug transition-all duration-300 ${
+                    className={`rounded-sm border px-3 py-1.5 text-xs leading-snug transition-all duration-300 ${
                       question === q
                         ? "border-accent/30 bg-accent/8 text-accent/90"
                         : "border-accent/[0.07] bg-black/20 text-muted/45 hover:border-accent/18 hover:text-muted/70"
@@ -312,10 +312,10 @@ function StewardCard({
 
             {/* Input */}
             <div className="space-y-2.5">
-              <div className="relative overflow-hidden rounded-xl">
+              <div className="relative overflow-hidden rounded-md border border-white/[0.07]">
                 <div className="absolute inset-0 bg-black/35" />
                 <div
-                  className="pointer-events-none absolute inset-0 rounded-xl"
+                  className="pointer-events-none absolute inset-0 rounded-md"
                   style={{ boxShadow: "inset 0 1px 0 rgba(255,171,74,0.05), inset 0 0 0 1px rgba(255,171,74,0.07)" }}
                   aria-hidden
                 />
@@ -343,7 +343,7 @@ function StewardCard({
                   type="button"
                   onClick={() => void handleAsk()}
                   disabled={!question.trim() || loading}
-                  className="group/ask relative overflow-hidden rounded-lg px-4 py-2 text-xs font-medium tracking-wide transition-all duration-300 disabled:cursor-not-allowed disabled:opacity-40"
+                  className="group/ask relative overflow-hidden rounded-sm px-4 py-2 font-display text-[0.65rem] tracking-[0.15em] uppercase transition-all duration-300 disabled:cursor-not-allowed disabled:opacity-40"
                   style={{
                     background:
                       question.trim() && !loading
@@ -399,7 +399,7 @@ function StewardCard({
               }`}
             >
               {error && (
-                <div className="rounded-lg border border-accent/[0.07] bg-black/20 px-4 py-3">
+                <div className="rounded-sm border border-accent/[0.07] bg-black/20 px-4 py-3">
                   <p className="text-xs leading-relaxed text-muted/50">{error}</p>
                 </div>
               )}
@@ -434,7 +434,7 @@ function StewardResponsePanel({
   response: StewardResponse;
 }) {
   return (
-    <div className="relative overflow-hidden rounded-xl">
+    <div className="relative overflow-hidden rounded-md border border-white/[0.07]">
       {/* Background */}
       <div className="absolute inset-0 bg-linear-to-br from-[rgba(8,14,24,0.97)] to-[rgba(4,6,11,0.99)]" />
       {/* Left accent bar */}
@@ -446,7 +446,7 @@ function StewardResponsePanel({
         aria-hidden
       />
       <div
-        className="pointer-events-none absolute inset-0 rounded-xl"
+        className="pointer-events-none absolute inset-0 rounded-md"
         style={{ boxShadow: "inset 0 1px 0 rgba(255,171,74,0.08), inset 0 0 0 1px rgba(255,171,74,0.04)" }}
         aria-hidden
       />
@@ -531,7 +531,7 @@ function CompanionCard({
 
   return (
     <article
-      className={`animate-fade-up group relative flex flex-col overflow-hidden rounded-2xl transition-all duration-700 ${
+      className={`animate-fade-up group relative flex flex-col overflow-hidden rounded-md border border-white/[0.06] transition-all duration-700 ${
         isEmerging
           ? "hover:-translate-y-1 hover:shadow-[0_20px_56px_rgba(0,0,0,0.5)]"
           : "opacity-75 hover:opacity-90"
@@ -549,7 +549,7 @@ function CompanionCard({
       )}
 
       <div
-        className="pointer-events-none absolute inset-0 rounded-2xl"
+        className="pointer-events-none absolute inset-0 rounded-md"
         style={{
           boxShadow: isEmerging
             ? "inset 0 1px 0 rgba(255,171,74,0.07), inset 0 0 0 1px rgba(255,171,74,0.03)"

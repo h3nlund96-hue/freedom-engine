@@ -84,7 +84,7 @@ export function FounderStatusBar() {
         {/* XP section — controlled width, not stretched */}
         <div className="flex w-72 flex-col gap-1.5 xl:w-96">
           <div
-            className="relative h-[3px] w-full overflow-hidden rounded-full"
+            className="relative h-[3px] w-full overflow-hidden rounded-sm"
             style={{ background: "rgba(255,171,74,0.09)" }}
             role="progressbar"
             aria-valuenow={xpData.xpInLevel}
@@ -92,7 +92,7 @@ export function FounderStatusBar() {
             aria-label={`XP: ${xpData.xpInLevel} of ${xpData.xpNeeded}`}
           >
             <div
-              className="absolute inset-y-0 left-0 rounded-full"
+              className="absolute inset-y-0 left-0 rounded-sm"
               style={{
                 width: `${barPercent}%`,
                 background: "linear-gradient(to right, rgba(255,171,74,0.65), rgba(77,216,255,0.82))",
@@ -143,14 +143,14 @@ export function FounderStatusBar() {
         {/* Line 2: XP bar + progress text */}
         <div className="flex items-center gap-3">
           <div
-            className="relative h-[2px] flex-1 overflow-hidden rounded-full"
+            className="relative h-[2px] flex-1 overflow-hidden rounded-sm"
             style={{ background: "rgba(255,171,74,0.09)" }}
             role="progressbar"
             aria-valuenow={xpData.xpInLevel}
             aria-valuemax={xpData.xpNeeded}
           >
             <div
-              className="absolute inset-y-0 left-0 rounded-full"
+              className="absolute inset-y-0 left-0 rounded-sm"
               style={{
                 width: `${barPercent}%`,
                 background: "linear-gradient(to right, rgba(255,171,74,0.60), rgba(77,216,255,0.78))",

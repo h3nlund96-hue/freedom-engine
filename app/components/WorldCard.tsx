@@ -46,7 +46,7 @@ export function WorldCard({
   return (
     <Link
       href={href}
-      className={`group animate-fade-up relative w-full overflow-hidden rounded-2xl bg-linear-to-br from-[rgba(14,19,30,0.7)] to-[rgba(8,9,14,0.85)] p-6 text-left shadow-[0_8px_32px_rgba(0,0,0,0.35),inset_0_1px_0_rgba(255,171,74,0.04)] backdrop-blur-sm transition-all duration-700 ease-out hover:-translate-y-1.5 hover:scale-[1.01] focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-accent/30 ${style.hover}`}
+      className={`group animate-fade-up relative w-full overflow-hidden rounded-md border border-white/[0.07] bg-linear-to-br from-[rgba(14,19,30,0.7)] to-[rgba(8,9,14,0.85)] p-6 text-left shadow-[0_8px_32px_rgba(0,0,0,0.35),inset_0_1px_0_rgba(255,171,74,0.04)] backdrop-blur-sm transition-all duration-700 ease-out hover:-translate-y-1.5 hover:scale-[1.01] focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-accent/30 ${style.hover}`}
       style={{ animationDelay: `${delay}s` }}
     >
       {/* Hover wash */}
@@ -56,7 +56,7 @@ export function WorldCard({
       />
 
       {/* Panel surface texture */}
-      <span className="noise-overlay-card pointer-events-none absolute inset-0 rounded-2xl opacity-[0.038] mix-blend-overlay" aria-hidden />
+      <span className="noise-overlay-card pointer-events-none absolute inset-0 rounded-md opacity-[0.038] mix-blend-overlay" aria-hidden />
 
       {/* Corner marks */}
       <CornerMarks size={8} inset="6px" />
@@ -68,9 +68,9 @@ export function WorldCard({
       />
 
       <div className="relative flex flex-col gap-4">
-        {/* Icon orb */}
+        {/* Icon frame */}
         <div
-          className={`flex size-10 items-center justify-center rounded-full bg-linear-to-br shadow-[inset_0_1px_0_rgba(255,255,255,0.04)] transition-all duration-700 group-hover:scale-110 group-hover:shadow-[0_0_20px_rgba(255,171,74,0.15)] ${style.orb}`}
+          className={`flex size-10 items-center justify-center rounded-md border border-white/[0.06] bg-linear-to-br shadow-[inset_0_1px_0_rgba(255,255,255,0.04)] transition-all duration-700 group-hover:scale-110 group-hover:shadow-[0_0_20px_rgba(255,171,74,0.15)] ${style.orb}`}
         >
           <span className="text-lg transition-transform duration-700 group-hover:scale-110">
             {icon}
