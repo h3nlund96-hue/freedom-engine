@@ -52,7 +52,7 @@ export function LocationShell({
           style={{ animationDelay: "0.1s" }}
         >
           <div className="flex items-start gap-5">
-            <div className="relative mt-1 flex size-16 shrink-0 items-center justify-center rounded-2xl bg-linear-to-br from-[rgba(28,24,18,0.9)] to-[rgba(12,10,8,0.95)] shadow-[0_8px_32px_rgba(0,0,0,0.4),inset_0_1px_0_rgba(212,165,116,0.06)]">
+            <div className="relative mt-1 flex size-16 shrink-0 items-center justify-center rounded-2xl bg-linear-to-br from-[rgba(18,25,38,0.9)] to-[rgba(8,10,16,0.95)] shadow-[0_8px_32px_rgba(0,0,0,0.4),inset_0_1px_0_rgba(255,171,74,0.06)]">
               <span className="text-3xl">{icon}</span>
               <span
                 className="pointer-events-none absolute inset-0 rounded-2xl border border-accent/[0.06]"
@@ -73,7 +73,7 @@ export function LocationShell({
           {/* Divider */}
           <div className="flex items-center gap-3" aria-hidden>
             <span className="h-px flex-1 bg-linear-to-r from-accent/15 to-transparent" />
-            <span className="size-1 rounded-full bg-accent/25 shadow-[0_0_8px_rgba(212,165,116,0.3)]" />
+            <span className="size-1 rounded-full bg-accent/25 shadow-[0_0_8px_rgba(255,171,74,0.3)]" />
             <span className="h-px w-8 bg-accent/10" />
           </div>
 
@@ -92,7 +92,7 @@ export function LocationShell({
             aria-hidden
           />
           <span
-            className="absolute left-0 top-0 size-1 -translate-x-[1.5px] rounded-full bg-accent-glow/50 shadow-[0_0_10px_rgba(232,132,42,0.35)]"
+            className="absolute left-0 top-0 size-1 -translate-x-[1.5px] rounded-full bg-accent-glow/50 shadow-[0_0_10px_rgba(77,216,255,0.35)]"
             aria-hidden
           />
           <p className="font-display text-sm italic leading-relaxed text-muted/90 sm:text-base">

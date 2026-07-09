@@ -15,7 +15,7 @@ interface CornerMarksProps {
 export function CornerMarks({
   size = 10,
   inset = "8px",
-  color = "rgba(212,165,116,0.22)",
+  color = "rgba(255,171,74,0.22)",
 }: CornerMarksProps) {
   const arm = `${size}px`;
   const thick = "1px";

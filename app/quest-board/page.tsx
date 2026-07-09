@@ -59,7 +59,7 @@ export default function QuestBoardPage() {
           </div>
           <div className="flex items-center gap-3" aria-hidden>
             <span className="h-px w-12 bg-linear-to-r from-accent/30 to-accent/10" />
-            <span className="size-[3px] rounded-full bg-accent/40 shadow-[0_0_8px_rgba(212,165,116,0.4)]" />
+            <span className="size-[3px] rounded-full bg-accent/40 shadow-[0_0_8px_rgba(255,171,74,0.4)]" />
             <span className="h-px flex-1 bg-linear-to-r from-accent/10 to-transparent" />
           </div>
           <p className="max-w-lg text-base leading-relaxed text-foreground/70">
@@ -170,7 +170,7 @@ export default function QuestBoardPage() {
           style={{ animationDelay: "0.54s" }}
         >
           <span className="absolute left-0 top-0 h-full w-px bg-linear-to-b from-accent-glow/40 via-accent/15 to-transparent" aria-hidden />
-          <span className="absolute left-0 top-0 size-1 -translate-x-[1.5px] rounded-full bg-accent-glow/50 shadow-[0_0_10px_rgba(232,132,42,0.35)]" aria-hidden />
+          <span className="absolute left-0 top-0 size-1 -translate-x-[1.5px] rounded-full bg-accent-glow/50 shadow-[0_0_10px_rgba(77,216,255,0.35)]" aria-hidden />
           <p className="font-display text-sm italic leading-relaxed text-muted/90 sm:text-base">
             Every Quest is completed through Builds.
           </p>
@@ -233,11 +233,11 @@ function CurrentFocusPanel({
 }) {
   return (
     <div className="relative overflow-hidden rounded-2xl">
-      <div className="absolute inset-0 bg-linear-to-b from-[rgba(28,21,13,0.95)] to-[rgba(12,9,6,0.98)]" />
-      <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_left,rgba(232,132,42,0.08)_0%,transparent_55%)]" />
+      <div className="absolute inset-0 bg-linear-to-b from-[rgba(13,22,38,0.95)] to-[rgba(6,9,16,0.98)]" />
+      <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_left,rgba(77,216,255,0.08)_0%,transparent_55%)]" />
       <div
         className="pointer-events-none absolute inset-0 rounded-2xl"
-        style={{ boxShadow: "inset 0 1px 0 rgba(212,165,116,0.11), inset 0 -1px 0 rgba(0,0,0,0.4)" }}
+        style={{ boxShadow: "inset 0 1px 0 rgba(255,171,74,0.11), inset 0 -1px 0 rgba(0,0,0,0.4)" }}
         aria-hidden
       />
       <span className="pointer-events-none absolute left-4 top-4 h-4 w-4 border-l border-t border-accent/22" aria-hidden />
@@ -250,7 +250,7 @@ function CurrentFocusPanel({
         <div className="mb-6 flex items-center gap-2.5">
           <span className="relative flex size-2" aria-hidden>
             <span className="absolute inline-flex size-full animate-glow-pulse rounded-full bg-accent-glow/55" />
-            <span className="relative inline-flex size-2 rounded-full bg-accent-glow shadow-[0_0_10px_rgba(232,132,42,0.65)]" />
+            <span className="relative inline-flex size-2 rounded-full bg-accent-glow shadow-[0_0_10px_rgba(77,216,255,0.65)]" />
           </span>
           <span className="font-display text-[0.6rem] tracking-[0.28em] uppercase text-accent-glow/75">Active Path</span>
         </div>
@@ -295,9 +295,9 @@ function FocusRow({ label, value, isLast = false }: { label: string; value: stri
 function MainQuestTile({ quest }: { quest: string }) {
   return (
     <div className="relative overflow-hidden rounded-xl">
-      <div className="absolute inset-0 bg-linear-to-r from-[rgba(26,19,11,0.92)] to-[rgba(14,11,7,0.88)]" />
+      <div className="absolute inset-0 bg-linear-to-r from-[rgba(11,20,35,0.92)] to-[rgba(7,12,19,0.88)]" />
       <div className="absolute inset-y-0 left-0 w-1 bg-linear-to-b from-accent/50 via-accent/25 to-transparent" />
-      <div className="pointer-events-none absolute inset-0 rounded-xl shadow-[inset_0_1px_0_rgba(212,165,116,0.07)]" aria-hidden />
+      <div className="pointer-events-none absolute inset-0 rounded-xl shadow-[inset_0_1px_0_rgba(255,171,74,0.07)]" aria-hidden />
       <div className="relative flex flex-col gap-1.5 px-6 py-5 sm:flex-row sm:items-center sm:gap-8 sm:px-7">
         <div className="shrink-0">
           <p className="font-display text-[0.6rem] tracking-[0.25em] uppercase text-accent/50">North Star</p>
@@ -316,14 +316,14 @@ function QuestlineCard({ questline }: { questline: Questline }) {
   const isActive = questline.status === "active";
   return (
     <div className={`relative overflow-hidden rounded-xl ${!isActive ? "opacity-60" : ""}`}>
-      <div className={`absolute inset-0 ${isActive ? "bg-linear-to-br from-[rgba(24,18,11,0.90)] to-[rgba(12,9,6,0.93)]" : "bg-[rgba(12,10,8,0.80)]"}`} />
-      <div className="pointer-events-none absolute inset-0 rounded-xl shadow-[inset_0_1px_0_rgba(212,165,116,0.06)]" aria-hidden />
+      <div className={`absolute inset-0 ${isActive ? "bg-linear-to-br from-[rgba(11,19,32,0.90)] to-[rgba(6,9,16,0.93)]" : "bg-[rgba(8,10,16,0.80)]"}`} />
+      <div className="pointer-events-none absolute inset-0 rounded-xl shadow-[inset_0_1px_0_rgba(255,171,74,0.06)]" aria-hidden />
       <div className="relative flex flex-col gap-3 p-5">
         <div className="flex items-center gap-2.5">
           {isActive ? (
             <span className="relative flex size-1.5" aria-hidden>
               <span className="absolute inline-flex size-full animate-glow-pulse rounded-full bg-accent-glow/70" />
-              <span className="relative inline-flex size-1.5 rounded-full bg-accent-glow shadow-[0_0_8px_rgba(232,132,42,0.6)]" />
+              <span className="relative inline-flex size-1.5 rounded-full bg-accent-glow shadow-[0_0_8px_rgba(77,216,255,0.6)]" />
             </span>
           ) : (
             <span className="size-1.5 rounded-full bg-muted/25" aria-hidden />
@@ -345,14 +345,14 @@ function QuestlineCard({ questline }: { questline: Questline }) {
 function ActiveQuestCard({ quest }: { quest: Quest }) {
   return (
     <div className="relative overflow-hidden rounded-xl">
-      <div className="absolute inset-0 bg-linear-to-br from-[rgba(22,16,10,0.90)] to-[rgba(10,8,6,0.94)]" />
-      <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,rgba(212,165,116,0.05)_0%,transparent_60%)]" />
-      <div className="pointer-events-none absolute inset-0 rounded-xl shadow-[inset_0_1px_0_rgba(212,165,116,0.08)]" aria-hidden />
+      <div className="absolute inset-0 bg-linear-to-br from-[rgba(10,17,30,0.90)] to-[rgba(6,8,14,0.94)]" />
+      <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,rgba(255,171,74,0.05)_0%,transparent_60%)]" />
+      <div className="pointer-events-none absolute inset-0 rounded-xl shadow-[inset_0_1px_0_rgba(255,171,74,0.08)]" aria-hidden />
       <div className="relative px-5 py-5 sm:px-6">
         <div className="mb-3 flex items-center gap-2.5">
           <span className="relative flex size-1.5" aria-hidden>
             <span className="absolute inline-flex size-full animate-glow-pulse rounded-full bg-accent-glow/60" />
-            <span className="relative inline-flex size-1.5 rounded-full bg-accent-glow shadow-[0_0_8px_rgba(232,132,42,0.55)]" />
+            <span className="relative inline-flex size-1.5 rounded-full bg-accent-glow shadow-[0_0_8px_rgba(77,216,255,0.55)]" />
           </span>
           <span className="font-display text-[0.58rem] tracking-[0.22em] uppercase text-accent-glow/70">Active</span>
         </div>
@@ -366,7 +366,7 @@ function ActiveQuestCard({ quest }: { quest: Quest }) {
 /* ── COMPLETED QUEST ROW ─────────────────────────────────────────────────── */
 function CompletedQuestRow({ quest }: { quest: Quest }) {
   return (
-    <li className="group flex items-start gap-3.5 rounded-xl px-4 py-3 transition-colors duration-300 hover:bg-[rgba(212,165,116,0.025)]">
+    <li className="group flex items-start gap-3.5 rounded-xl px-4 py-3 transition-colors duration-300 hover:bg-[rgba(255,171,74,0.025)]">
       <CheckMark />
       <div className="min-w-0">
         <p className="text-sm text-foreground/55 transition-colors duration-300 group-hover:text-foreground/70">{quest.title}</p>
@@ -382,11 +382,11 @@ function CompletedQuestRow({ quest }: { quest: Quest }) {
 function SideQuestRow({ sideQuest }: { sideQuest: SideQuest }) {
   const isCompleted = sideQuest.status === "completed";
   return (
-    <li className="group flex items-start gap-3.5 overflow-hidden rounded-xl px-4 py-3.5 transition-colors duration-300 hover:bg-[rgba(212,165,116,0.025)]">
+    <li className="group flex items-start gap-3.5 overflow-hidden rounded-xl px-4 py-3.5 transition-colors duration-300 hover:bg-[rgba(255,171,74,0.025)]">
       {isCompleted ? (
         <CheckMark />
       ) : (
-        <span className="mt-1 size-1.5 shrink-0 rounded-full bg-accent/20 shadow-[0_0_4px_rgba(212,165,116,0.15)]" aria-hidden />
+        <span className="mt-1 size-1.5 shrink-0 rounded-full bg-accent/20 shadow-[0_0_4px_rgba(255,171,74,0.15)]" aria-hidden />
       )}
       <div className="min-w-0 flex-1">
         <div className="flex items-start justify-between gap-3">
@@ -408,7 +408,7 @@ function SideQuestRow({ sideQuest }: { sideQuest: SideQuest }) {
 /* ── COMPLETED BUILD ROW ─────────────────────────────────────────────────── */
 function CompletedBuildRow({ build }: { build: Build }) {
   return (
-    <li className="group flex items-center gap-4 rounded-xl px-4 py-2.5 transition-colors duration-300 hover:bg-[rgba(212,165,116,0.025)]">
+    <li className="group flex items-center gap-4 rounded-xl px-4 py-2.5 transition-colors duration-300 hover:bg-[rgba(255,171,74,0.025)]">
       <CheckMark />
       <span className="text-sm text-foreground/50 transition-colors duration-300 group-hover:text-foreground/65">
         {build.title}

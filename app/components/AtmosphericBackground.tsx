@@ -12,56 +12,56 @@ type AtmosphericVariant =
 interface VariantConfig {
   overheadColor: string;
   tint?: string;       // subtle overall hue shift layer
-  ember1: string;
-  ember2: string;
+  glow1: string;
+  glow2: string;
   floor: string;
 }
 
 const VARIANTS: Record<AtmosphericVariant, VariantConfig> = {
   hq: {
-    overheadColor: "rgba(212,165,116,0.09)",
-    ember1: "rgba(232,132,42,0.06)",
-    ember2: "rgba(212,165,116,0.05)",
-    floor: "rgba(232,132,42,0.04)",
+    overheadColor: "rgba(255,171,74,0.09)",
+    glow1: "rgba(255,171,74,0.06)",
+    glow2: "rgba(77,216,255,0.04)",
+    floor: "rgba(255,171,74,0.04)",
   },
   constitution: {
-    overheadColor: "rgba(150,170,220,0.07)",    // cool blue moonlight
-    tint: "rgba(100,120,180,0.03)",
-    ember1: "rgba(130,150,210,0.04)",
-    ember2: "rgba(160,140,120,0.04)",
-    floor: "rgba(80,100,140,0.03)",
+    overheadColor: "rgba(255,171,74,0.08)",    // command-deck amber
+    tint: "rgba(77,216,255,0.02)",
+    glow1: "rgba(255,171,74,0.05)",
+    glow2: "rgba(77,216,255,0.03)",
+    floor: "rgba(255,171,74,0.03)",
   },
   "quest-board": {
-    overheadColor: "rgba(210,185,130,0.11)",    // strong directional war-room light
-    ember1: "rgba(210,160,90,0.06)",
-    ember2: "rgba(190,145,80,0.05)",
-    floor: "rgba(180,140,70,0.04)",
+    overheadColor: "rgba(255,171,74,0.11)",    // mission-control, strongest signal
+    glow1: "rgba(255,171,74,0.06)",
+    glow2: "rgba(77,216,255,0.05)",
+    floor: "rgba(255,171,74,0.04)",
   },
   "idea-vault": {
-    overheadColor: "rgba(120,160,140,0.06)",    // dim green-grey, hidden archive
-    tint: "rgba(60,110,80,0.025)",
-    ember1: "rgba(90,140,110,0.04)",
-    ember2: "rgba(110,130,100,0.04)",
-    floor: "rgba(60,100,75,0.03)",
+    overheadColor: "rgba(77,216,255,0.07)",    // cool cyan, encrypted archive
+    tint: "rgba(77,216,255,0.025)",
+    glow1: "rgba(77,216,255,0.045)",
+    glow2: "rgba(90,150,180,0.035)",
+    floor: "rgba(60,140,170,0.03)",
   },
   companions: {
-    overheadColor: "rgba(140,110,195,0.07)",    // purple council chamber
-    tint: "rgba(90,60,160,0.03)",
-    ember1: "rgba(110,85,180,0.04)",
-    ember2: "rgba(140,100,190,0.04)",
-    floor: "rgba(80,60,130,0.03)",
+    overheadColor: "rgba(77,216,255,0.08)",    // comms channel, cyan-leaning
+    tint: "rgba(77,216,255,0.03)",
+    glow1: "rgba(77,216,255,0.05)",
+    glow2: "rgba(255,171,74,0.03)",
+    floor: "rgba(60,140,170,0.03)",
   },
   login: {
-    overheadColor: "rgba(200,160,100,0.08)",
-    ember1: "rgba(220,130,40,0.05)",
-    ember2: "rgba(200,155,95,0.04)",
-    floor: "rgba(180,120,40,0.04)",
+    overheadColor: "rgba(255,171,74,0.08)",
+    glow1: "rgba(255,171,74,0.05)",
+    glow2: "rgba(77,216,255,0.03)",
+    floor: "rgba(255,171,74,0.04)",
   },
   default: {
-    overheadColor: "rgba(212,165,116,0.09)",
-    ember1: "rgba(232,132,42,0.06)",
-    ember2: "rgba(212,165,116,0.05)",
-    floor: "rgba(232,132,42,0.04)",
+    overheadColor: "rgba(255,171,74,0.09)",
+    glow1: "rgba(255,171,74,0.06)",
+    glow2: "rgba(77,216,255,0.04)",
+    floor: "rgba(255,171,74,0.04)",
   },
 };
 
@@ -77,14 +77,14 @@ export function AtmosphericBackground({
   return (
     <div className="pointer-events-none absolute inset-0 overflow-hidden" aria-hidden>
       {/* Base depth gradient */}
-      <div className="absolute inset-0 bg-linear-to-b from-[#16120e] via-[#0a0908] to-[#060504]" />
+      <div className="absolute inset-0 bg-linear-to-b from-[#0e131c] via-[#070a10] to-[#04060a]" />
 
       {/* Per-variant hue tint */}
       {v.tint && (
         <div className="absolute inset-0" style={{ background: v.tint }} />
       )}
 
-      {/* Overhead warm light */}
+      {/* Overhead instrument light */}
       <div
         className="absolute -top-1/4 left-1/2 h-[70vh] w-[120vw] -translate-x-1/2 rounded-full"
         style={{
@@ -92,36 +92,48 @@ export function AtmosphericBackground({
         }}
       />
 
-      {/* Ember pools */}
+      {/* Telemetry glow pools */}
       <div
         className="animate-ember-drift absolute -left-20 top-1/4 h-[28rem] w-[28rem] rounded-full blur-2xl"
-        style={{ background: `radial-gradient(circle, ${v.ember1} 0%, transparent 70%)` }}
+        style={{ background: `radial-gradient(circle, ${v.glow1} 0%, transparent 70%)` }}
       />
       <div
         className="animate-ember-drift absolute -right-16 top-1/2 h-80 w-80 rounded-full blur-2xl"
-        style={{ background: `radial-gradient(circle, ${v.ember2} 0%, transparent 70%)`, animationDelay: "-5s" }}
+        style={{ background: `radial-gradient(circle, ${v.glow2} 0%, transparent 70%)`, animationDelay: "-5s" }}
       />
       <div
         className="animate-ember-drift absolute left-1/4 top-2/3 h-72 w-72 rounded-full blur-2xl"
-        style={{ background: `radial-gradient(circle, ${v.ember1} 0%, transparent 70%)`, animationDelay: "-9s" }}
+        style={{ background: `radial-gradient(circle, ${v.glow1} 0%, transparent 70%)`, animationDelay: "-9s" }}
       />
       <div
         className="animate-ember-drift absolute right-1/4 top-1/4 h-64 w-64 rounded-full blur-2xl"
-        style={{ background: `radial-gradient(circle, ${v.ember2} 0%, transparent 70%)`, animationDelay: "-3s" }}
+        style={{ background: `radial-gradient(circle, ${v.glow2} 0%, transparent 70%)`, animationDelay: "-3s" }}
       />
       <div
         className="animate-ember-drift absolute -left-10 top-2/3 h-56 w-56 rounded-full blur-2xl"
-        style={{ background: `radial-gradient(circle, ${v.ember2} 0%, transparent 70%)`, animationDelay: "-12s" }}
+        style={{ background: `radial-gradient(circle, ${v.glow2} 0%, transparent 70%)`, animationDelay: "-12s" }}
       />
       <div
         className="animate-ember-drift absolute right-[10%] top-[15%] h-48 w-48 rounded-full blur-2xl"
-        style={{ background: `radial-gradient(circle, ${v.ember1} 0%, transparent 70%)`, animationDelay: "-7s" }}
+        style={{ background: `radial-gradient(circle, ${v.glow1} 0%, transparent 70%)`, animationDelay: "-7s" }}
       />
 
-      {/* Floor warmth */}
+      {/* Floor instrument glow */}
       <div
         className="absolute inset-x-0 bottom-0 h-1/3"
         style={{ background: `radial-gradient(ellipse at bottom, ${v.floor} 0%, transparent 60%)` }}
+      />
+
+      {/* HUD grid — faint, fading toward the edges */}
+      <div
+        className="absolute inset-0 opacity-[0.05]"
+        style={{
+          backgroundImage:
+            "linear-gradient(rgba(180,205,230,0.6) 1px, transparent 1px), linear-gradient(90deg, rgba(180,205,230,0.6) 1px, transparent 1px)",
+          backgroundSize: "48px 48px",
+          maskImage: "radial-gradient(ellipse 90% 70% at 50% 20%, black 0%, transparent 75%)",
+          WebkitMaskImage: "radial-gradient(ellipse 90% 70% at 50% 20%, black 0%, transparent 75%)",
+        }}
       />
 
       {/* Vignette — strengthened corners for depth */}
@@ -129,12 +141,12 @@ export function AtmosphericBackground({
       {/* Extra corner deepening */}
       <div className="absolute inset-0 bg-[radial-gradient(ellipse_80%_80%_at_center,transparent_50%,rgba(0,0,0,0.30)_100%)]" />
 
-      {/* Floating particles */}
+      {/* Floating particles — distant telemetry points */}
       <div className="absolute inset-0">
         {particles.map((p) => (
           <span
             key={p.id}
-            className="animate-particle-float absolute rounded-full bg-accent/30"
+            className="animate-particle-float absolute rounded-full bg-accent-glow/30"
             style={{
               left: p.left,
               top: p.top,

@@ -60,7 +60,7 @@ export default function ProfilePage() {
 
           <div className="flex items-center gap-3" aria-hidden>
             <span className="h-px w-12 bg-linear-to-r from-accent/30 to-accent/10" />
-            <span className="size-[3px] rounded-full bg-accent/40 shadow-[0_0_8px_rgba(212,165,116,0.4)]" />
+            <span className="size-[3px] rounded-full bg-accent/40 shadow-[0_0_8px_rgba(255,171,74,0.4)]" />
             <span className="h-px flex-1 bg-linear-to-r from-accent/10 to-transparent" />
           </div>
         </header>
@@ -72,15 +72,15 @@ export default function ProfilePage() {
           aria-label="Founder identity"
         >
           <div className="relative overflow-hidden rounded-2xl">
-            <div className="absolute inset-0 bg-linear-to-br from-[rgba(22,16,10,0.95)] to-[rgba(10,8,5,0.98)]" />
+            <div className="absolute inset-0 bg-linear-to-br from-[rgba(10,17,30,0.95)] to-[rgba(5,8,14,0.98)]" />
             <div
               className="pointer-events-none absolute inset-0"
-              style={{ background: "radial-gradient(ellipse at top left, rgba(232,132,42,0.07) 0%, transparent 55%)" }}
+              style={{ background: "radial-gradient(ellipse at top left, rgba(77,216,255,0.07) 0%, transparent 55%)" }}
               aria-hidden
             />
             <div
               className="pointer-events-none absolute inset-0 rounded-2xl"
-              style={{ boxShadow: "inset 0 1px 0 rgba(212,165,116,0.10), inset 0 0 0 1px rgba(212,165,116,0.04)" }}
+              style={{ boxShadow: "inset 0 1px 0 rgba(255,171,74,0.10), inset 0 0 0 1px rgba(255,171,74,0.04)" }}
               aria-hidden
             />
             <div className="absolute inset-x-0 top-0 h-px bg-linear-to-r from-transparent via-accent/22 to-transparent" aria-hidden />
@@ -90,10 +90,10 @@ export default function ProfilePage() {
               {/* Avatar + level + title */}
               <div className="flex items-center gap-5">
                 <div className="relative flex size-14 shrink-0 items-center justify-center rounded-xl">
-                  <div className="absolute inset-0 rounded-xl bg-linear-to-br from-[rgba(212,165,116,0.16)] to-[rgba(232,132,42,0.08)]" />
+                  <div className="absolute inset-0 rounded-xl bg-linear-to-br from-[rgba(255,171,74,0.16)] to-[rgba(77,216,255,0.08)]" />
                   <div
                     className="pointer-events-none absolute inset-0 rounded-xl"
-                    style={{ boxShadow: "inset 0 1px 0 rgba(212,165,116,0.20), inset 0 0 0 1px rgba(212,165,116,0.10), 0 0 20px rgba(212,165,116,0.08)" }}
+                    style={{ boxShadow: "inset 0 1px 0 rgba(255,171,74,0.20), inset 0 0 0 1px rgba(255,171,74,0.10), 0 0 20px rgba(255,171,74,0.08)" }}
                     aria-hidden
                   />
                   <span className="relative font-display text-xl font-medium tracking-wider text-accent/85">F</span>
@@ -103,7 +103,7 @@ export default function ProfilePage() {
                   <div className="flex items-center gap-2.5">
                     <span
                       className="rounded px-2 py-0.5 font-display text-[0.6rem] tracking-[0.18em] uppercase"
-                      style={{ background: "rgba(212,165,116,0.12)", color: "rgba(212,165,116,0.85)", border: "1px solid rgba(212,165,116,0.12)" }}
+                      style={{ background: "rgba(255,171,74,0.12)", color: "rgba(255,171,74,0.85)", border: "1px solid rgba(255,171,74,0.12)" }}
                     >
                       Level {xpData.level}
                     </span>
@@ -124,7 +124,7 @@ export default function ProfilePage() {
 
                 <div
                   className="relative h-2 w-full overflow-hidden rounded-full"
-                  style={{ background: "rgba(212,165,116,0.08)" }}
+                  style={{ background: "rgba(255,171,74,0.08)" }}
                   role="progressbar"
                   aria-valuenow={xpData.xpInLevel}
                   aria-valuemax={xpData.xpNeeded}
@@ -133,8 +133,8 @@ export default function ProfilePage() {
                     className="absolute inset-y-0 left-0 rounded-full"
                     style={{
                       width: `${barPercent}%`,
-                      background: "linear-gradient(to right, rgba(212,165,116,0.65), rgba(232,132,42,0.85))",
-                      boxShadow: "0 0 10px rgba(232,132,42,0.30)",
+                      background: "linear-gradient(to right, rgba(255,171,74,0.65), rgba(77,216,255,0.85))",
+                      boxShadow: "0 0 10px rgba(77,216,255,0.30)",
                     }}
                   />
                 </div>
@@ -216,7 +216,7 @@ function StatBlock({
   return (
     <div
       className={`rounded-xl px-4 py-3 ${className}`}
-      style={{ background: "rgba(255,255,255,0.02)", border: "1px solid rgba(212,165,116,0.05)" }}
+      style={{ background: "rgba(255,255,255,0.02)", border: "1px solid rgba(255,171,74,0.05)" }}
     >
       <p className="font-display text-[0.52rem] tracking-[0.18em] uppercase text-muted/35">{label}</p>
       <p className="mt-1.5 font-display text-2xl tracking-wide text-foreground/80">

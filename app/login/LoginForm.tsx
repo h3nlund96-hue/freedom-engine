@@ -44,7 +44,7 @@ export function LoginForm() {
           <div className="absolute inset-0 bg-black/30" />
           <div
             className="pointer-events-none absolute inset-0 rounded-xl"
-            style={{ boxShadow: "inset 0 1px 0 rgba(212,165,116,0.06), inset 0 0 0 1px rgba(212,165,116,0.08)" }}
+            style={{ boxShadow: "inset 0 1px 0 rgba(255,171,74,0.06), inset 0 0 0 1px rgba(255,171,74,0.08)" }}
             aria-hidden
           />
           <input
@@ -70,7 +70,7 @@ export function LoginForm() {
           <div className="absolute inset-0 bg-black/30" />
           <div
             className="pointer-events-none absolute inset-0 rounded-xl"
-            style={{ boxShadow: "inset 0 1px 0 rgba(212,165,116,0.06), inset 0 0 0 1px rgba(212,165,116,0.08)" }}
+            style={{ boxShadow: "inset 0 1px 0 rgba(255,171,74,0.06), inset 0 0 0 1px rgba(255,171,74,0.08)" }}
             aria-hidden
           />
           <input
@@ -100,16 +100,16 @@ export function LoginForm() {
         disabled={loading}
         className="group relative mt-1 overflow-hidden rounded-xl py-3.5 text-sm font-medium tracking-wide transition-all duration-300 disabled:cursor-not-allowed disabled:opacity-50"
         style={{
-          background: "linear-gradient(135deg, rgba(212,165,116,0.16) 0%, rgba(232,132,42,0.10) 100%)",
-          boxShadow: "inset 0 1px 0 rgba(212,165,116,0.14), 0 4px 24px rgba(0,0,0,0.35)",
-          color: "rgba(212,165,116,0.90)",
-          border: "1px solid rgba(212,165,116,0.12)",
+          background: "linear-gradient(135deg, rgba(255,171,74,0.16) 0%, rgba(77,216,255,0.10) 100%)",
+          boxShadow: "inset 0 1px 0 rgba(255,171,74,0.14), 0 4px 24px rgba(0,0,0,0.35)",
+          color: "rgba(255,171,74,0.90)",
+          border: "1px solid rgba(255,171,74,0.12)",
         }}
       >
         <span className="relative z-10">{loading ? "Entering..." : "Enter HQ"}</span>
         <span
           className="pointer-events-none absolute inset-0 opacity-0 transition-opacity duration-500 group-hover:opacity-100"
-          style={{ background: "radial-gradient(ellipse at center, rgba(232,132,42,0.07) 0%, transparent 70%)" }}
+          style={{ background: "radial-gradient(ellipse at center, rgba(77,216,255,0.07) 0%, transparent 70%)" }}
           aria-hidden
         />
       </button>

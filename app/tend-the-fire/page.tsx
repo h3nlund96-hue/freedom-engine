@@ -30,7 +30,7 @@ export default function TendTheFirePage() {
           {reminders.map((reminder, i) => (
             <li
               key={i}
-              className="rounded-xl bg-linear-to-br from-[rgba(22,16,10,0.65)] to-[rgba(12,9,7,0.8)] px-5 py-4 shadow-[inset_0_1px_0_rgba(232,132,42,0.04)]"
+              className="rounded-xl bg-linear-to-br from-[rgba(10,17,30,0.65)] to-[rgba(7,9,16,0.8)] px-5 py-4 shadow-[inset_0_1px_0_rgba(77,216,255,0.04)]"
             >
               <p className="font-display text-sm italic leading-relaxed text-foreground/70">
                 &ldquo;{reminder}&rdquo;
