@@ -27,7 +27,7 @@ export function Collapsible({
           {label}
         </span>
         {count !== undefined && (
-          <span className="rounded-full bg-muted/8 px-1.5 py-0.5 font-display text-[0.58rem] tracking-wide text-muted/40">
+          <span className="rounded-sm bg-muted/8 px-1.5 py-0.5 font-display text-[0.58rem] tracking-wide text-muted/40">
             {count}
           </span>
         )}

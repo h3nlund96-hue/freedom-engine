@@ -71,7 +71,7 @@ export default function ProfilePage() {
           style={{ animationDelay: "0.16s" }}
           aria-label="Founder identity"
         >
-          <div className="relative overflow-hidden rounded-2xl">
+          <div className="relative overflow-hidden rounded-md border border-white/[0.07]">
             <div className="absolute inset-0 bg-linear-to-br from-[rgba(10,17,30,0.95)] to-[rgba(5,8,14,0.98)]" />
             <div
               className="pointer-events-none absolute inset-0"
@@ -79,7 +79,7 @@ export default function ProfilePage() {
               aria-hidden
             />
             <div
-              className="pointer-events-none absolute inset-0 rounded-2xl"
+              className="pointer-events-none absolute inset-0 rounded-md"
               style={{ boxShadow: "inset 0 1px 0 rgba(255,171,74,0.10), inset 0 0 0 1px rgba(255,171,74,0.04)" }}
               aria-hidden
             />
@@ -89,10 +89,10 @@ export default function ProfilePage() {
 
               {/* Avatar + level + title */}
               <div className="flex items-center gap-5">
-                <div className="relative flex size-14 shrink-0 items-center justify-center rounded-xl">
-                  <div className="absolute inset-0 rounded-xl bg-linear-to-br from-[rgba(255,171,74,0.16)] to-[rgba(77,216,255,0.08)]" />
+                <div className="relative flex size-14 shrink-0 items-center justify-center rounded-md">
+                  <div className="absolute inset-0 rounded-md bg-linear-to-br from-[rgba(255,171,74,0.16)] to-[rgba(77,216,255,0.08)]" />
                   <div
-                    className="pointer-events-none absolute inset-0 rounded-xl"
+                    className="pointer-events-none absolute inset-0 rounded-md"
                     style={{ boxShadow: "inset 0 1px 0 rgba(255,171,74,0.20), inset 0 0 0 1px rgba(255,171,74,0.10), 0 0 20px rgba(255,171,74,0.08)" }}
                     aria-hidden
                   />
@@ -123,14 +123,14 @@ export default function ProfilePage() {
                 </div>
 
                 <div
-                  className="relative h-2 w-full overflow-hidden rounded-full"
+                  className="relative h-2 w-full overflow-hidden rounded-sm"
                   style={{ background: "rgba(255,171,74,0.08)" }}
                   role="progressbar"
                   aria-valuenow={xpData.xpInLevel}
                   aria-valuemax={xpData.xpNeeded}
                 >
                   <div
-                    className="absolute inset-y-0 left-0 rounded-full"
+                    className="absolute inset-y-0 left-0 rounded-sm"
                     style={{
                       width: `${barPercent}%`,
                       background: "linear-gradient(to right, rgba(255,171,74,0.65), rgba(77,216,255,0.85))",
@@ -178,7 +178,7 @@ export default function ProfilePage() {
 
         {/* Alpha notice */}
         <div className="animate-fade-up" style={{ animationDelay: "0.30s" }}>
-          <div className="flex items-start gap-4 rounded-xl border border-dashed border-accent/[0.07] px-5 py-4">
+          <div className="flex items-start gap-4 rounded-md border border-dashed border-accent/[0.07] px-5 py-4">
             <span className="mt-0.5 font-display text-xs text-accent/35">Alpha</span>
             <p className="text-xs leading-relaxed text-muted/40">
               Founder progression is derived from completed Builds and Side Quests in the Quest System. A full Founder profile with history, achievements and settings will be added in a future Build.
@@ -215,7 +215,7 @@ function StatBlock({
 }) {
   return (
     <div
-      className={`rounded-xl px-4 py-3 ${className}`}
+      className={`rounded-md px-4 py-3 ${className}`}
       style={{ background: "rgba(255,255,255,0.02)", border: "1px solid rgba(255,171,74,0.05)" }}
     >
       <p className="font-display text-[0.52rem] tracking-[0.18em] uppercase text-muted/35">{label}</p>

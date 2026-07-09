@@ -37,7 +37,7 @@ export default function LoginPage() {
           </div>
 
           {/* Panel */}
-          <div className="relative overflow-hidden rounded-2xl">
+          <div className="relative overflow-hidden rounded-md border border-white/[0.07]">
             <div className="absolute inset-0 bg-linear-to-br from-[rgba(10,17,30,0.95)] to-[rgba(5,8,14,0.98)]" />
             <div
               className="pointer-events-none absolute inset-0"
@@ -45,7 +45,7 @@ export default function LoginPage() {
               aria-hidden
             />
             <div
-              className="pointer-events-none absolute inset-0 rounded-2xl"
+              className="pointer-events-none absolute inset-0 rounded-md"
               style={{ boxShadow: "inset 0 1px 0 rgba(255,171,74,0.09), inset 0 0 0 1px rgba(255,171,74,0.04)" }}
               aria-hidden
             />

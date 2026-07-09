@@ -209,7 +209,7 @@ function StatBadge({
 }) {
   return (
     <span
-      className={`inline-flex items-center gap-1 rounded-full px-2 py-0.5 font-display text-[0.57rem] tracking-wide ${
+      className={`inline-flex items-center gap-1 rounded-sm px-2 py-0.5 font-display text-[0.57rem] tracking-wide ${
         color === "active"
           ? "bg-accent-glow/10 text-accent-glow/70"
           : "bg-muted/6 text-muted/40"
@@ -232,11 +232,11 @@ function CurrentFocusPanel({
   build: Build;
 }) {
   return (
-    <div className="relative overflow-hidden rounded-2xl">
+    <div className="relative overflow-hidden rounded-md border border-white/[0.07]">
       <div className="absolute inset-0 bg-linear-to-b from-[rgba(13,22,38,0.95)] to-[rgba(6,9,16,0.98)]" />
       <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_left,rgba(77,216,255,0.08)_0%,transparent_55%)]" />
       <div
-        className="pointer-events-none absolute inset-0 rounded-2xl"
+        className="pointer-events-none absolute inset-0 rounded-md"
         style={{ boxShadow: "inset 0 1px 0 rgba(255,171,74,0.11), inset 0 -1px 0 rgba(0,0,0,0.4)" }}
         aria-hidden
       />
@@ -294,10 +294,10 @@ function FocusRow({ label, value, isLast = false }: { label: string; value: stri
 /* ── MAIN QUEST TILE ─────────────────────────────────────────────────────── */
 function MainQuestTile({ quest }: { quest: string }) {
   return (
-    <div className="relative overflow-hidden rounded-xl">
+    <div className="relative overflow-hidden rounded-md border border-white/[0.07]">
       <div className="absolute inset-0 bg-linear-to-r from-[rgba(11,20,35,0.92)] to-[rgba(7,12,19,0.88)]" />
       <div className="absolute inset-y-0 left-0 w-1 bg-linear-to-b from-accent/50 via-accent/25 to-transparent" />
-      <div className="pointer-events-none absolute inset-0 rounded-xl shadow-[inset_0_1px_0_rgba(255,171,74,0.07)]" aria-hidden />
+      <div className="pointer-events-none absolute inset-0 rounded-md shadow-[inset_0_1px_0_rgba(255,171,74,0.07)]" aria-hidden />
       <div className="relative flex flex-col gap-1.5 px-6 py-5 sm:flex-row sm:items-center sm:gap-8 sm:px-7">
         <div className="shrink-0">
           <p className="font-display text-[0.6rem] tracking-[0.25em] uppercase text-accent/50">North Star</p>
@@ -315,9 +315,9 @@ function MainQuestTile({ quest }: { quest: string }) {
 function QuestlineCard({ questline }: { questline: Questline }) {
   const isActive = questline.status === "active";
   return (
-    <div className={`relative overflow-hidden rounded-xl ${!isActive ? "opacity-60" : ""}`}>
+    <div className={`relative overflow-hidden rounded-md border border-white/[0.07] ${!isActive ? "opacity-60" : ""}`}>
       <div className={`absolute inset-0 ${isActive ? "bg-linear-to-br from-[rgba(11,19,32,0.90)] to-[rgba(6,9,16,0.93)]" : "bg-[rgba(8,10,16,0.80)]"}`} />
-      <div className="pointer-events-none absolute inset-0 rounded-xl shadow-[inset_0_1px_0_rgba(255,171,74,0.06)]" aria-hidden />
+      <div className="pointer-events-none absolute inset-0 rounded-md shadow-[inset_0_1px_0_rgba(255,171,74,0.06)]" aria-hidden />
       <div className="relative flex flex-col gap-3 p-5">
         <div className="flex items-center gap-2.5">
           {isActive ? (
@@ -344,10 +344,10 @@ function QuestlineCard({ questline }: { questline: Questline }) {
 /* ── ACTIVE QUEST CARD ───────────────────────────────────────────────────── */
 function ActiveQuestCard({ quest }: { quest: Quest }) {
   return (
-    <div className="relative overflow-hidden rounded-xl">
+    <div className="relative overflow-hidden rounded-md border border-white/[0.07]">
       <div className="absolute inset-0 bg-linear-to-br from-[rgba(10,17,30,0.90)] to-[rgba(6,8,14,0.94)]" />
       <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,rgba(255,171,74,0.05)_0%,transparent_60%)]" />
-      <div className="pointer-events-none absolute inset-0 rounded-xl shadow-[inset_0_1px_0_rgba(255,171,74,0.08)]" aria-hidden />
+      <div className="pointer-events-none absolute inset-0 rounded-md shadow-[inset_0_1px_0_rgba(255,171,74,0.08)]" aria-hidden />
       <div className="relative px-5 py-5 sm:px-6">
         <div className="mb-3 flex items-center gap-2.5">
           <span className="relative flex size-1.5" aria-hidden>
@@ -366,7 +366,7 @@ function ActiveQuestCard({ quest }: { quest: Quest }) {
 /* ── COMPLETED QUEST ROW ─────────────────────────────────────────────────── */
 function CompletedQuestRow({ quest }: { quest: Quest }) {
   return (
-    <li className="group flex items-start gap-3.5 rounded-xl px-4 py-3 transition-colors duration-300 hover:bg-[rgba(255,171,74,0.025)]">
+    <li className="group flex items-start gap-3.5 rounded-md px-4 py-3 transition-colors duration-300 hover:bg-[rgba(255,171,74,0.025)]">
       <CheckMark />
       <div className="min-w-0">
         <p className="text-sm text-foreground/55 transition-colors duration-300 group-hover:text-foreground/70">{quest.title}</p>
@@ -382,7 +382,7 @@ function CompletedQuestRow({ quest }: { quest: Quest }) {
 function SideQuestRow({ sideQuest }: { sideQuest: SideQuest }) {
   const isCompleted = sideQuest.status === "completed";
   return (
-    <li className="group flex items-start gap-3.5 overflow-hidden rounded-xl px-4 py-3.5 transition-colors duration-300 hover:bg-[rgba(255,171,74,0.025)]">
+    <li className="group flex items-start gap-3.5 overflow-hidden rounded-md px-4 py-3.5 transition-colors duration-300 hover:bg-[rgba(255,171,74,0.025)]">
       {isCompleted ? (
         <CheckMark />
       ) : (
@@ -394,7 +394,7 @@ function SideQuestRow({ sideQuest }: { sideQuest: SideQuest }) {
             {sideQuest.title}
           </p>
           {!isCompleted && (
-            <span className="shrink-0 rounded-full bg-muted/5 px-2 py-0.5 font-display text-[0.57rem] tracking-wide text-muted/35">
+            <span className="shrink-0 rounded-sm bg-muted/5 px-2 py-0.5 font-display text-[0.57rem] tracking-wide text-muted/35">
               Available
             </span>
           )}
@@ -408,7 +408,7 @@ function SideQuestRow({ sideQuest }: { sideQuest: SideQuest }) {
 /* ── COMPLETED BUILD ROW ─────────────────────────────────────────────────── */
 function CompletedBuildRow({ build }: { build: Build }) {
   return (
-    <li className="group flex items-center gap-4 rounded-xl px-4 py-2.5 transition-colors duration-300 hover:bg-[rgba(255,171,74,0.025)]">
+    <li className="group flex items-center gap-4 rounded-md px-4 py-2.5 transition-colors duration-300 hover:bg-[rgba(255,171,74,0.025)]">
       <CheckMark />
       <span className="text-sm text-foreground/50 transition-colors duration-300 group-hover:text-foreground/65">
         {build.title}
@@ -420,7 +420,7 @@ function CompletedBuildRow({ build }: { build: Build }) {
 /* ── CHECK MARK ──────────────────────────────────────────────────────────── */
 function CheckMark() {
   return (
-    <span className="mt-0.5 flex size-4 shrink-0 items-center justify-center rounded-full border border-accent/18 bg-accent/5">
+    <span className="mt-0.5 flex size-4 shrink-0 items-center justify-center rounded-sm border border-accent/18 bg-accent/5">
       <svg className="size-2.5 text-accent/55" viewBox="0 0 10 10" fill="none" aria-hidden>
         <path d="M2 5.5L4.2 7.5L8 3" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round" />
       </svg>

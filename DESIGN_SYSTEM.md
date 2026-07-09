@@ -74,15 +74,29 @@ Cinzel is retired. No new webfont is introduced — the HUD register comes from 
 | Companion | Bot |
 | Seal in the Vault | Save |
 
+## Shape and Form
+
+The HUD re-theme (color) is done. This pass moves the *shape* language to match: instrument panels are rectangular and hairline-edged, not soft rounded cards.
+
+| Element | Radius | Notes |
+|---|---|---|
+| Cards / panels / modals | `rounded-md` (6px) | Down from `rounded-2xl`/`rounded-xl` |
+| Buttons / badges / inputs | `rounded-sm` (2px) | Down from `rounded-lg`/`rounded-xl` — reads as a switch, not a pill |
+| Icon frames (location icon, avatar) | `rounded-md`, square | Down from `rounded-full` — framed like an instrument readout, with corner brackets, not a circular emblem |
+| Status / active / pulse indicators | `rounded-full` | Stays circular — these are the one place a dot reads correctly, like an LED |
+
+Every panel gets an explicit 1px hairline border (`border border-white/[0.08]` or an accent-tinted equivalent) in addition to — not instead of — the existing gradient and inset highlight. Corner brackets (`CornerMarks`) become the default framing on primary panels, not just an optional accent.
+
 ## Panels and Cards
 
 Standard panel structure:
 - Dark gradient background (`from-[rgba(22,29,41,...)] to-[rgba(14,19,28,...)]`)
+- 1px hairline border (`border-white/[0.08]`)
 - Top inset highlight (`inset 0 1px 0 rgba(255,171,74,0.07)`)
-- Hairline corner brackets for framing (optional, use on strategic panels — replaces solid corner marks)
+- Corner brackets for framing (default on primary panels — see Shape and Form)
 - Faint grid texture at low opacity, masked to fade toward panel edges
 - Amber glow at top-left on focus/hover; cyan glow for active/live state
-- No harsh solid borders — prefer 1px hairlines, shadow, and inset highlights
+- No soft, heavily-rounded borders — prefer small radii, 1px hairlines, shadow, and inset highlights
 
 ## Animation
 

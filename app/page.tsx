@@ -121,12 +121,12 @@ function CurrentFocus() {
       style={{ animationDelay: "0.22s" }}
       aria-label="Current Focus"
     >
-      <div className="relative overflow-hidden rounded-2xl">
+      <div className="relative overflow-hidden rounded-md border border-white/[0.07]">
         {/* Base */}
         <div className="absolute inset-0 bg-linear-to-b from-[rgba(12,20,35,0.94)] to-[rgba(6,8,14,0.97)]" />
         <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_left,rgba(77,216,255,0.07)_0%,transparent_55%)]" />
         <div
-          className="pointer-events-none absolute inset-0 rounded-2xl"
+          className="pointer-events-none absolute inset-0 rounded-md"
           style={{ boxShadow: "inset 0 1px 0 rgba(255,171,74,0.10), inset 0 -1px 0 rgba(0,0,0,0.3)" }}
           aria-hidden
         />
@@ -205,7 +205,7 @@ function TendTheFire() {
       style={{ animationDelay: "0.62s" }}
       aria-label="Tend the Fire"
     >
-      <div className="relative overflow-hidden rounded-2xl">
+      <div className="relative overflow-hidden rounded-md border border-white/[0.07]">
         {/* Base */}
         <div className="absolute inset-0 bg-linear-to-br from-[rgba(7,15,30,0.95)] to-[rgba(4,7,14,0.97)]" />
 
@@ -229,7 +229,7 @@ function TendTheFire() {
 
         {/* Top edge warmth */}
         <div
-          className="pointer-events-none absolute inset-0 rounded-2xl"
+          className="pointer-events-none absolute inset-0 rounded-md"
           style={{
             boxShadow:
               "inset 0 1px 0 rgba(77,216,255,0.14), inset 1px 0 0 rgba(77,216,255,0.06)",
@@ -263,7 +263,7 @@ function TendTheFire() {
           <ul className="space-y-2" role="list">
             {smallBuilds.map((action) => (
               <li key={action}>
-                <div className="group flex cursor-default items-center gap-3.5 rounded-xl px-4 py-3 transition-all duration-400 hover:bg-[rgba(40,225,255,0.06)]">
+                <div className="group flex cursor-default items-center gap-3.5 rounded-md px-4 py-3 transition-all duration-400 hover:bg-[rgba(40,225,255,0.06)]">
                   {/* Ember dot */}
                   <span className="relative flex size-1.5 shrink-0" aria-hidden>
                     <span className="absolute inline-flex size-full animate-glow-pulse rounded-full bg-accent-glow/50" />

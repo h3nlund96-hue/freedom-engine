@@ -40,10 +40,10 @@ export function LoginForm() {
         <label htmlFor="email" className="font-display text-[0.6rem] tracking-[0.22em] uppercase text-muted/55">
           Email
         </label>
-        <div className="relative overflow-hidden rounded-xl">
+        <div className="relative overflow-hidden rounded-sm">
           <div className="absolute inset-0 bg-black/30" />
           <div
-            className="pointer-events-none absolute inset-0 rounded-xl"
+            className="pointer-events-none absolute inset-0 rounded-sm"
             style={{ boxShadow: "inset 0 1px 0 rgba(255,171,74,0.06), inset 0 0 0 1px rgba(255,171,74,0.08)" }}
             aria-hidden
           />
@@ -66,10 +66,10 @@ export function LoginForm() {
         <label htmlFor="password" className="font-display text-[0.6rem] tracking-[0.22em] uppercase text-muted/55">
           Password
         </label>
-        <div className="relative overflow-hidden rounded-xl">
+        <div className="relative overflow-hidden rounded-sm">
           <div className="absolute inset-0 bg-black/30" />
           <div
-            className="pointer-events-none absolute inset-0 rounded-xl"
+            className="pointer-events-none absolute inset-0 rounded-sm"
             style={{ boxShadow: "inset 0 1px 0 rgba(255,171,74,0.06), inset 0 0 0 1px rgba(255,171,74,0.08)" }}
             aria-hidden
           />
@@ -89,7 +89,7 @@ export function LoginForm() {
 
       {/* Error */}
       {error && (
-        <p className="rounded-lg border border-accent/[0.07] bg-black/20 px-4 py-2.5 text-xs leading-relaxed text-muted/55">
+        <p className="rounded-sm border border-accent/[0.07] bg-black/20 px-4 py-2.5 text-xs leading-relaxed text-muted/55">
           {error}
         </p>
       )}
@@ -98,7 +98,7 @@ export function LoginForm() {
       <button
         type="submit"
         disabled={loading}
-        className="group relative mt-1 overflow-hidden rounded-xl py-3.5 text-sm font-medium tracking-wide transition-all duration-300 disabled:cursor-not-allowed disabled:opacity-50"
+        className="group relative mt-1 overflow-hidden rounded-sm py-3.5 font-display text-xs tracking-[0.18em] uppercase transition-all duration-300 disabled:cursor-not-allowed disabled:opacity-50"
         style={{
           background: "linear-gradient(135deg, rgba(255,171,74,0.16) 0%, rgba(77,216,255,0.10) 100%)",
           boxShadow: "inset 0 1px 0 rgba(255,171,74,0.14), 0 4px 24px rgba(0,0,0,0.35)",

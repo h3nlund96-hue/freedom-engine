@@ -25,7 +25,7 @@ export function BuildPrompt() {
 
       <div className="group relative">
         <div
-          className="pointer-events-none absolute -inset-px rounded-2xl bg-linear-to-b from-accent/10 via-transparent to-accent-glow/5 opacity-0 blur-sm transition-opacity duration-700 group-focus-within:opacity-100"
+          className="pointer-events-none absolute -inset-px rounded-md bg-linear-to-b from-accent/10 via-transparent to-accent-glow/5 opacity-0 blur-sm transition-opacity duration-700 group-focus-within:opacity-100"
           aria-hidden
         />
         <label htmlFor="build-intent" className="sr-only">
@@ -35,7 +35,7 @@ export function BuildPrompt() {
           id="build-intent"
           type="text"
           placeholder="Speak your intention into the world…"
-          className="relative w-full rounded-2xl border-0 bg-[rgba(8,10,16,0.6)] px-5 py-4 text-base text-foreground/90 shadow-[inset_0_2px_12px_rgba(0,0,0,0.45),0_0_0_1px_rgba(255,171,74,0.06)] backdrop-blur-md transition-all duration-500 placeholder:text-muted/40 focus:bg-[rgba(10,14,22,0.75)] focus:shadow-[inset_0_2px_12px_rgba(0,0,0,0.4),0_0_0_1px_rgba(255,171,74,0.12),0_0_32px_rgba(77,216,255,0.08)] focus:outline-none"
+          className="relative w-full rounded-md border-0 bg-[rgba(8,10,16,0.6)] px-5 py-4 text-base text-foreground/90 shadow-[inset_0_2px_12px_rgba(0,0,0,0.45),0_0_0_1px_rgba(255,171,74,0.06)] backdrop-blur-md transition-all duration-500 placeholder:text-muted/40 focus:bg-[rgba(10,14,22,0.75)] focus:shadow-[inset_0_2px_12px_rgba(0,0,0,0.4),0_0_0_1px_rgba(255,171,74,0.12),0_0_32px_rgba(77,216,255,0.08)] focus:outline-none"
         />
       </div>
     </footer>

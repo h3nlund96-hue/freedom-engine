@@ -113,7 +113,7 @@ export function VaultClient() {
 
         {/* Error */}
         {error && !loading && (
-          <div className="rounded-xl border border-accent/[0.06] bg-black/20 px-5 py-4">
+          <div className="rounded-md border border-accent/[0.06] bg-black/20 px-5 py-4">
             <p className="text-xs leading-relaxed text-muted/45">{error}</p>
           </div>
         )}
@@ -181,7 +181,7 @@ function CaptureConsole({ onSeal }: { onSeal: (text: string) => Promise<boolean>
     <section className="space-y-3">
       <SectionLabel>Capture an Idea</SectionLabel>
 
-      <div className="group relative overflow-hidden rounded-2xl transition-all duration-700">
+      <div className="group relative overflow-hidden rounded-md border border-white/[0.07] transition-all duration-700">
         {/* Panel base */}
         <div className="absolute inset-0 bg-[rgba(4,6,11,0.82)]" />
 
@@ -198,7 +198,7 @@ function CaptureConsole({ onSeal }: { onSeal: (text: string) => Promise<boolean>
         {/* Sealed overlay */}
         {sealed && (
           <div
-            className="pointer-events-none absolute inset-0 z-10 flex items-center justify-center rounded-2xl"
+            className="pointer-events-none absolute inset-0 z-10 flex items-center justify-center rounded-md"
             style={{ background: "rgba(4,6,11,0.65)" }}
             aria-hidden
           >
@@ -211,7 +211,7 @@ function CaptureConsole({ onSeal }: { onSeal: (text: string) => Promise<boolean>
         {/* Failed overlay */}
         {failed && (
           <div
-            className="pointer-events-none absolute inset-0 z-10 flex items-center justify-center rounded-2xl"
+            className="pointer-events-none absolute inset-0 z-10 flex items-center justify-center rounded-md"
             style={{ background: "rgba(4,6,11,0.65)" }}
             aria-hidden
           >
@@ -223,7 +223,7 @@ function CaptureConsole({ onSeal }: { onSeal: (text: string) => Promise<boolean>
 
         {/* Ring */}
         <div
-          className="pointer-events-none absolute inset-0 rounded-2xl transition-all duration-700"
+          className="pointer-events-none absolute inset-0 rounded-md transition-all duration-700"
           style={{
             boxShadow:
               "inset 0 1px 0 rgba(255,171,74,0.08), inset 0 0 0 1px rgba(255,171,74,0.05)",
@@ -231,7 +231,7 @@ function CaptureConsole({ onSeal }: { onSeal: (text: string) => Promise<boolean>
           aria-hidden
         />
         <div
-          className="pointer-events-none absolute inset-0 rounded-2xl opacity-0 transition-opacity duration-700 group-focus-within:opacity-100"
+          className="pointer-events-none absolute inset-0 rounded-md opacity-0 transition-opacity duration-700 group-focus-within:opacity-100"
           style={{
             boxShadow:
               "inset 0 1px 0 rgba(255,171,74,0.12), inset 0 0 0 1px rgba(255,171,74,0.10), 0 0 32px rgba(77,216,255,0.06)",
@@ -269,7 +269,7 @@ function CaptureConsole({ onSeal }: { onSeal: (text: string) => Promise<boolean>
               type="button"
               onClick={handleSeal}
               disabled={!value.trim() || sealed || submitting}
-              className="group/btn relative overflow-hidden rounded-lg px-4 py-1.5 transition-all duration-500 disabled:cursor-not-allowed disabled:opacity-30 enabled:hover:shadow-[0_0_20px_rgba(255,171,74,0.10)]"
+              className="group/btn relative overflow-hidden rounded-sm px-4 py-1.5 transition-all duration-500 disabled:cursor-not-allowed disabled:opacity-30 enabled:hover:shadow-[0_0_20px_rgba(255,171,74,0.10)]"
               style={{
                 background:
                   "linear-gradient(to right, rgba(255,171,74,0.10), rgba(255,171,74,0.06))",
@@ -313,11 +313,11 @@ function VaultCompartment({
   const hasItems = count > 0;
 
   return (
-    <div className="relative overflow-hidden rounded-xl">
+    <div className="relative overflow-hidden rounded-md border border-white/[0.07]">
       <div className="absolute inset-0 bg-linear-to-br from-[rgba(9,15,24,0.90)] to-[rgba(6,8,14,0.88)]" />
       <div className="absolute inset-x-0 top-0 h-px bg-linear-to-r from-transparent via-accent/15 to-transparent" />
       <div
-        className="pointer-events-none absolute inset-0 rounded-xl"
+        className="pointer-events-none absolute inset-0 rounded-md"
         style={{
           boxShadow:
             "inset 0 1px 0 rgba(255,171,74,0.06), inset 0 0 0 1px rgba(255,171,74,0.03)",
@@ -345,7 +345,7 @@ function VaultCompartment({
             </p>
           </div>
           <span
-            className={`mt-0.5 shrink-0 rounded-full px-2 py-0.5 font-display text-[0.58rem] tracking-wider ${
+            className={`mt-0.5 shrink-0 rounded-sm px-2 py-0.5 font-display text-[0.58rem] tracking-wider ${
               hasItems ? "bg-accent/12 text-accent/70" : "bg-muted/5 text-muted/28"
             }`}
           >
@@ -390,7 +390,7 @@ function IdeaCard({
   onDelete: (id: string) => void;
 }) {
   return (
-    <li className="group flex flex-col gap-2.5 rounded-lg px-3 py-3 transition-colors duration-300 hover:bg-[rgba(255,171,74,0.03)]">
+    <li className="group flex flex-col gap-2.5 rounded-sm px-3 py-3 transition-colors duration-300 hover:bg-[rgba(255,171,74,0.03)]">
       <div className="flex items-start gap-2.5">
         <span
           className="mt-1.5 size-1.5 shrink-0 rounded-full bg-accent/30 shadow-[0_0_5px_rgba(255,171,74,0.2)]"
