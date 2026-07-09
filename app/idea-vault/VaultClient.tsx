@@ -52,12 +52,13 @@ export function VaultClient() {
       .finally(() => setLoading(false));
   }, []);
 
-  async function handleSeal(text: string) {
+  async function handleSeal(text: string): Promise<boolean> {
     try {
       const idea = await createIdea(text);
       setIdeas((prev) => [idea, ...prev]);
+      return true;
     } catch {
-      // Capture failed — silently ignore so the UI doesn't break.
+      return false;
     }
   }
 
@@ -147,18 +148,29 @@ function byNewest(a: Idea, b: Idea) {
 
 /* ── CAPTURE CONSOLE ─────────────────────────────────────────────────────── */
 
-function CaptureConsole({ onSeal }: { onSeal: (text: string) => void }) {
+function CaptureConsole({ onSeal }: { onSeal: (text: string) => Promise<boolean> }) {
   const [value, setValue] = useState("");
   const [sealed, setSealed] = useState(false);
+  const [submitting, setSubmitting] = useState(false);
+  const [failed, setFailed] = useState(false);
 
-  function handleSeal() {
-    if (!value.trim()) return;
-    onSeal(value.trim());
-    setSealed(true);
-    setTimeout(() => {
-      setValue("");
-      setSealed(false);
-    }, 1800);
+  async function handleSeal() {
+    if (!value.trim() || submitting) return;
+    setSubmitting(true);
+    setFailed(false);
+    const success = await onSeal(value.trim());
+    setSubmitting(false);
+
+    if (success) {
+      setSealed(true);
+      setTimeout(() => {
+        setValue("");
+        setSealed(false);
+      }, 1800);
+    } else {
+      setFailed(true);
+      setTimeout(() => setFailed(false), 2600);
+    }
   }
 
   function handleKeyDown(e: React.KeyboardEvent<HTMLTextAreaElement>) {
@@ -196,6 +208,19 @@ function CaptureConsole({ onSeal }: { onSeal: (text: string) => void }) {
           </div>
         )}
 
+        {/* Failed overlay */}
+        {failed && (
+          <div
+            className="pointer-events-none absolute inset-0 z-10 flex items-center justify-center rounded-2xl"
+            style={{ background: "rgba(8,6,4,0.65)" }}
+            aria-hidden
+          >
+            <span className="font-display text-sm tracking-[0.18em] uppercase text-muted/70">
+              The Vault could not seal this idea. Try again.
+            </span>
+          </div>
+        )}
+
         {/* Ring */}
         <div
           className="pointer-events-none absolute inset-0 rounded-2xl transition-all duration-700"
@@ -225,7 +250,7 @@ function CaptureConsole({ onSeal }: { onSeal: (text: string) => void }) {
             onChange={(e) => setValue(e.target.value)}
             onKeyDown={handleKeyDown}
             placeholder="Write the idea before it disappears..."
-            disabled={sealed}
+            disabled={sealed || submitting}
             className="w-full resize-none bg-transparent px-5 pb-3 pt-5 text-sm leading-relaxed text-foreground/90 placeholder:text-muted/30 focus:outline-none sm:text-base"
           />
 
@@ -234,6 +259,8 @@ function CaptureConsole({ onSeal }: { onSeal: (text: string) => void }) {
             <p className="text-xs text-muted/35">
               {sealed
                 ? "Idea sealed."
+                : submitting
+                ? "Sealing..."
                 : value.trim()
                 ? "⌘ + Enter to seal"
                 : "No sorting required. Just capture it."}
@@ -241,7 +268,7 @@ function CaptureConsole({ onSeal }: { onSeal: (text: string) => void }) {
             <button
               type="button"
               onClick={handleSeal}
-              disabled={!value.trim() || sealed}
+              disabled={!value.trim() || sealed || submitting}
               className="group/btn relative overflow-hidden rounded-lg px-4 py-1.5 transition-all duration-500 disabled:cursor-not-allowed disabled:opacity-30 enabled:hover:shadow-[0_0_20px_rgba(212,165,116,0.10)]"
               style={{
                 background:
@@ -254,7 +281,7 @@ function CaptureConsole({ onSeal }: { onSeal: (text: string) => void }) {
                 aria-hidden
               />
               <span className="relative font-display text-[0.65rem] tracking-[0.15em] uppercase text-accent/70 group-hover/btn:text-accent/90">
-                Seal in the Vault
+                {submitting ? "Sealing..." : "Seal in the Vault"}
               </span>
             </button>
           </div>
