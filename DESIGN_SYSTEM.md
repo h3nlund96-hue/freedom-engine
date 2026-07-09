@@ -6,14 +6,15 @@ Freedom Engine should feel like **entering a world**, not managing a dashboard.
 
 The Founder moves through locations. He does not manage menus.
 
+The RPG mechanics — Quests, Builds, Locations, Companions — stay exactly as they are. Only the visual world around them changes: from dark fantasy stone-and-firelight to a dark sci-fi HUD.
+
 ## Visual Inspiration
 
-- Immersive RPG worlds (atmosphere and feeling only — no copied assets)
-- Nordic darkness and stone halls
-- Cinematic fantasy-tech
-- Warm firelight and hidden archives
-- Strategic war rooms
-- Quiet mystery and personal headquarters
+- Immersive HUD/cockpit interfaces (atmosphere and feeling only — no copied assets)
+- Deep-space instrumentation — Starfield's retro-futurist cockpit panels
+- Iron Man's arc-reactor HUD — clean telemetry, quiet until something needs attention
+- Strategic war rooms, mission control
+- Quiet mystery and personal headquarters — still true, now told through onboard systems instead of stone halls
 
 > Do not copy any copyrighted game assets, UI, names, or visuals.
 > Capture the feeling, not the intellectual property.
@@ -21,19 +22,19 @@ The Founder moves through locations. He does not manage menus.
 ## Visual Identity
 
 **Use:**
-- Dark, near-black backgrounds
-- Warm amber and ember accent tones
-- Cinematic depth and shadow
-- Subtle atmospheric gradients
+- Dark, near-black navy backgrounds
+- Amber instrument accent as primary, cool cyan as secondary
+- Thin 1px lines and hairline corner brackets instead of solid borders
+- Faint grid / scanline texture for depth (in place of atmospheric fog)
 - Premium, minimal spacing
-- Soft warm glow on hover and focus
-- Calm, purposeful motion
+- Soft accent glow on hover, focus, and active indicators
+- Calm, purposeful motion — telemetry ticks, not fire
 
 **Avoid:**
 - Corporate dashboard styling
 - Generic SaaS UI patterns
 - Bright productivity colors
-- Cartoonish fantasy elements
+- Cartoonish sci-fi elements
 - Visual clutter and noise
 - Guilt-based task management UI
 - Excessive future placeholders
@@ -42,21 +43,24 @@ The Founder moves through locations. He does not manage menus.
 
 | Token | Value | Use |
 |---|---|---|
-| `--background` | `#0a0908` | Page background |
-| `--foreground` | `#e8e0d5` | Primary text |
-| `--muted` | `#9a8f82` | Secondary text |
-| `--accent` | `#d4a574` | Gold accent |
-| `--accent-glow` | `#e8842a` | Ember/active accent |
-| `--surface` | `#141210` | Card surface |
-| `--surface-raised` | `#1c1815` | Elevated surface |
+| `--background` | `#070a10` | Page background |
+| `--foreground` | `#e4e8ee` | Primary text |
+| `--muted` | `#74829f` | Secondary text |
+| `--accent` | `#ffab4a` | Amber instrument accent |
+| `--accent-glow` | `#4dd8ff` | Cyan/secondary accent, active state |
+| `--surface` | `#0e131c` | Card surface |
+| `--surface-raised` | `#161d29` | Elevated surface |
+| `--critical` | `#ff5c5c` | Warnings / destructive actions only |
 
 ## Typography
 
 | Role | Font | Notes |
 |---|---|---|
-| Display / titles | Cinzel | Headings, location names, labels |
+| Display / titles / labels | Geist Mono | Uppercase, wide tracking — headings, location names, badges read like onboard telemetry |
 | Body / UI | Geist Sans | Descriptions, body text |
-| Mono | Geist Mono | Code, technical content |
+| Data / stats | Geist Mono | Tabular numerals for anything counted (Builds live, quest %) |
+
+Cinzel is retired. No new webfont is introduced — the HUD register comes from typesetting the existing Geist Mono uppercase, tracked, and small, not from a new typeface.
 
 ## UI Language
 
@@ -73,25 +77,26 @@ The Founder moves through locations. He does not manage menus.
 ## Panels and Cards
 
 Standard panel structure:
-- Dark gradient background (`from-[rgba(22,17,11,...)] to-[rgba(10,8,6,...)]`)
-- Top inset highlight (`inset 0 1px 0 rgba(212,165,116,0.07)`)
-- Corner marks for framing (optional, use on strategic panels)
-- Warm radial glow at top-left on focus/hover
-- No harsh solid borders — prefer shadow and inset highlights
+- Dark gradient background (`from-[rgba(22,29,41,...)] to-[rgba(14,19,28,...)]`)
+- Top inset highlight (`inset 0 1px 0 rgba(255,171,74,0.07)`)
+- Hairline corner brackets for framing (optional, use on strategic panels — replaces solid corner marks)
+- Faint grid texture at low opacity, masked to fade toward panel edges
+- Amber glow at top-left on focus/hover; cyan glow for active/live state
+- No harsh solid borders — prefer 1px hairlines, shadow, and inset highlights
 
 ## Animation
 
 - **Entrance:** `fade-up` with staggered `animationDelay` per section
-- **Hover:** lift (`-translate-y-1`), scale (`scale-[1.01]`), warm glow
-- **Active indicators:** `animate-glow-pulse` on ember dots
-- **Background:** `animate-ember-drift` for atmospheric orbs
-- **Particles:** `animate-particle-float` for floating dust motes
+- **Hover:** lift (`-translate-y-1`), scale (`scale-[1.01]`), amber or cyan glow depending on state
+- **Active indicators:** `animate-glow-pulse` on status dots
+- **Background:** faint drifting grid / starfield in place of ember orbs
+- **Particles:** slow-moving points of light in place of dust motes
 
 Keep animations calm and purposeful. No excessive game effects. No distracting movement.
 
 ## Environment Art
 
-Real background graphics, architectural elements (pillars, halls, arches), and world art should be added later as a dedicated **Environment Art Pass**.
+Real background graphics, HUD framing elements (grid lines, corner brackets, scanlines), and world art should be added later as a dedicated **Environment Art Pass**.
 
 Do not force complex CSS-only fake architecture prematurely. Atmosphere through gradients and lighting is sufficient until real art assets are ready.
 
@@ -99,8 +104,8 @@ Do not force complex CSS-only fake architecture prematurely. Atmosphere through 
 
 | Location | Feel | Color bias |
 |---|---|---|
-| AI Mastery HQ | Personal headquarters, welcoming | Warm gold |
-| Constitution Hall | Sacred hall, moral authority | Deep gold |
-| Quest Board | Strategic war room, clarity | Amber |
-| Idea Vault | Hidden archive, protective | Cool-warm |
-| Tend the Fire | Hearth room, emotional support | Deep ember |
+| AI Mastery HQ | Personal headquarters, welcoming | Warm amber |
+| Constitution Hall | Command deck, moral authority | Deep amber |
+| Quest Board | Mission control, clarity | Amber + cyan |
+| Idea Vault | Protected archive, encrypted | Cool cyan |
+| Tend the Fire | Life-support / hearth system, emotional support | Deep amber |
