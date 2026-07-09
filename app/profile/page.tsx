@@ -1,7 +1,7 @@
 import Link from "next/link";
 import type { Metadata } from "next";
 import { AtmosphericBackground } from "../components/AtmosphericBackground";
-import { progress } from "../data/freedomEngineProgress";
+import { getProgress } from "../lib/questService";
 import {
   calculateFounderXP,
   getXPProgress,
@@ -15,18 +15,18 @@ export const metadata: Metadata = {
   description: "Founder progression inside Freedom Engine.",
 };
 
-/* ── DERIVED DATA ─────────────────────────────────────────────────────────── */
-
-const totalXP = calculateFounderXP(progress);
-const xpData = getXPProgress(totalXP);
-const title = getFounderTitle(xpData.level);
-const completedBuilds = countCompletedBuilds(progress);
-const completedSideQuests = countCompletedSideQuests(progress);
-const barPercent = Math.round(xpData.fraction * 100);
-
 /* ── PAGE ─────────────────────────────────────────────────────────────────── */
 
-export default function ProfilePage() {
+export default async function ProfilePage() {
+  const progress = await getProgress();
+
+  const totalXP = calculateFounderXP(progress);
+  const xpData = getXPProgress(totalXP);
+  const title = getFounderTitle(xpData.level);
+  const completedBuilds = countCompletedBuilds(progress);
+  const completedSideQuests = countCompletedSideQuests(progress);
+  const barPercent = Math.round(xpData.fraction * 100);
+
   return (
     <div className="relative flex min-h-full flex-1 flex-col overflow-hidden">
       <AtmosphericBackground />

@@ -1,21 +1,19 @@
 import Link from "next/link";
-import { progress } from "../data/freedomEngineProgress";
+import type { FreedomEngineProgress } from "../data/freedomEngineProgress";
 import {
   calculateFounderXP,
   getXPProgress,
   getFounderTitle,
 } from "../lib/founderProgress";
 
-/* ── DERIVED DATA (server-side, static) ───────────────────────────────────── */
-
-const totalXP = calculateFounderXP(progress);
-const xpData = getXPProgress(totalXP);
-const title = getFounderTitle(xpData.level);
-const barPercent = Math.round(xpData.fraction * 100);
-
 /* ── COMPONENT ─────────────────────────────────────────────────────────────── */
 
-export function FounderStatusBar() {
+export function FounderStatusBar({ progress }: { progress: FreedomEngineProgress }) {
+  const totalXP = calculateFounderXP(progress);
+  const xpData = getXPProgress(totalXP);
+  const title = getFounderTitle(xpData.level);
+  const barPercent = Math.round(xpData.fraction * 100);
+
   return (
     <div className="relative z-10 w-full">
       <div className="absolute inset-0 bg-[rgba(4,7,14,0.80)] backdrop-blur-sm" />

@@ -1,11 +1,11 @@
 import OpenAI from "openai";
 import { createClient as createSupabaseClient } from "../../../lib/supabase/server";
 import {
-  progress,
   getActiveQuestline,
   getActiveQuest,
   getCurrentBuild,
 } from "../../data/freedomEngineProgress";
+import { getProgress } from "../../lib/questService";
 
 /* ── CLIENT ───────────────────────────────────────────────────────────────── */
 
@@ -116,6 +116,7 @@ export async function POST(request: Request) {
     }
 
     // Build live context from the shared progress data source.
+    const progress = await getProgress();
     const activeQuestline = getActiveQuestline(progress);
     const activeQuest = activeQuestline ? getActiveQuest(activeQuestline) : undefined;
     const currentBuild = activeQuest ? getCurrentBuild(activeQuest) : undefined;

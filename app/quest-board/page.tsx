@@ -3,7 +3,6 @@ import type { Metadata } from "next";
 import { AtmosphericBackground } from "../components/AtmosphericBackground";
 import { Collapsible } from "./Collapsible";
 import {
-  progress,
   getActiveQuestline,
   getActiveQuest,
   getCurrentBuild,
@@ -12,27 +11,28 @@ import {
   type Questline,
   type SideQuest,
 } from "../data/freedomEngineProgress";
+import { getProgress } from "../lib/questService";
 
 export const metadata: Metadata = {
   title: "Quest Board — Freedom Engine",
   description: "The active path through Freedom Engine.",
 };
 
-/* ── DERIVED STATE ────────────────────────────────────────────────────────── */
-
-const activeQuestline = getActiveQuestline(progress)!;
-const activeQuest = getActiveQuest(activeQuestline)!;
-const currentBuild = getCurrentBuild(activeQuest)!;
-
-const completedBuilds = activeQuest.builds?.filter((b) => b.status === "completed") ?? [];
-const completedQuests = activeQuestline.quests?.filter((q) => q.status === "completed") ?? [];
-const availableQuestlines = progress.questlines.filter((q) => q.status === "available");
-const availableSideQuests = progress.sideQuests.filter((s) => s.status === "available");
-const completedSideQuests = progress.sideQuests.filter((s) => s.status === "completed");
-
 /* ── PAGE ─────────────────────────────────────────────────────────────────── */
 
-export default function QuestBoardPage() {
+export default async function QuestBoardPage() {
+  const progress = await getProgress();
+
+  const activeQuestline = getActiveQuestline(progress)!;
+  const activeQuest = getActiveQuest(activeQuestline)!;
+  const currentBuild = getCurrentBuild(activeQuest)!;
+
+  const completedBuilds = activeQuest.builds?.filter((b) => b.status === "completed") ?? [];
+  const completedQuests = activeQuestline.quests?.filter((q) => q.status === "completed") ?? [];
+  const availableQuestlines = progress.questlines.filter((q) => q.status === "available");
+  const availableSideQuests = progress.sideQuests.filter((s) => s.status === "available");
+  const completedSideQuests = progress.sideQuests.filter((s) => s.status === "completed");
+
   return (
     <div className="relative flex min-h-full flex-1 flex-col overflow-hidden">
       <AtmosphericBackground variant="quest-board" />
