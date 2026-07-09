@@ -74,7 +74,7 @@ export default function ConstitutionPage() {
 
           <div className="flex items-center gap-3" aria-hidden>
             <span className="h-px w-12 bg-linear-to-r from-accent/30 to-accent/10" />
-            <span className="size-[3px] rounded-full bg-accent/40 shadow-[0_0_8px_rgba(212,165,116,0.4)]" />
+            <span className="size-[3px] rounded-full bg-accent/40 shadow-[0_0_8px_rgba(255,171,74,0.4)]" />
             <span className="h-px flex-1 bg-linear-to-r from-accent/10 to-transparent" />
           </div>
 
@@ -140,9 +140,9 @@ function CoreRule() {
   return (
     <div className="relative overflow-hidden rounded-2xl">
       {/* Layered background */}
-      <div className="absolute inset-0 bg-linear-to-br from-[rgba(28,22,14,0.92)] to-[rgba(10,8,6,0.97)]" />
-      <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_left,rgba(212,165,116,0.07)_0%,transparent_60%)]" />
-      <div className="pointer-events-none absolute inset-0 rounded-2xl shadow-[inset_0_1px_0_rgba(212,165,116,0.08),inset_0_-1px_0_rgba(0,0,0,0.4)]" aria-hidden />
+      <div className="absolute inset-0 bg-linear-to-br from-[rgba(14,23,38,0.92)] to-[rgba(6,8,14,0.97)]" />
+      <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_left,rgba(255,171,74,0.07)_0%,transparent_60%)]" />
+      <div className="pointer-events-none absolute inset-0 rounded-2xl shadow-[inset_0_1px_0_rgba(255,171,74,0.08),inset_0_-1px_0_rgba(0,0,0,0.4)]" aria-hidden />
 
       {/* Corner engravings */}
       <span className="pointer-events-none absolute left-4 top-4 h-4 w-4 border-l border-t border-accent/20" aria-hidden />
@@ -182,15 +182,15 @@ function ConstitutionTablet({
 }) {
   return (
     <article
-      className="group animate-fade-up relative overflow-hidden rounded-2xl transition-all duration-700 ease-out hover:-translate-y-1 hover:shadow-[0_20px_56px_rgba(0,0,0,0.5),0_0_0_1px_rgba(212,165,116,0.08)]"
+      className="group animate-fade-up relative overflow-hidden rounded-2xl transition-all duration-700 ease-out hover:-translate-y-1 hover:shadow-[0_20px_56px_rgba(0,0,0,0.5),0_0_0_1px_rgba(255,171,74,0.08)]"
       style={{ animationDelay: `${delay}s` }}
     >
       {/* Base */}
-      <div className="absolute inset-0 bg-linear-to-br from-[rgba(22,17,12,0.85)] to-[rgba(10,8,6,0.95)]" />
+      <div className="absolute inset-0 bg-linear-to-br from-[rgba(12,18,30,0.85)] to-[rgba(6,8,14,0.95)]" />
       {/* Hover wash */}
-      <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_left,rgba(212,165,116,0.06)_0%,transparent_65%)] opacity-0 transition-opacity duration-700 group-hover:opacity-100" />
+      <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_left,rgba(255,171,74,0.06)_0%,transparent_65%)] opacity-0 transition-opacity duration-700 group-hover:opacity-100" />
       {/* Top highlight */}
-      <div className="pointer-events-none absolute inset-0 rounded-2xl shadow-[inset_0_1px_0_rgba(212,165,116,0.06)]" aria-hidden />
+      <div className="pointer-events-none absolute inset-0 rounded-2xl shadow-[inset_0_1px_0_rgba(255,171,74,0.06)]" aria-hidden />
 
       {/* Hover bottom glow */}
       <span

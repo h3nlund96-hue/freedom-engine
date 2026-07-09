@@ -183,14 +183,14 @@ function CaptureConsole({ onSeal }: { onSeal: (text: string) => Promise<boolean>
 
       <div className="group relative overflow-hidden rounded-2xl transition-all duration-700">
         {/* Panel base */}
-        <div className="absolute inset-0 bg-[rgba(8,6,4,0.82)]" />
+        <div className="absolute inset-0 bg-[rgba(4,6,11,0.82)]" />
 
         {/* Focus glow */}
         <div
           className="pointer-events-none absolute inset-0 opacity-0 transition-opacity duration-700 group-focus-within:opacity-100"
           style={{
             background:
-              "radial-gradient(ellipse at 30% 0%, rgba(212,165,116,0.07) 0%, transparent 65%)",
+              "radial-gradient(ellipse at 30% 0%, rgba(255,171,74,0.07) 0%, transparent 65%)",
           }}
           aria-hidden
         />
@@ -199,7 +199,7 @@ function CaptureConsole({ onSeal }: { onSeal: (text: string) => Promise<boolean>
         {sealed && (
           <div
             className="pointer-events-none absolute inset-0 z-10 flex items-center justify-center rounded-2xl"
-            style={{ background: "rgba(8,6,4,0.65)" }}
+            style={{ background: "rgba(4,6,11,0.65)" }}
             aria-hidden
           >
             <span className="font-display text-sm tracking-[0.18em] uppercase text-accent/80">
@@ -212,7 +212,7 @@ function CaptureConsole({ onSeal }: { onSeal: (text: string) => Promise<boolean>
         {failed && (
           <div
             className="pointer-events-none absolute inset-0 z-10 flex items-center justify-center rounded-2xl"
-            style={{ background: "rgba(8,6,4,0.65)" }}
+            style={{ background: "rgba(4,6,11,0.65)" }}
             aria-hidden
           >
             <span className="font-display text-sm tracking-[0.18em] uppercase text-muted/70">
@@ -226,7 +226,7 @@ function CaptureConsole({ onSeal }: { onSeal: (text: string) => Promise<boolean>
           className="pointer-events-none absolute inset-0 rounded-2xl transition-all duration-700"
           style={{
             boxShadow:
-              "inset 0 1px 0 rgba(212,165,116,0.08), inset 0 0 0 1px rgba(212,165,116,0.05)",
+              "inset 0 1px 0 rgba(255,171,74,0.08), inset 0 0 0 1px rgba(255,171,74,0.05)",
           }}
           aria-hidden
         />
@@ -234,7 +234,7 @@ function CaptureConsole({ onSeal }: { onSeal: (text: string) => Promise<boolean>
           className="pointer-events-none absolute inset-0 rounded-2xl opacity-0 transition-opacity duration-700 group-focus-within:opacity-100"
           style={{
             boxShadow:
-              "inset 0 1px 0 rgba(212,165,116,0.12), inset 0 0 0 1px rgba(212,165,116,0.10), 0 0 32px rgba(232,132,42,0.06)",
+              "inset 0 1px 0 rgba(255,171,74,0.12), inset 0 0 0 1px rgba(255,171,74,0.10), 0 0 32px rgba(77,216,255,0.06)",
           }}
           aria-hidden
         />
@@ -269,11 +269,11 @@ function CaptureConsole({ onSeal }: { onSeal: (text: string) => Promise<boolean>
               type="button"
               onClick={handleSeal}
               disabled={!value.trim() || sealed || submitting}
-              className="group/btn relative overflow-hidden rounded-lg px-4 py-1.5 transition-all duration-500 disabled:cursor-not-allowed disabled:opacity-30 enabled:hover:shadow-[0_0_20px_rgba(212,165,116,0.10)]"
+              className="group/btn relative overflow-hidden rounded-lg px-4 py-1.5 transition-all duration-500 disabled:cursor-not-allowed disabled:opacity-30 enabled:hover:shadow-[0_0_20px_rgba(255,171,74,0.10)]"
               style={{
                 background:
-                  "linear-gradient(to right, rgba(212,165,116,0.10), rgba(212,165,116,0.06))",
-                boxShadow: "inset 0 1px 0 rgba(212,165,116,0.09)",
+                  "linear-gradient(to right, rgba(255,171,74,0.10), rgba(255,171,74,0.06))",
+                boxShadow: "inset 0 1px 0 rgba(255,171,74,0.09)",
               }}
             >
               <span
@@ -314,13 +314,13 @@ function VaultCompartment({
 
   return (
     <div className="relative overflow-hidden rounded-xl">
-      <div className="absolute inset-0 bg-linear-to-br from-[rgba(18,14,9,0.90)] to-[rgba(10,8,6,0.88)]" />
+      <div className="absolute inset-0 bg-linear-to-br from-[rgba(9,15,24,0.90)] to-[rgba(6,8,14,0.88)]" />
       <div className="absolute inset-x-0 top-0 h-px bg-linear-to-r from-transparent via-accent/15 to-transparent" />
       <div
         className="pointer-events-none absolute inset-0 rounded-xl"
         style={{
           boxShadow:
-            "inset 0 1px 0 rgba(212,165,116,0.06), inset 0 0 0 1px rgba(212,165,116,0.03)",
+            "inset 0 1px 0 rgba(255,171,74,0.06), inset 0 0 0 1px rgba(255,171,74,0.03)",
         }}
         aria-hidden
       />
@@ -390,10 +390,10 @@ function IdeaCard({
   onDelete: (id: string) => void;
 }) {
   return (
-    <li className="group flex flex-col gap-2.5 rounded-lg px-3 py-3 transition-colors duration-300 hover:bg-[rgba(212,165,116,0.03)]">
+    <li className="group flex flex-col gap-2.5 rounded-lg px-3 py-3 transition-colors duration-300 hover:bg-[rgba(255,171,74,0.03)]">
       <div className="flex items-start gap-2.5">
         <span
-          className="mt-1.5 size-1.5 shrink-0 rounded-full bg-accent/30 shadow-[0_0_5px_rgba(212,165,116,0.2)]"
+          className="mt-1.5 size-1.5 shrink-0 rounded-full bg-accent/30 shadow-[0_0_5px_rgba(255,171,74,0.2)]"
           aria-hidden
         />
         <p className="text-sm leading-relaxed text-foreground/70">{idea.text}</p>
@@ -405,7 +405,7 @@ function IdeaCard({
             value={idea.status}
             onChange={(e) => onStatusChange(idea.id, e.target.value as IdeaStatus)}
             aria-label="Move to compartment"
-            className="cursor-pointer appearance-none rounded-md bg-[rgba(212,165,116,0.05)] py-1 pl-2.5 pr-6 font-display text-[0.6rem] tracking-[0.12em] uppercase text-accent/55 outline-none transition-colors duration-300 hover:bg-[rgba(212,165,116,0.08)] hover:text-accent/75 focus:outline-none"
+            className="cursor-pointer appearance-none rounded-md bg-[rgba(255,171,74,0.05)] py-1 pl-2.5 pr-6 font-display text-[0.6rem] tracking-[0.12em] uppercase text-accent/55 outline-none transition-colors duration-300 hover:bg-[rgba(255,171,74,0.08)] hover:text-accent/75 focus:outline-none"
           >
             {STATUS_ORDER.map((s) => (
               <option key={s} value={s}>

@@ -123,11 +123,11 @@ function CurrentFocus() {
     >
       <div className="relative overflow-hidden rounded-2xl">
         {/* Base */}
-        <div className="absolute inset-0 bg-linear-to-b from-[rgba(26,19,12,0.94)] to-[rgba(10,8,6,0.97)]" />
-        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_left,rgba(232,132,42,0.07)_0%,transparent_55%)]" />
+        <div className="absolute inset-0 bg-linear-to-b from-[rgba(12,20,35,0.94)] to-[rgba(6,8,14,0.97)]" />
+        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_left,rgba(77,216,255,0.07)_0%,transparent_55%)]" />
         <div
           className="pointer-events-none absolute inset-0 rounded-2xl"
-          style={{ boxShadow: "inset 0 1px 0 rgba(212,165,116,0.10), inset 0 -1px 0 rgba(0,0,0,0.3)" }}
+          style={{ boxShadow: "inset 0 1px 0 rgba(255,171,74,0.10), inset 0 -1px 0 rgba(0,0,0,0.3)" }}
           aria-hidden
         />
         <span className="pointer-events-none absolute left-4 top-4 h-3.5 w-3.5 border-l border-t border-accent/18" aria-hidden />
@@ -140,7 +140,7 @@ function CurrentFocus() {
           <div className="mb-5 flex items-center gap-2.5">
             <span className="relative flex size-1.5" aria-hidden>
               <span className="absolute inline-flex size-full animate-glow-pulse rounded-full bg-accent-glow/65" />
-              <span className="relative inline-flex size-1.5 rounded-full bg-accent-glow shadow-[0_0_8px_rgba(232,132,42,0.6)]" />
+              <span className="relative inline-flex size-1.5 rounded-full bg-accent-glow shadow-[0_0_8px_rgba(77,216,255,0.6)]" />
             </span>
             <span className="font-display text-[0.6rem] tracking-[0.28em] uppercase text-accent-glow/70">
               Current Focus
@@ -207,14 +207,14 @@ function TendTheFire() {
     >
       <div className="relative overflow-hidden rounded-2xl">
         {/* Base */}
-        <div className="absolute inset-0 bg-linear-to-br from-[rgba(22,14,7,0.95)] to-[rgba(10,7,4,0.97)]" />
+        <div className="absolute inset-0 bg-linear-to-br from-[rgba(7,15,30,0.95)] to-[rgba(4,7,14,0.97)]" />
 
         {/* Warm ember glow — the fire */}
         <div
           className="animate-ember-drift absolute -left-12 top-1/2 h-64 w-64 -translate-y-1/2 rounded-full blur-3xl"
           style={{
             background:
-              "radial-gradient(circle, rgba(232,100,18,0.18) 0%, rgba(200,80,10,0.08) 45%, transparent 70%)",
+              "radial-gradient(circle, rgba(40,225,255,0.18) 0%, rgba(55,215,255,0.08) 45%, transparent 70%)",
           }}
           aria-hidden
         />
@@ -222,7 +222,7 @@ function TendTheFire() {
           className="animate-glow-pulse absolute inset-x-0 bottom-0 h-20"
           style={{
             background:
-              "radial-gradient(ellipse at 35% 100%, rgba(220,90,15,0.10) 0%, transparent 65%)",
+              "radial-gradient(ellipse at 35% 100%, rgba(45,220,255,0.10) 0%, transparent 65%)",
           }}
           aria-hidden
         />
@@ -232,7 +232,7 @@ function TendTheFire() {
           className="pointer-events-none absolute inset-0 rounded-2xl"
           style={{
             boxShadow:
-              "inset 0 1px 0 rgba(232,132,42,0.14), inset 1px 0 0 rgba(232,132,42,0.06)",
+              "inset 0 1px 0 rgba(77,216,255,0.14), inset 1px 0 0 rgba(77,216,255,0.06)",
           }}
           aria-hidden
         />
@@ -263,11 +263,11 @@ function TendTheFire() {
           <ul className="space-y-2" role="list">
             {smallBuilds.map((action) => (
               <li key={action}>
-                <div className="group flex cursor-default items-center gap-3.5 rounded-xl px-4 py-3 transition-all duration-400 hover:bg-[rgba(232,100,18,0.06)]">
+                <div className="group flex cursor-default items-center gap-3.5 rounded-xl px-4 py-3 transition-all duration-400 hover:bg-[rgba(40,225,255,0.06)]">
                   {/* Ember dot */}
                   <span className="relative flex size-1.5 shrink-0" aria-hidden>
                     <span className="absolute inline-flex size-full animate-glow-pulse rounded-full bg-accent-glow/50" />
-                    <span className="relative inline-flex size-1.5 rounded-full bg-accent-glow/70 shadow-[0_0_6px_rgba(232,132,42,0.5)]" />
+                    <span className="relative inline-flex size-1.5 rounded-full bg-accent-glow/70 shadow-[0_0_6px_rgba(77,216,255,0.5)]" />
                   </span>
                   <span className="text-sm leading-relaxed text-foreground/60 transition-colors duration-400 group-hover:text-foreground/80">
                     {action}

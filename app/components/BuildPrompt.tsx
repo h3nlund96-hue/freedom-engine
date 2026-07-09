@@ -10,7 +10,7 @@ export function BuildPrompt() {
           aria-hidden
         />
         <span
-          className="size-1 rounded-full bg-accent/40 shadow-[0_0_8px_rgba(212,165,116,0.5)]"
+          className="size-1 rounded-full bg-accent/40 shadow-[0_0_8px_rgba(255,171,74,0.5)]"
           aria-hidden
         />
         <span
@@ -35,7 +35,7 @@ export function BuildPrompt() {
           id="build-intent"
           type="text"
           placeholder="Speak your intention into the world…"
-          className="relative w-full rounded-2xl border-0 bg-[rgba(12,10,8,0.6)] px-5 py-4 text-base text-foreground/90 shadow-[inset_0_2px_12px_rgba(0,0,0,0.45),0_0_0_1px_rgba(212,165,116,0.06)] backdrop-blur-md transition-all duration-500 placeholder:text-muted/40 focus:bg-[rgba(16,13,10,0.75)] focus:shadow-[inset_0_2px_12px_rgba(0,0,0,0.4),0_0_0_1px_rgba(212,165,116,0.12),0_0_32px_rgba(232,132,42,0.08)] focus:outline-none"
+          className="relative w-full rounded-2xl border-0 bg-[rgba(8,10,16,0.6)] px-5 py-4 text-base text-foreground/90 shadow-[inset_0_2px_12px_rgba(0,0,0,0.45),0_0_0_1px_rgba(255,171,74,0.06)] backdrop-blur-md transition-all duration-500 placeholder:text-muted/40 focus:bg-[rgba(10,14,22,0.75)] focus:shadow-[inset_0_2px_12px_rgba(0,0,0,0.4),0_0_0_1px_rgba(255,171,74,0.12),0_0_32px_rgba(77,216,255,0.08)] focus:outline-none"
         />
       </div>
     </footer>
