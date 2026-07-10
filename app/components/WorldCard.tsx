@@ -13,22 +13,18 @@ type WorldCardProps = {
 const glowStyles = {
   gold: {
     hover: "group-hover:shadow-[0_16px_48px_rgba(255,171,74,0.12),inset_0_1px_0_rgba(255,171,74,0.1)]",
-    orb: "from-accent/20 to-accent/5 group-hover:from-accent/30 group-hover:to-accent/8",
     accent: "group-hover:text-accent",
   },
   ember: {
     hover: "group-hover:shadow-[0_16px_48px_rgba(77,216,255,0.14),inset_0_1px_0_rgba(77,216,255,0.08)]",
-    orb: "from-accent-glow/20 to-accent-glow/5 group-hover:from-accent-glow/35 group-hover:to-accent-glow/10",
     accent: "group-hover:text-accent-glow",
   },
   amber: {
     hover: "group-hover:shadow-[0_16px_48px_rgba(255,190,110,0.12),inset_0_1px_0_rgba(255,190,110,0.08)]",
-    orb: "from-[rgba(255,190,110,0.2)] to-[rgba(255,190,110,0.05)] group-hover:from-[rgba(255,190,110,0.3)] group-hover:to-[rgba(255,190,110,0.08)]",
     accent: "group-hover:text-[#ffbe6e]",
   },
   warm: {
     hover: "group-hover:shadow-[0_16px_48px_rgba(90,205,255,0.13),inset_0_1px_0_rgba(90,205,255,0.07)]",
-    orb: "from-[rgba(90,205,255,0.18)] to-[rgba(90,205,255,0.04)] group-hover:from-[rgba(90,205,255,0.28)] group-hover:to-[rgba(90,205,255,0.08)]",
     accent: "group-hover:text-[#5acdff]",
   },
 };
@@ -68,14 +64,12 @@ export function WorldCard({
       />
 
       <div className="relative flex flex-col gap-4">
-        {/* Icon frame */}
-        <div
-          className={`flex size-10 items-center justify-center rounded-md border border-white/[0.06] bg-linear-to-br shadow-[inset_0_1px_0_rgba(255,255,255,0.04)] transition-all duration-700 group-hover:scale-110 group-hover:shadow-[0_0_20px_rgba(255,171,74,0.15)] ${style.orb}`}
+        {/* Icon */}
+        <span
+          className={`icon-pulse-glow inline-block w-fit font-display text-3xl leading-none text-accent transition-transform duration-700 group-hover:scale-110 ${style.accent}`}
         >
-          <span className="font-display text-lg text-accent transition-transform duration-700 group-hover:scale-110">
-            {icon}
-          </span>
-        </div>
+          {icon}
+        </span>
 
         <div className="space-y-2">
           <div className="flex items-start justify-between gap-2">

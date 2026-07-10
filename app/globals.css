@@ -134,6 +134,23 @@
   }
 }
 
+/* Location icons — a slow breathing scale plus the same HUD glow as the HQ glyph */
+@keyframes icon-breathe {
+  0%,
+  100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.07);
+  }
+}
+
+.icon-pulse-glow {
+  animation:
+    icon-breathe 3.6s ease-in-out infinite,
+    glyph-glow-pulse 4.5s ease-in-out infinite alternate;
+}
+
 .animate-fade-up {
   animation: fade-up 1s cubic-bezier(0.22, 1, 0.36, 1) both;
 }
@@ -193,7 +210,8 @@
   .animate-particle-float,
   .animate-glow-pulse,
   .hq-glyph-spin,
-  .hq-glyph-char {
+  .hq-glyph-char,
+  .icon-pulse-glow {
     animation: none;
   }
   .hq-glyph-mount,
