@@ -35,6 +35,7 @@ const VARIANTS: Record<AtmosphericVariant, VariantConfig> = {
     glow1: "rgba(255,171,74,0.05)",
     glow2: "rgba(77,216,255,0.03)",
     floor: "rgba(255,171,74,0.03)",
+    image: "/environment/constitution.jpg",
   },
   "quest-board": {
     overheadColor: "rgba(255,171,74,0.11)",    // mission-control, strongest signal
