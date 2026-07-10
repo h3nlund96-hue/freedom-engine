@@ -1,3 +1,5 @@
+import Image from "next/image";
+
 /* ── VARIANT CONFIG ───────────────────────────────────────────────────────── */
 
 type AtmosphericVariant =
@@ -15,6 +17,8 @@ interface VariantConfig {
   glow1: string;
   glow2: string;
   floor: string;
+  /** Environment Art Pass — real photography behind the CSS atmosphere. */
+  image?: string;
 }
 
 const VARIANTS: Record<AtmosphericVariant, VariantConfig> = {
@@ -23,6 +27,7 @@ const VARIANTS: Record<AtmosphericVariant, VariantConfig> = {
     glow1: "rgba(255,171,74,0.06)",
     glow2: "rgba(77,216,255,0.04)",
     floor: "rgba(255,171,74,0.04)",
+    image: "/environment/hq.jpg",
   },
   constitution: {
     overheadColor: "rgba(255,171,74,0.08)",    // command-deck amber
@@ -36,6 +41,7 @@ const VARIANTS: Record<AtmosphericVariant, VariantConfig> = {
     glow1: "rgba(255,171,74,0.06)",
     glow2: "rgba(77,216,255,0.05)",
     floor: "rgba(255,171,74,0.04)",
+    image: "/environment/quest-board.jpg",
   },
   "idea-vault": {
     overheadColor: "rgba(77,216,255,0.07)",    // cool cyan, encrypted archive
@@ -43,6 +49,7 @@ const VARIANTS: Record<AtmosphericVariant, VariantConfig> = {
     glow1: "rgba(77,216,255,0.045)",
     glow2: "rgba(90,150,180,0.035)",
     floor: "rgba(60,140,170,0.03)",
+    image: "/environment/idea-vault.jpg",
   },
   companions: {
     overheadColor: "rgba(77,216,255,0.08)",    // comms channel, cyan-leaning
@@ -78,6 +85,23 @@ export function AtmosphericBackground({
     <div className="pointer-events-none absolute inset-0 overflow-hidden" aria-hidden>
       {/* Base depth gradient */}
       <div className="absolute inset-0 bg-linear-to-b from-[#0e131c] via-[#070a10] to-[#04060a]" />
+
+      {/* Environment art — real photography, dimmed so UI stays readable on top */}
+      {v.image && (
+        <>
+          <div className="absolute inset-0 opacity-40">
+            <Image
+              src={v.image}
+              alt=""
+              fill
+              priority={variant === "hq"}
+              sizes="100vw"
+              className="object-cover"
+            />
+          </div>
+          <div className="absolute inset-0 bg-linear-to-b from-[rgba(7,10,16,0.55)] via-[rgba(7,10,16,0.35)] to-[rgba(4,6,10,0.88)]" />
+        </>
+      )}
 
       {/* Per-variant hue tint */}
       {v.tint && (
