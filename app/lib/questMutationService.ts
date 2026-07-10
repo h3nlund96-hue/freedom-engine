@@ -1,0 +1,281 @@
+/**
+ * Quest System mutation layer (browser client).
+ *
+ * app/lib/questService.ts handles the read side (server client, used for
+ * the initial page load). This file handles every write — creating and
+ * editing Questlines, Quests, Builds and Side Quests from the client —
+ * so Quest Board can be a real interactive tool instead of a read-only
+ * display of data seeded by hand.
+ *
+ * Only one Questline / Quest / Build can be "active" within its parent
+ * scope at a time (the rest of the app assumes this — see
+ * getActiveQuestline / getActiveQuest / getCurrentBuild). Activating one
+ * here demotes any previously-active sibling back to "available".
+ */
+
+import { createClient } from "../../lib/supabase/client";
+import type { FreedomEngineProgress, QuestStatus } from "../data/freedomEngineProgress";
+import {
+  mapProgressRows,
+  type FounderStateRow,
+  type QuestlineRow,
+  type QuestRow,
+  type BuildRow,
+  type SideQuestRow,
+} from "./questRows";
+
+/* ── TYPES ────────────────────────────────────────────────────────────────── */
+
+export interface QuestlineSummary {
+  id: string;
+  title: string;
+  status: QuestStatus;
+}
+
+/** Refetch the full Quest System from the client — used after any mutation
+ * below so the UI reflects the real, authoritative state. */
+export async function getProgressClient(): Promise<FreedomEngineProgress> {
+  const supabase = createClient();
+
+  const [
+    { data: founderState },
+    { data: questlineRows },
+    { data: questRows },
+    { data: buildRows },
+    { data: sideQuestRows },
+  ] = await Promise.all([
+    supabase.from("founder_state").select("main_quest").maybeSingle(),
+    supabase.from("questlines").select("*").order("sort_order"),
+    supabase.from("quests").select("*").order("sort_order"),
+    supabase.from("builds").select("*").order("sort_order"),
+    supabase.from("side_quests").select("*").order("sort_order"),
+  ]);
+
+  return mapProgressRows(
+    founderState as FounderStateRow | null,
+    (questlineRows ?? []) as QuestlineRow[],
+    (questRows ?? []) as QuestRow[],
+    (buildRows ?? []) as BuildRow[],
+    (sideQuestRows ?? []) as SideQuestRow[]
+  );
+}
+
+interface EditableFields {
+  title?: string;
+  description?: string;
+  status?: QuestStatus;
+}
+
+/* ── HELPERS ──────────────────────────────────────────────────────────────── */
+
+async function currentUserId(): Promise<string> {
+  const supabase = createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  if (!user) throw new Error("Not authenticated.");
+  return user.id;
+}
+
+function toPatch(fields: EditableFields): Record<string, unknown> {
+  const patch: Record<string, unknown> = { updated_at: new Date().toISOString() };
+  if (fields.title !== undefined) patch.title = fields.title.trim();
+  if (fields.description !== undefined) patch.description = fields.description.trim() || null;
+  if (fields.status !== undefined) patch.status = fields.status;
+  return patch;
+}
+
+async function nextSortOrder(
+  table: "questlines" | "quests" | "builds" | "side_quests",
+  scopeColumn: "questline_id" | "quest_id" | null,
+  scopeId: string | null
+): Promise<number> {
+  const supabase = createClient();
+  let query = supabase.from(table).select("id", { count: "exact", head: true });
+  if (scopeColumn && scopeId) query = query.eq(scopeColumn, scopeId);
+  const { count } = await query;
+  return (count ?? 0) + 1;
+}
+
+/* ── QUESTLINES ───────────────────────────────────────────────────────────── */
+
+/** Lightweight list for pickers (e.g. choosing where a converted idea's Quest lives). */
+export async function getQuestlineOptions(): Promise<QuestlineSummary[]> {
+  const supabase = createClient();
+  const { data, error } = await supabase
+    .from("questlines")
+    .select("id, title, status")
+    .order("sort_order");
+
+  if (error) throw new Error(error.message);
+  return (data ?? []) as QuestlineSummary[];
+}
+
+export async function createQuestline(title: string, description: string): Promise<{ id: string }> {
+  const supabase = createClient();
+  const userId = await currentUserId();
+  const sortOrder = await nextSortOrder("questlines", null, null);
+
+  const { data, error } = await supabase
+    .from("questlines")
+    .insert({
+      user_id: userId,
+      title: title.trim(),
+      description: description.trim() || null,
+      status: "available",
+      sort_order: sortOrder,
+    })
+    .select("id")
+    .single();
+
+  if (error) throw new Error(error.message);
+  return data;
+}
+
+export async function updateQuestline(id: string, fields: EditableFields): Promise<void> {
+  const supabase = createClient();
+
+  if (fields.status === "active") {
+    const { error: demoteError } = await supabase
+      .from("questlines")
+      .update({ status: "available" })
+      .eq("status", "active")
+      .neq("id", id);
+    if (demoteError) throw new Error(demoteError.message);
+  }
+
+  const { error } = await supabase.from("questlines").update(toPatch(fields)).eq("id", id);
+  if (error) throw new Error(error.message);
+}
+
+/* ── QUESTS ───────────────────────────────────────────────────────────────── */
+
+export async function createQuest(
+  questlineId: string,
+  title: string,
+  description: string
+): Promise<{ id: string }> {
+  const supabase = createClient();
+  const userId = await currentUserId();
+  const sortOrder = await nextSortOrder("quests", "questline_id", questlineId);
+
+  const { data, error } = await supabase
+    .from("quests")
+    .insert({
+      user_id: userId,
+      questline_id: questlineId,
+      title: title.trim(),
+      description: description.trim() || null,
+      status: "available",
+      sort_order: sortOrder,
+    })
+    .select("id")
+    .single();
+
+  if (error) throw new Error(error.message);
+  return data;
+}
+
+export async function updateQuest(
+  id: string,
+  questlineId: string,
+  fields: EditableFields
+): Promise<void> {
+  const supabase = createClient();
+
+  if (fields.status === "active") {
+    const { error: demoteError } = await supabase
+      .from("quests")
+      .update({ status: "available" })
+      .eq("questline_id", questlineId)
+      .eq("status", "active")
+      .neq("id", id);
+    if (demoteError) throw new Error(demoteError.message);
+  }
+
+  const { error } = await supabase.from("quests").update(toPatch(fields)).eq("id", id);
+  if (error) throw new Error(error.message);
+}
+
+/* ── BUILDS ───────────────────────────────────────────────────────────────── */
+
+export async function createBuild(
+  questId: string,
+  title: string,
+  description: string,
+  nextStep: string
+): Promise<{ id: string }> {
+  const supabase = createClient();
+  const userId = await currentUserId();
+  const sortOrder = await nextSortOrder("builds", "quest_id", questId);
+
+  const { data, error } = await supabase
+    .from("builds")
+    .insert({
+      user_id: userId,
+      quest_id: questId,
+      title: title.trim(),
+      description: description.trim() || null,
+      next_step: nextStep.trim() || null,
+      status: "available",
+      sort_order: sortOrder,
+    })
+    .select("id")
+    .single();
+
+  if (error) throw new Error(error.message);
+  return data;
+}
+
+export async function updateBuild(
+  id: string,
+  questId: string,
+  fields: EditableFields & { nextStep?: string }
+): Promise<void> {
+  const supabase = createClient();
+
+  if (fields.status === "active") {
+    const { error: demoteError } = await supabase
+      .from("builds")
+      .update({ status: "available" })
+      .eq("quest_id", questId)
+      .eq("status", "active")
+      .neq("id", id);
+    if (demoteError) throw new Error(demoteError.message);
+  }
+
+  const patch = toPatch(fields);
+  if (fields.nextStep !== undefined) patch.next_step = fields.nextStep.trim() || null;
+
+  const { error } = await supabase.from("builds").update(patch).eq("id", id);
+  if (error) throw new Error(error.message);
+}
+
+/* ── SIDE QUESTS ──────────────────────────────────────────────────────────── */
+
+export async function createSideQuest(title: string, description: string): Promise<{ id: string }> {
+  const supabase = createClient();
+  const userId = await currentUserId();
+  const sortOrder = await nextSortOrder("side_quests", null, null);
+
+  const { data, error } = await supabase
+    .from("side_quests")
+    .insert({
+      user_id: userId,
+      title: title.trim(),
+      description: description.trim() || null,
+      status: "available",
+      sort_order: sortOrder,
+    })
+    .select("id")
+    .single();
+
+  if (error) throw new Error(error.message);
+  return data;
+}
+
+export async function updateSideQuest(id: string, fields: EditableFields): Promise<void> {
+  const supabase = createClient();
+  const { error } = await supabase.from("side_quests").update(toPatch(fields)).eq("id", id);
+  if (error) throw new Error(error.message);
+}

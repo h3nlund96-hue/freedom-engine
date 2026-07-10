@@ -4,11 +4,17 @@ import { useEffect, useState } from "react";
 import {
   type Idea,
   type IdeaStatus,
+  type ConvertedToType,
   getIdeas,
   createIdea,
-  updateIdeaStatus,
+  updateIdea,
   deleteIdea,
+  convertIdeaToQuest,
+  convertIdeaToSideQuest,
 } from "../lib/ideaService";
+import { getQuestlineOptions, type QuestlineSummary } from "../lib/questMutationService";
+import { ConfirmDialog } from "../components/ConfirmDialog";
+import { IdeaDetailModal } from "./IdeaDetailModal";
 
 /* ── STATUS CONFIG ───────────────────────────────────────────────────────── */
 
@@ -42,19 +48,27 @@ const STATUS_ORDER: IdeaStatus[] = [
 
 export function VaultClient() {
   const [ideas, setIdeas] = useState<Idea[]>([]);
+  const [questlineOptions, setQuestlineOptions] = useState<QuestlineSummary[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
+  const [selectedIdea, setSelectedIdea] = useState<Idea | null>(null);
+  const [deleteTarget, setDeleteTarget] = useState<Idea | null>(null);
+  const [deleting, setDeleting] = useState(false);
+
   useEffect(() => {
-    getIdeas()
-      .then(setIdeas)
+    Promise.all([getIdeas(), getQuestlineOptions().catch(() => [])])
+      .then(([ideaList, questlines]) => {
+        setIdeas(ideaList);
+        setQuestlineOptions(questlines);
+      })
       .catch(() => setError("The Vault could not be opened. Try again in a moment."))
       .finally(() => setLoading(false));
   }, []);
 
-  async function handleSeal(text: string): Promise<boolean> {
+  async function handleSeal(title: string, description: string, status: IdeaStatus): Promise<boolean> {
     try {
-      const idea = await createIdea(text);
+      const idea = await createIdea(title, description, status);
       setIdeas((prev) => [idea, ...prev]);
       return true;
     } catch {
@@ -62,34 +76,52 @@ export function VaultClient() {
     }
   }
 
-  async function handleStatusChange(id: string, status: IdeaStatus) {
-    // Optimistic update — feels instant.
-    setIdeas((prev) =>
-      prev.map((idea) => (idea.id === id ? { ...idea, status } : idea))
-    );
-    try {
-      await updateIdeaStatus(id, status);
-    } catch {
-      // Roll back on failure.
-      setIdeas((prev) =>
-        prev.map((idea) =>
-          idea.id === id
-            ? { ...idea, status: ideas.find((i) => i.id === id)?.status ?? idea.status }
-            : idea
-        )
-      );
-    }
+  async function handleSaveIdea(fields: { title: string; description: string; status: IdeaStatus }) {
+    if (!selectedIdea) return;
+    const updated = await updateIdea(selectedIdea.id, fields);
+    setIdeas((prev) => prev.map((i) => (i.id === updated.id ? updated : i)));
+    setSelectedIdea(updated);
   }
 
-  async function handleDelete(id: string) {
-    // Optimistic update.
-    setIdeas((prev) => prev.filter((idea) => idea.id !== id));
+  async function handleConvert(
+    type: ConvertedToType,
+    questlineId: string | null,
+    title: string,
+    description: string
+  ) {
+    if (!selectedIdea) return;
+    if (type === "quest" && questlineId) {
+      await convertIdeaToQuest(selectedIdea, questlineId, title, description);
+    } else {
+      await convertIdeaToSideQuest(selectedIdea, title, description);
+    }
+    const updated: Idea = {
+      ...selectedIdea,
+      title,
+      description,
+      convertedAt: new Date().toISOString(),
+      convertedToType: type,
+    };
+    setIdeas((prev) => prev.map((i) => (i.id === updated.id ? updated : i)));
+    setSelectedIdea(updated);
+  }
+
+  function handleRequestDelete(idea: Idea) {
+    setDeleteTarget(idea);
+  }
+
+  async function handleConfirmDelete() {
+    if (!deleteTarget) return;
+    setDeleting(true);
     try {
-      await deleteIdea(id);
+      await deleteIdea(deleteTarget.id);
+      setIdeas((prev) => prev.filter((i) => i.id !== deleteTarget.id));
+      if (selectedIdea?.id === deleteTarget.id) setSelectedIdea(null);
+      setDeleteTarget(null);
     } catch {
-      // Restore on failure.
-      const removed = ideas.find((i) => i.id === id);
-      if (removed) setIdeas((prev) => [...prev, removed].sort(byNewest));
+      // Leave the dialog open so the Founder can retry.
+    } finally {
+      setDeleting(false);
     }
   }
 
@@ -130,14 +162,36 @@ export function VaultClient() {
                   key={status}
                   status={status}
                   ideas={compartmentIdeas}
-                  onStatusChange={handleStatusChange}
-                  onDelete={handleDelete}
+                  onSelect={setSelectedIdea}
                 />
               );
             })}
           </div>
         )}
       </div>
+
+      {selectedIdea && (
+        <IdeaDetailModal
+          idea={selectedIdea}
+          questlineOptions={questlineOptions}
+          onClose={() => setSelectedIdea(null)}
+          onSave={handleSaveIdea}
+          onDelete={() => handleRequestDelete(selectedIdea)}
+          onConvert={handleConvert}
+        />
+      )}
+
+      {deleteTarget && (
+        <ConfirmDialog
+          title="Delete this idea?"
+          message={`"${deleteTarget.title}" will be permanently removed from the Vault. This cannot be undone.`}
+          confirmLabel="Delete"
+          destructive
+          busy={deleting}
+          onConfirm={handleConfirmDelete}
+          onCancel={() => setDeleteTarget(null)}
+        />
+      )}
     </div>
   );
 }
@@ -148,23 +202,31 @@ function byNewest(a: Idea, b: Idea) {
 
 /* ── CAPTURE CONSOLE ─────────────────────────────────────────────────────── */
 
-function CaptureConsole({ onSeal }: { onSeal: (text: string) => Promise<boolean> }) {
-  const [value, setValue] = useState("");
+function CaptureConsole({
+  onSeal,
+}: {
+  onSeal: (title: string, description: string, status: IdeaStatus) => Promise<boolean>;
+}) {
+  const [title, setTitle] = useState("");
+  const [description, setDescription] = useState("");
+  const [status, setStatus] = useState<IdeaStatus>("raw");
   const [sealed, setSealed] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [failed, setFailed] = useState(false);
 
   async function handleSeal() {
-    if (!value.trim() || submitting) return;
+    if (!title.trim() || submitting) return;
     setSubmitting(true);
     setFailed(false);
-    const success = await onSeal(value.trim());
+    const success = await onSeal(title.trim(), description.trim(), status);
     setSubmitting(false);
 
     if (success) {
       setSealed(true);
       setTimeout(() => {
-        setValue("");
+        setTitle("");
+        setDescription("");
+        setStatus("raw");
         setSealed(false);
       }, 1800);
     } else {
@@ -173,7 +235,7 @@ function CaptureConsole({ onSeal }: { onSeal: (text: string) => Promise<boolean>
     }
   }
 
-  function handleKeyDown(e: React.KeyboardEvent<HTMLTextAreaElement>) {
+  function handleKeyDown(e: React.KeyboardEvent<HTMLTextAreaElement | HTMLInputElement>) {
     if ((e.metaKey || e.ctrlKey) && e.key === "Enter") handleSeal();
   }
 
@@ -239,36 +301,65 @@ function CaptureConsole({ onSeal }: { onSeal: (text: string) => Promise<boolean>
           aria-hidden
         />
 
-        <div className="relative">
-          <label htmlFor="idea-capture" className="sr-only">
-            Capture an idea
+        <div className="relative flex flex-col gap-3 px-5 pb-3 pt-5">
+          <label htmlFor="idea-capture-title" className="sr-only">
+            Idea title
           </label>
-          <textarea
-            id="idea-capture"
-            rows={3}
-            value={value}
-            onChange={(e) => setValue(e.target.value)}
+          <input
+            id="idea-capture-title"
+            value={title}
+            onChange={(e) => setTitle(e.target.value)}
             onKeyDown={handleKeyDown}
             placeholder="Write the idea before it disappears..."
             disabled={sealed || submitting}
-            className="w-full resize-none bg-transparent px-5 pb-3 pt-5 text-sm leading-relaxed text-foreground/90 placeholder:text-muted/30 focus:outline-none sm:text-base"
+            className="w-full bg-transparent text-sm font-medium text-foreground/90 placeholder:text-muted/30 placeholder:font-normal focus:outline-none sm:text-base"
+          />
+
+          <label htmlFor="idea-capture-description" className="sr-only">
+            Idea description
+          </label>
+          <textarea
+            id="idea-capture-description"
+            rows={2}
+            value={description}
+            onChange={(e) => setDescription(e.target.value)}
+            onKeyDown={handleKeyDown}
+            placeholder="Add more detail (optional)..."
+            disabled={sealed || submitting}
+            className="w-full resize-none bg-transparent text-xs leading-relaxed text-foreground/70 placeholder:text-muted/25 focus:outline-none"
           />
 
           {/* Console footer */}
-          <div className="flex items-center justify-between gap-4 border-t border-accent/[0.07] px-5 py-3">
-            <p className="text-xs text-muted/55">
-              {sealed
-                ? "Idea sealed."
-                : submitting
-                ? "Sealing..."
-                : value.trim()
-                ? "⌘ + Enter to seal"
-                : "No sorting required. Just capture it."}
-            </p>
+          <div className="flex flex-wrap items-center justify-between gap-3 border-t border-accent/[0.07] pt-3">
+            <div className="flex items-center gap-3">
+              <label htmlFor="idea-capture-status" className="sr-only">
+                Idea status
+              </label>
+              <select
+                id="idea-capture-status"
+                value={status}
+                onChange={(e) => setStatus(e.target.value as IdeaStatus)}
+                disabled={sealed || submitting}
+                className="cursor-pointer rounded-sm bg-[rgba(255,171,74,0.05)] px-2.5 py-1 font-display text-[0.6rem] tracking-[0.1em] uppercase text-accent/60 outline-none transition-colors duration-300 hover:bg-[rgba(255,171,74,0.08)] hover:text-accent/80 focus:outline-none disabled:opacity-50"
+              >
+                {STATUS_ORDER.map((s) => (
+                  <option key={s} value={s}>
+                    {STATUS_CONFIG[s].label}
+                  </option>
+                ))}
+              </select>
+              <p className="text-xs text-muted/55">
+                {sealed
+                  ? "Idea sealed."
+                  : submitting
+                  ? "Sealing..."
+                  : "⌘ + Enter to seal"}
+              </p>
+            </div>
             <button
               type="button"
               onClick={handleSeal}
-              disabled={!value.trim() || sealed || submitting}
+              disabled={!title.trim() || sealed || submitting}
               className="group/btn relative overflow-hidden rounded-sm px-4 py-1.5 transition-all duration-500 disabled:cursor-not-allowed disabled:opacity-30 enabled:hover:shadow-[0_0_20px_rgba(255,171,74,0.10)]"
               style={{
                 background:
@@ -300,13 +391,11 @@ function CaptureConsole({ onSeal }: { onSeal: (text: string) => Promise<boolean>
 function VaultCompartment({
   status,
   ideas,
-  onStatusChange,
-  onDelete,
+  onSelect,
 }: {
   status: IdeaStatus;
   ideas: Idea[];
-  onStatusChange: (id: string, status: IdeaStatus) => void;
-  onDelete: (id: string) => void;
+  onSelect: (idea: Idea) => void;
 }) {
   const cfg = STATUS_CONFIG[status];
   const count = ideas.length;
@@ -357,12 +446,7 @@ function VaultCompartment({
         {hasItems && (
           <ul className="space-y-1 border-t border-accent/[0.05] px-4 pb-3 pt-2">
             {ideas.map((idea) => (
-              <IdeaCard
-                key={idea.id}
-                idea={idea}
-                onStatusChange={onStatusChange}
-                onDelete={onDelete}
-              />
+              <IdeaRow key={idea.id} idea={idea} onSelect={onSelect} />
             ))}
           </ul>
         )}
@@ -378,58 +462,31 @@ function VaultCompartment({
   );
 }
 
-/* ── IDEA CARD ───────────────────────────────────────────────────────────── */
+/* ── IDEA ROW ─────────────────────────────────────────────────────────────── */
 
-function IdeaCard({
-  idea,
-  onStatusChange,
-  onDelete,
-}: {
-  idea: Idea;
-  onStatusChange: (id: string, status: IdeaStatus) => void;
-  onDelete: (id: string) => void;
-}) {
+function IdeaRow({ idea, onSelect }: { idea: Idea; onSelect: (idea: Idea) => void }) {
+  const converted = idea.convertedToType !== null;
+
   return (
-    <li className="group flex flex-col gap-2.5 rounded-sm px-3 py-3 transition-colors duration-300 hover:bg-[rgba(255,171,74,0.03)]">
-      <div className="flex items-start gap-2.5">
+    <li>
+      <button
+        type="button"
+        onClick={() => onSelect(idea)}
+        className="group flex w-full items-center gap-2.5 rounded-sm px-3 py-2.5 text-left transition-colors duration-300 hover:bg-[rgba(255,171,74,0.04)] focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-accent/30"
+      >
         <span
-          className="mt-1.5 size-1.5 shrink-0 rounded-full bg-accent/30 shadow-[0_0_5px_rgba(255,171,74,0.2)]"
+          className="size-1.5 shrink-0 rounded-full bg-accent/30 shadow-[0_0_5px_rgba(255,171,74,0.2)]"
           aria-hidden
         />
-        <p className="text-sm leading-relaxed text-foreground/70">{idea.text}</p>
-      </div>
-
-      <div className="ml-4 flex items-center gap-3">
-        <div className="relative">
-          <select
-            value={idea.status}
-            onChange={(e) => onStatusChange(idea.id, e.target.value as IdeaStatus)}
-            aria-label="Move to compartment"
-            className="cursor-pointer appearance-none rounded-md bg-[rgba(255,171,74,0.05)] py-1 pl-2.5 pr-6 font-display text-[0.6rem] tracking-[0.12em] uppercase text-accent/55 outline-none transition-colors duration-300 hover:bg-[rgba(255,171,74,0.08)] hover:text-accent/75 focus:outline-none"
-          >
-            {STATUS_ORDER.map((s) => (
-              <option key={s} value={s}>
-                {STATUS_CONFIG[s].label}
-              </option>
-            ))}
-          </select>
-          <span
-            className="pointer-events-none absolute right-2 top-1/2 -translate-y-1/2 text-[0.5rem] text-accent/40"
-            aria-hidden
-          >
-            ▾
+        <span className="min-w-0 flex-1 truncate text-sm leading-relaxed text-foreground/75 group-hover:text-foreground/90">
+          {idea.title}
+        </span>
+        {converted && (
+          <span className="shrink-0 rounded-sm bg-accent-glow/10 px-1.5 py-0.5 font-display text-[0.55rem] tracking-wide uppercase text-accent-glow/70">
+            {idea.convertedToType === "quest" ? "→ Quest" : "→ Side Quest"}
           </span>
-        </div>
-
-        <button
-          type="button"
-          onClick={() => onDelete(idea.id)}
-          aria-label="Remove idea"
-          className="rounded font-display text-[0.6rem] tracking-[0.12em] uppercase text-muted/50 transition-colors duration-300 hover:text-foreground/70 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-accent/30"
-        >
-          remove
-        </button>
-      </div>
+        )}
+      </button>
     </li>
   );
 }
