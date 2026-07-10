@@ -38,7 +38,7 @@ export default function ConstitutionPage() {
       <main className="relative mx-auto flex w-full max-w-2xl flex-1 flex-col gap-16 px-6 py-20 sm:px-8 sm:py-28 lg:max-w-3xl">
 
         <LocationHeader
-          icon="📜"
+          icon="⚖"
           eyebrow="Constitution Hall"
           title="The Founder Constitution"
           description="The moral compass — these principles guide every major decision."

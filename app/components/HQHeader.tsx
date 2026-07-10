@@ -15,8 +15,13 @@ export function HQHeader({ title, welcome }: HQHeaderProps) {
           Headquarters
         </p>
       </div>
-      <h1 className="font-display text-4xl font-medium tracking-wide text-foreground sm:text-5xl">
-        {title}
+      <h1 className="flex items-center gap-3.5 font-display text-4xl font-medium tracking-wide text-foreground sm:text-5xl">
+        <span className="hq-glyph-mount text-3xl sm:text-4xl" aria-hidden>
+          <span className="hq-glyph-spin">
+            <span className="hq-glyph-char text-accent">⌬</span>
+          </span>
+        </span>
+        <span className="hq-title-settle">{title}</span>
       </h1>
       <p className="text-lg text-muted sm:text-xl">{welcome}</p>
     </header>

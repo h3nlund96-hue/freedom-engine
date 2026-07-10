@@ -72,7 +72,7 @@ export function WorldCard({
         <div
           className={`flex size-10 items-center justify-center rounded-md border border-white/[0.06] bg-linear-to-br shadow-[inset_0_1px_0_rgba(255,255,255,0.04)] transition-all duration-700 group-hover:scale-110 group-hover:shadow-[0_0_20px_rgba(255,171,74,0.15)] ${style.orb}`}
         >
-          <span className="text-lg transition-transform duration-700 group-hover:scale-110">
+          <span className="font-display text-lg text-accent transition-transform duration-700 group-hover:scale-110">
             {icon}
           </span>
         </div>
