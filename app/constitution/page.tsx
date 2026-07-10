@@ -1,6 +1,6 @@
-import Link from "next/link";
 import type { Metadata } from "next";
 import { AtmosphericBackground } from "../components/AtmosphericBackground";
+import { LocationHeader } from "../components/LocationHeader";
 
 export const metadata: Metadata = {
   title: "The Founder Constitution — Freedom Engine",
@@ -37,51 +37,12 @@ export default function ConstitutionPage() {
 
       <main className="relative mx-auto flex w-full max-w-2xl flex-1 flex-col gap-16 px-6 py-20 sm:px-8 sm:py-28 lg:max-w-3xl">
 
-        {/* Back link */}
-        <nav className="animate-fade-up" aria-label="Back to headquarters">
-          <Link
-            href="/"
-            className="group inline-flex items-center gap-2.5 rounded text-muted/70 transition-colors duration-300 hover:text-accent focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-accent/40"
-          >
-            <span
-              className="inline-block transition-transform duration-300 group-hover:-translate-x-1"
-              aria-hidden
-            >
-              ←
-            </span>
-            <span className="font-display text-xs tracking-[0.22em] uppercase">
-              AI Mastery HQ
-            </span>
-          </Link>
-        </nav>
-
-        {/* Hall header */}
-        <header
-          className="animate-fade-up space-y-7"
-          style={{ animationDelay: "0.08s" }}
-        >
-          <div className="space-y-1">
-            <p className="font-display text-[0.65rem] tracking-[0.28em] uppercase text-accent/65">
-              Constitution Hall
-            </p>
-            <h1 className="font-display text-4xl font-medium tracking-wide text-foreground sm:text-5xl">
-              The Founder Constitution
-            </h1>
-            <p className="pt-1 text-base text-muted sm:text-lg">
-              The moral compass of Freedom Engine.
-            </p>
-          </div>
-
-          <div className="flex items-center gap-3" aria-hidden>
-            <span className="h-px w-12 bg-linear-to-r from-accent/30 to-accent/10" />
-            <span className="size-[3px] rounded-full bg-accent/40 shadow-[0_0_8px_rgba(255,171,74,0.4)]" />
-            <span className="h-px flex-1 bg-linear-to-r from-accent/10 to-transparent" />
-          </div>
-
-          <p className="max-w-lg text-base leading-relaxed text-foreground/70">
-            These principles guide every major decision inside Freedom Engine.
-          </p>
-        </header>
+        <LocationHeader
+          icon="📜"
+          eyebrow="Constitution Hall"
+          title="The Founder Constitution"
+          description="The moral compass — these principles guide every major decision."
+        />
 
         {/* Core rule — the foundation stone */}
         <div
