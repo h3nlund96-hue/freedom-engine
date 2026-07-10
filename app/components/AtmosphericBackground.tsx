@@ -1,4 +1,8 @@
-import Image from "next/image";
+import Image, { type StaticImageData } from "next/image";
+import hqArt from "../assets/environment/hq.jpg";
+import constitutionArt from "../assets/environment/constitution.jpg";
+import questBoardArt from "../assets/environment/quest-board.jpg";
+import ideaVaultArt from "../assets/environment/idea-vault.jpg";
 
 /* ── VARIANT CONFIG ───────────────────────────────────────────────────────── */
 
@@ -18,7 +22,7 @@ interface VariantConfig {
   glow2: string;
   floor: string;
   /** Environment Art Pass — real photography behind the CSS atmosphere. */
-  image?: string;
+  image?: StaticImageData;
 }
 
 const VARIANTS: Record<AtmosphericVariant, VariantConfig> = {
@@ -27,7 +31,7 @@ const VARIANTS: Record<AtmosphericVariant, VariantConfig> = {
     glow1: "rgba(255,171,74,0.06)",
     glow2: "rgba(77,216,255,0.04)",
     floor: "rgba(255,171,74,0.04)",
-    image: "/environment/hq.jpg",
+    image: hqArt,
   },
   constitution: {
     overheadColor: "rgba(255,171,74,0.08)",    // command-deck amber
@@ -35,14 +39,14 @@ const VARIANTS: Record<AtmosphericVariant, VariantConfig> = {
     glow1: "rgba(255,171,74,0.05)",
     glow2: "rgba(77,216,255,0.03)",
     floor: "rgba(255,171,74,0.03)",
-    image: "/environment/constitution.jpg",
+    image: constitutionArt,
   },
   "quest-board": {
     overheadColor: "rgba(255,171,74,0.11)",    // mission-control, strongest signal
     glow1: "rgba(255,171,74,0.06)",
     glow2: "rgba(77,216,255,0.05)",
     floor: "rgba(255,171,74,0.04)",
-    image: "/environment/quest-board.jpg",
+    image: questBoardArt,
   },
   "idea-vault": {
     overheadColor: "rgba(77,216,255,0.07)",    // cool cyan, encrypted archive
@@ -50,7 +54,7 @@ const VARIANTS: Record<AtmosphericVariant, VariantConfig> = {
     glow1: "rgba(77,216,255,0.045)",
     glow2: "rgba(90,150,180,0.035)",
     floor: "rgba(60,140,170,0.03)",
-    image: "/environment/idea-vault.jpg",
+    image: ideaVaultArt,
   },
   companions: {
     overheadColor: "rgba(77,216,255,0.08)",    // comms channel, cyan-leaning
@@ -87,7 +91,10 @@ export function AtmosphericBackground({
       {/* Base depth gradient */}
       <div className="absolute inset-0 bg-linear-to-b from-[#0e131c] via-[#070a10] to-[#04060a]" />
 
-      {/* Environment art — real photography, dimmed so UI stays readable on top */}
+      {/* Environment art — real photography, dimmed so UI stays readable on top.
+          object-contain on narrow screens: these photos are landscape-ish,
+          and object-cover on a tall mobile viewport would zoom in past
+          recognizable detail — contain shows the whole frame instead. */}
       {v.image && (
         <>
           <div className="absolute inset-0 opacity-40">
@@ -95,9 +102,10 @@ export function AtmosphericBackground({
               src={v.image}
               alt=""
               fill
+              placeholder="blur"
               priority={variant === "hq"}
               sizes="100vw"
-              className="object-cover"
+              className="object-contain sm:object-cover"
             />
           </div>
           <div className="absolute inset-0 bg-linear-to-b from-[rgba(7,10,16,0.55)] via-[rgba(7,10,16,0.35)] to-[rgba(4,6,10,0.88)]" />
