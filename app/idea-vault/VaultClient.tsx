@@ -107,14 +107,14 @@ export function VaultClient() {
               <span className="absolute inline-flex size-full animate-glow-pulse rounded-full bg-accent/40" />
               <span className="relative inline-flex size-1.5 rounded-full bg-accent/60" />
             </span>
-            <p className="text-xs italic text-muted/40">Opening the Vault...</p>
+            <p className="text-xs italic text-muted/55">Opening the Vault...</p>
           </div>
         )}
 
         {/* Error */}
         {error && !loading && (
           <div className="rounded-md border border-accent/[0.06] bg-black/20 px-5 py-4">
-            <p className="text-xs leading-relaxed text-muted/45">{error}</p>
+            <p className="text-xs leading-relaxed text-foreground/80">{error}</p>
           </div>
         )}
 
@@ -256,7 +256,7 @@ function CaptureConsole({ onSeal }: { onSeal: (text: string) => Promise<boolean>
 
           {/* Console footer */}
           <div className="flex items-center justify-between gap-4 border-t border-accent/[0.07] px-5 py-3">
-            <p className="text-xs text-muted/35">
+            <p className="text-xs text-muted/55">
               {sealed
                 ? "Idea sealed."
                 : submitting
@@ -288,7 +288,7 @@ function CaptureConsole({ onSeal }: { onSeal: (text: string) => Promise<boolean>
         </div>
       </div>
 
-      <p className="text-[0.65rem] text-muted/35">
+      <p className="text-[0.65rem] text-muted/50">
         Ideas now sync through Founder Login.
       </p>
     </section>
@@ -331,14 +331,14 @@ function VaultCompartment({
           <div>
             <h3
               className={`font-display text-sm tracking-wide ${
-                hasItems ? "text-foreground/85" : "text-foreground/40"
+                hasItems ? "text-foreground/85" : "text-foreground/60"
               }`}
             >
               {cfg.label}
             </h3>
             <p
               className={`mt-0.5 text-xs leading-relaxed ${
-                hasItems ? "text-muted/50" : "text-muted/28"
+                hasItems ? "text-muted/60" : "text-muted/50"
               }`}
             >
               {cfg.description}
@@ -346,7 +346,7 @@ function VaultCompartment({
           </div>
           <span
             className={`mt-0.5 shrink-0 rounded-sm px-2 py-0.5 font-display text-[0.58rem] tracking-wider ${
-              hasItems ? "bg-accent/12 text-accent/70" : "bg-muted/5 text-muted/28"
+              hasItems ? "bg-accent/12 text-accent/70" : "bg-muted/5 text-muted/45"
             }`}
           >
             {count}
@@ -369,7 +369,7 @@ function VaultCompartment({
 
         {/* Empty */}
         {!hasItems && (
-          <p className="border-t border-accent/[0.04] px-5 py-3 text-[0.65rem] italic text-muted/28">
+          <p className="border-t border-accent/[0.04] px-5 py-3 text-[0.65rem] italic text-muted/45">
             Empty
           </p>
         )}
@@ -425,7 +425,7 @@ function IdeaCard({
           type="button"
           onClick={() => onDelete(idea.id)}
           aria-label="Remove idea"
-          className="rounded font-display text-[0.6rem] tracking-[0.12em] uppercase text-muted/35 transition-colors duration-300 hover:text-foreground/50 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-accent/30"
+          className="rounded font-display text-[0.6rem] tracking-[0.12em] uppercase text-muted/50 transition-colors duration-300 hover:text-foreground/70 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-accent/30"
         >
           remove
         </button>
