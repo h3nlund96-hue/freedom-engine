@@ -40,7 +40,7 @@ export default async function QuestBoardPage() {
       <main className="relative mx-auto flex w-full max-w-2xl flex-1 flex-col gap-12 px-6 py-20 sm:px-8 sm:py-28 lg:max-w-3xl">
 
         <LocationHeader
-          icon="⚔️"
+          icon="◎"
           eyebrow="Quest Chamber"
           title="Quest Board"
           description="The active path — current Quest, active Build, next step forward."

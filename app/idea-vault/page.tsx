@@ -16,7 +16,7 @@ export default function IdeaVaultPage() {
       <main className="relative mx-auto flex w-full max-w-2xl flex-1 flex-col gap-14 px-6 py-20 sm:px-8 sm:py-28 lg:max-w-3xl">
 
         <LocationHeader
-          icon="💡"
+          icon="⬡"
           eyebrow="Hidden Archive"
           title="Idea Vault"
           description="Capture ideas safely, without letting them distract from the active Quest."

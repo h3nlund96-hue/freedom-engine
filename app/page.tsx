@@ -16,28 +16,28 @@ import { getProgress } from "./lib/questService";
 
 const worldPlaces = [
   {
-    icon: "📜",
+    icon: "⚖",
     title: "Constitution Hall",
     description: "A sacred hall containing the principles that guide every decision.",
     href: "/constitution",
     glow: "gold" as const,
   },
   {
-    icon: "⚔️",
+    icon: "◎",
     title: "Quest Board",
     description: "The place where The Founder sees the active Quest and current Build.",
     href: "/quest-board",
     glow: "amber" as const,
   },
   {
-    icon: "💡",
+    icon: "⬡",
     title: "Idea Vault",
     description: "A safe place to capture ideas without letting them distract from the active Quest.",
     href: "/idea-vault",
     glow: "gold" as const,
   },
   {
-    icon: "🤝",
+    icon: "⋈",
     title: "Companion Hall",
     description: "Allies who walk the path with The Founder. Not bots — focused AI specialists.",
     href: "/companions",
@@ -56,7 +56,7 @@ export default async function Home() {
 
       <main className="relative mx-auto flex w-full max-w-2xl flex-1 flex-col gap-14 px-6 py-14 sm:px-8 sm:py-20 lg:max-w-3xl">
         <HQHeader
-          title="🏛️ AI Mastery HQ"
+          title="AI Mastery HQ"
           welcome="Welcome back, Founder."
         />
 

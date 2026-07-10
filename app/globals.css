@@ -96,6 +96,44 @@
   }
 }
 
+/* HQ glyph — a HUD dial that never stops turning */
+@keyframes glyph-rotate {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes glyph-glow-pulse {
+  from {
+    text-shadow: 0 0 10px rgba(255, 171, 74, 0.25);
+  }
+  to {
+    text-shadow: 0 0 22px rgba(77, 216, 255, 0.55), 0 0 8px rgba(255, 171, 74, 0.4);
+  }
+}
+
+@keyframes glyph-spin-up {
+  from {
+    opacity: 0;
+    transform: scale(0.3) rotate(-140deg);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) rotate(0deg);
+  }
+}
+
+@keyframes glyph-title-settle {
+  from {
+    opacity: 0;
+    transform: translateX(-6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
 .animate-fade-up {
   animation: fade-up 1s cubic-bezier(0.22, 1, 0.36, 1) both;
 }
@@ -124,6 +162,28 @@
   animation: fog-drift-3 45s ease-in-out infinite;
 }
 
+.hq-glyph-spin {
+  display: inline-block;
+  animation: glyph-rotate 70s linear infinite;
+}
+
+.hq-glyph-char {
+  display: inline-block;
+  animation: glyph-glow-pulse 4.5s ease-in-out infinite alternate;
+}
+
+.hq-glyph-mount {
+  display: inline-block;
+  opacity: 0;
+  animation: glyph-spin-up 1s cubic-bezier(0.2, 0.8, 0.25, 1.05) forwards;
+}
+
+.hq-title-settle {
+  display: inline-block;
+  opacity: 0;
+  animation: glyph-title-settle 0.6s ease-out 0.45s forwards;
+}
+
 /* Respect reduced motion — freeze all atmospheric movement */
 @media (prefers-reduced-motion: reduce) {
   .animate-fog-1,
@@ -131,8 +191,16 @@
   .animate-fog-3,
   .animate-ember-drift,
   .animate-particle-float,
-  .animate-glow-pulse {
+  .animate-glow-pulse,
+  .hq-glyph-spin,
+  .hq-glyph-char {
     animation: none;
+  }
+  .hq-glyph-mount,
+  .hq-title-settle {
+    animation: none;
+    opacity: 1;
+    transform: none;
   }
 }
 

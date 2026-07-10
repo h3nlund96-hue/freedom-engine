@@ -31,7 +31,7 @@ export function LocationHeader({ icon, eyebrow, title, description, lore }: Loca
 
       {/* Location header */}
       <header className="animate-fade-up flex items-start gap-4" style={{ animationDelay: "0.06s" }}>
-        <div className="relative mt-0.5 flex size-11 shrink-0 items-center justify-center rounded-md border border-white/[0.07] bg-linear-to-br from-[rgba(18,25,38,0.9)] to-[rgba(8,10,16,0.95)] text-xl shadow-[0_6px_20px_rgba(0,0,0,0.35),inset_0_1px_0_rgba(255,171,74,0.06)]">
+        <div className="relative mt-0.5 flex size-11 shrink-0 items-center justify-center rounded-md border border-white/[0.07] bg-linear-to-br from-[rgba(18,25,38,0.9)] to-[rgba(8,10,16,0.95)] font-display text-xl text-accent shadow-[0_6px_20px_rgba(0,0,0,0.35),inset_0_1px_0_rgba(255,171,74,0.06)]">
           {icon}
         </div>
 

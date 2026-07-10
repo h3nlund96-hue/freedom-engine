@@ -18,7 +18,7 @@ export default function CompanionHallPage() {
       <main className="relative mx-auto flex w-full max-w-2xl flex-1 flex-col gap-14 px-6 py-20 sm:px-8 sm:py-28 lg:max-w-3xl">
 
         <LocationHeader
-          icon="🤝"
+          icon="⋈"
           eyebrow="Council Chamber"
           title="Companion Hall"
           description="Focused AI allies who help The Founder build, decide, learn and keep momentum."
