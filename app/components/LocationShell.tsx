@@ -1,6 +1,5 @@
-import Link from "next/link";
 import { AtmosphericBackground } from "./AtmosphericBackground";
-import { CornerMarks } from "./CornerMarks";
+import { LocationHeader } from "./LocationHeader";
 
 type LocationShellProps = {
   icon: string;
@@ -25,78 +24,13 @@ export function LocationShell({
       <AtmosphericBackground />
 
       <main className="relative mx-auto flex w-full max-w-2xl flex-1 flex-col gap-14 px-6 py-20 sm:px-8 sm:py-28 lg:max-w-3xl">
-        {/* Back navigation */}
-        <nav
-          className="animate-fade-up"
-          style={{ animationDelay: "0s" }}
-          aria-label="Back to headquarters"
-        >
-          <Link
-            href="/"
-            className="group inline-flex items-center gap-2.5 text-sm text-muted/70 transition-colors duration-300 hover:text-accent focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-accent/40 rounded"
-          >
-            <span
-              className="inline-block transition-transform duration-300 group-hover:-translate-x-1"
-              aria-hidden
-            >
-              ←
-            </span>
-            <span className="font-display tracking-wide text-xs uppercase">
-              AI Mastery HQ
-            </span>
-          </Link>
-        </nav>
-
-        {/* Location header */}
-        <header
-          className="animate-fade-up space-y-6"
-          style={{ animationDelay: "0.1s" }}
-        >
-          <div className="flex items-start gap-5">
-            <div className="relative mt-1 flex size-16 shrink-0 items-center justify-center rounded-md border border-white/[0.07] bg-linear-to-br from-[rgba(18,25,38,0.9)] to-[rgba(8,10,16,0.95)] shadow-[0_8px_32px_rgba(0,0,0,0.4),inset_0_1px_0_rgba(255,171,74,0.06)]">
-              <span className="text-3xl">{icon}</span>
-              <CornerMarks size={6} inset="5px" />
-            </div>
-
-            <div className="space-y-2">
-              <p className="font-display text-[0.65rem] tracking-[0.25em] uppercase text-accent/70">
-                {subtitle}
-              </p>
-              <h1 className="font-display text-3xl font-medium tracking-wide text-foreground sm:text-4xl">
-                {title}
-              </h1>
-            </div>
-          </div>
-
-          {/* Divider */}
-          <div className="flex items-center gap-3" aria-hidden>
-            <span className="h-px flex-1 bg-linear-to-r from-accent/15 to-transparent" />
-            <span className="size-1 rounded-full bg-accent/25 shadow-[0_0_8px_rgba(255,171,74,0.3)]" />
-            <span className="h-px w-8 bg-accent/10" />
-          </div>
-
-          <p className="max-w-lg text-base leading-relaxed text-foreground/75 sm:text-lg">
-            {description}
-          </p>
-        </header>
-
-        {/* Lore block */}
-        <blockquote
-          className="animate-fade-up relative py-1 pl-7"
-          style={{ animationDelay: "0.2s" }}
-        >
-          <span
-            className="absolute left-0 top-0 h-full w-px bg-linear-to-b from-accent-glow/40 via-accent/15 to-transparent"
-            aria-hidden
-          />
-          <span
-            className="absolute left-0 top-0 size-1 -translate-x-[1.5px] rounded-full bg-accent-glow/50 shadow-[0_0_10px_rgba(77,216,255,0.35)]"
-            aria-hidden
-          />
-          <p className="font-display text-sm italic leading-relaxed text-muted/90 sm:text-base">
-            {lore}
-          </p>
-        </blockquote>
+        <LocationHeader
+          icon={icon}
+          eyebrow={subtitle}
+          title={title}
+          description={description}
+          lore={lore}
+        />
 
         {/* Optional children (future content areas) */}
         {children && (
