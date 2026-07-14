@@ -151,16 +151,6 @@ export default async function ProfilePage() {
           </div>
         </div>
 
-        {/* Alpha notice */}
-        <div className="animate-fade-up" style={{ animationDelay: "0.30s" }}>
-          <div className="flex items-start gap-4 rounded-md border border-dashed border-accent/[0.07] px-5 py-4">
-            <span className="mt-0.5 font-display text-xs text-accent/35">Alpha</span>
-            <p className="text-xs leading-relaxed text-muted/40">
-              Founder progression is derived from completed Builds and Side Quests in the Quest System. A full Founder profile with history, achievements and settings will be added in a future Build.
-            </p>
-          </div>
-        </div>
-
         {/* Footer */}
         <footer className="animate-fade-up mt-auto flex items-center gap-4 pt-2" style={{ animationDelay: "0.36s" }}>
           <span className="h-px flex-1 bg-linear-to-r from-transparent via-accent/8 to-transparent" aria-hidden />

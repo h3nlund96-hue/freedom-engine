@@ -47,16 +47,6 @@ export default function CompanionHallPage() {
         {/* Ember card + ask console */}
         <CompanionHallClient />
 
-        {/* Alpha notice */}
-        <div className="animate-fade-up" style={{ animationDelay: "0.62s" }}>
-          <div className="flex items-start gap-4 rounded-md border border-dashed border-accent/[0.08] px-5 py-4">
-            <span className="mt-0.5 font-display text-xs text-accent/40">Alpha</span>
-            <p className="text-xs leading-relaxed text-muted/45">
-              Ember is the first Companion awake in Alpha. More will join in future Questlines as they earn a real, working role.
-            </p>
-          </div>
-        </div>
-
         {/* Footer */}
         <footer
           className="animate-fade-up mt-auto flex items-center gap-4 pt-2"
