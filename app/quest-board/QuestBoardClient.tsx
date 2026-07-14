@@ -377,6 +377,22 @@ function QuestCard({
   );
 }
 
+/* ── ELEVATED CARD ────────────────────────────────────────────────────────── */
+
+/** The opaque HUD card shell used for every top-level entity in a tab
+ * (Questlines, Side Quests, and completed-Quest groupings). Nested entities
+ * (Quests inside a Questline, Builds inside a Quest) use a lighter tint
+ * instead, since they already sit on top of this opaque surface. */
+function ElevatedCard({ children }: { children: React.ReactNode }) {
+  return (
+    <div className="relative overflow-hidden rounded-md border border-white/[0.07]">
+      <div className="absolute inset-0 bg-linear-to-br from-[rgba(11,19,32,0.9)] to-[rgba(6,9,16,0.93)]" />
+      <div className="pointer-events-none absolute inset-0 rounded-md shadow-[inset_0_1px_0_rgba(255,171,74,0.06)]" aria-hidden />
+      <div className="relative flex flex-col gap-3 p-5">{children}</div>
+    </div>
+  );
+}
+
 /* ── QUESTLINE CARD ───────────────────────────────────────────────────────── */
 
 function QuestlineCard({ questline, onChanged }: { questline: Questline; onChanged: () => void }) {
@@ -385,70 +401,65 @@ function QuestlineCard({ questline, onChanged }: { questline: Questline; onChang
   const quests = (questline.quests ?? []).filter((q) => q.status !== "completed");
 
   return (
-    <div className="relative overflow-hidden rounded-md border border-white/[0.07]">
-      <div className="absolute inset-0 bg-linear-to-br from-[rgba(11,19,32,0.9)] to-[rgba(6,9,16,0.93)]" />
-      <div className="pointer-events-none absolute inset-0 rounded-md shadow-[inset_0_1px_0_rgba(255,171,74,0.06)]" aria-hidden />
+    <ElevatedCard>
+      {editing ? (
+        <EntityEditForm
+          initialTitle={questline.title}
+          initialDescription={questline.description}
+          initialStatus={questline.status}
+          onCancel={() => setEditing(false)}
+          onSave={async (fields) => {
+            await updateQuestline(questline.id, fields);
+            setEditing(false);
+            onChanged();
+          }}
+        />
+      ) : (
+        <div className="flex items-start justify-between gap-3">
+          <div className="min-w-0">
+            <div className="flex items-center gap-2.5">
+              <h3 className="font-display text-base tracking-wide text-foreground/95">{questline.title}</h3>
+              <StatusPill status={questline.status} />
+            </div>
+            <p className="mt-1 text-xs leading-relaxed text-muted/60">{questline.description}</p>
+          </div>
+          <div className="flex shrink-0 gap-1.5">
+            {questline.status !== "active" && (
+              <button
+                type="button"
+                onClick={() => updateQuestline(questline.id, { status: "active" }).then(onChanged)}
+                className={`${smallBtn} text-accent-glow/70 hover:text-accent-glow`}
+              >
+                Activate
+              </button>
+            )}
+            <button type="button" onClick={() => setEditing(true)} className={`${smallBtn} text-muted/50 hover:text-foreground/75`}>
+              Edit
+            </button>
+          </div>
+        </div>
+      )}
 
-      <div className="relative flex flex-col gap-3 p-5">
-        {editing ? (
-          <EntityEditForm
-            initialTitle={questline.title}
-            initialDescription={questline.description}
-            initialStatus={questline.status}
-            onCancel={() => setEditing(false)}
-            onSave={async (fields) => {
-              await updateQuestline(questline.id, fields);
-              setEditing(false);
+      {/* Quests within this Questline */}
+      <div className="flex flex-col gap-2.5 border-t border-accent/[0.06] pt-3">
+        {quests.map((q) => (
+          <QuestCard key={q.id} quest={q} questlineId={questline.id} onChanged={onChanged} />
+        ))}
+
+        {addingQuest ? (
+          <AddEntityForm
+            onCancel={() => setAddingQuest(false)}
+            onAdd={async (fields) => {
+              await createQuest(questline.id, fields.title, fields.description);
+              setAddingQuest(false);
               onChanged();
             }}
           />
         ) : (
-          <div className="flex items-start justify-between gap-3">
-            <div className="min-w-0">
-              <div className="flex items-center gap-2.5">
-                <h3 className="font-display text-base tracking-wide text-foreground/95">{questline.title}</h3>
-                <StatusPill status={questline.status} />
-              </div>
-              <p className="mt-1 text-xs leading-relaxed text-muted/60">{questline.description}</p>
-            </div>
-            <div className="flex shrink-0 gap-1.5">
-              {questline.status !== "active" && (
-                <button
-                  type="button"
-                  onClick={() => updateQuestline(questline.id, { status: "active" }).then(onChanged)}
-                  className={`${smallBtn} text-accent-glow/70 hover:text-accent-glow`}
-                >
-                  Activate
-                </button>
-              )}
-              <button type="button" onClick={() => setEditing(true)} className={`${smallBtn} text-muted/50 hover:text-foreground/75`}>
-                Edit
-              </button>
-            </div>
-          </div>
+          <AddToggle label="Add Quest" onClick={() => setAddingQuest(true)} />
         )}
-
-        {/* Quests within this Questline */}
-        <div className="flex flex-col gap-2.5 border-t border-accent/[0.06] pt-3">
-          {quests.map((q) => (
-            <QuestCard key={q.id} quest={q} questlineId={questline.id} onChanged={onChanged} />
-          ))}
-
-          {addingQuest ? (
-            <AddEntityForm
-              onCancel={() => setAddingQuest(false)}
-              onAdd={async (fields) => {
-                await createQuest(questline.id, fields.title, fields.description);
-                setAddingQuest(false);
-                onChanged();
-              }}
-            />
-          ) : (
-            <AddToggle label="Add Quest" onClick={() => setAddingQuest(true)} />
-          )}
-        </div>
       </div>
-    </div>
+    </ElevatedCard>
   );
 }
 
@@ -457,50 +468,48 @@ function QuestlineCard({ questline, onChanged }: { questline: Questline; onChang
 function SideQuestCard({ sideQuest, onChanged }: { sideQuest: SideQuest; onChanged: () => void }) {
   const [editing, setEditing] = useState(false);
 
-  if (editing) {
-    return (
-      <EntityEditForm
-        initialTitle={sideQuest.title}
-        initialDescription={sideQuest.description}
-        initialStatus={sideQuest.status}
-        onCancel={() => setEditing(false)}
-        onSave={async (fields) => {
-          await updateSideQuest(sideQuest.id, fields);
-          setEditing(false);
-          onChanged();
-        }}
-      />
-    );
-  }
-
   return (
-    <div className="rounded-sm border border-white/[0.06] bg-white/[0.015] px-3.5 py-3">
-      <div className="flex items-start justify-between gap-3">
-        <div className="min-w-0">
-          <div className="flex items-center gap-2">
-            <h4 className="font-display text-sm tracking-wide text-foreground/90">{sideQuest.title}</h4>
-            <StatusPill status={sideQuest.status} />
+    <ElevatedCard>
+      {editing ? (
+        <EntityEditForm
+          initialTitle={sideQuest.title}
+          initialDescription={sideQuest.description}
+          initialStatus={sideQuest.status}
+          onCancel={() => setEditing(false)}
+          onSave={async (fields) => {
+            await updateSideQuest(sideQuest.id, fields);
+            setEditing(false);
+            onChanged();
+          }}
+        />
+      ) : (
+        <div className="flex items-start justify-between gap-3">
+          <div className="min-w-0">
+            <div className="flex items-center gap-2.5">
+              <h3 className="font-display text-base tracking-wide text-foreground/95">{sideQuest.title}</h3>
+              <StatusPill status={sideQuest.status} />
+            </div>
+            {sideQuest.description && (
+              <p className="mt-1 text-xs leading-relaxed text-muted/60">{sideQuest.description}</p>
+            )}
           </div>
-          {sideQuest.description && (
-            <p className="mt-1 text-xs leading-relaxed text-muted/60">{sideQuest.description}</p>
-          )}
-        </div>
-        <div className="flex shrink-0 gap-1.5">
-          {sideQuest.status !== "completed" && (
-            <button
-              type="button"
-              onClick={() => updateSideQuest(sideQuest.id, { status: "completed" }).then(onChanged)}
-              className={`${smallBtn} text-accent/60 hover:text-accent/85`}
-            >
-              Complete
+          <div className="flex shrink-0 gap-1.5">
+            {sideQuest.status !== "completed" && (
+              <button
+                type="button"
+                onClick={() => updateSideQuest(sideQuest.id, { status: "completed" }).then(onChanged)}
+                className={`${smallBtn} text-accent/60 hover:text-accent/85`}
+              >
+                Complete
+              </button>
+            )}
+            <button type="button" onClick={() => setEditing(true)} className={`${smallBtn} text-muted/50 hover:text-foreground/75`}>
+              Edit
             </button>
-          )}
-          <button type="button" onClick={() => setEditing(true)} className={`${smallBtn} text-muted/50 hover:text-foreground/75`}>
-            Edit
-          </button>
+          </div>
         </div>
-      </div>
-    </div>
+      )}
+    </ElevatedCard>
   );
 }
 
@@ -590,10 +599,10 @@ function CompletedTab({
         ) : (
           <div className="space-y-2.5">
             {completedQuests.map(({ quest, questlineTitle, questlineId }) => (
-              <div key={quest.id}>
-                <p className="mb-1 text-[0.65rem] uppercase tracking-wide text-muted/35">{questlineTitle}</p>
+              <ElevatedCard key={quest.id}>
+                <p className="text-[0.65rem] uppercase tracking-wide text-muted/35">{questlineTitle}</p>
                 <QuestCard quest={quest} questlineId={questlineId} onChanged={onChanged} />
-              </div>
+              </ElevatedCard>
             ))}
           </div>
         )}
