@@ -10,8 +10,7 @@
 with target_quest as (
   select id as quest_id, user_id
   from public.quests
-  where title = 'Build Freedom Engine Alpha'
-  limit 1
+  where id = 'e7bfffd6-e515-4b57-a479-00d0dae4dc7c' -- "Quest 2 — Build Freedom Engine Alpha"
 ),
 next_sort as (
   select coalesce(max(b.sort_order), 0) as base
