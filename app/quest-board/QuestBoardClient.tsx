@@ -57,6 +57,7 @@ function EntityEditForm({
   questlinePicker,
   onSave,
   onCancel,
+  onDelete,
 }: {
   initialTitle: string;
   initialDescription: string;
@@ -73,6 +74,9 @@ function EntityEditForm({
     questlineId?: string;
   }) => Promise<void>;
   onCancel: () => void;
+  /** When provided, renders a "Delete" action inside the form — the caller
+   * owns the confirmation step (see QuestCard's confirmingDelete state). */
+  onDelete?: () => void;
 }) {
   const [title, setTitle] = useState(initialTitle);
   const [description, setDescription] = useState(initialDescription);
@@ -143,19 +147,30 @@ function EntityEditForm({
         ))}
       </select>
       {saveError && <p className="text-[0.65rem] text-[rgba(255,120,120,0.9)]">{saveError}</p>}
-      <div className="mt-1 flex gap-2">
-        <button
-          type="button"
-          onClick={handleSave}
-          disabled={!title.trim() || saving}
-          className={`${smallBtn} bg-accent/12 text-accent/85`}
-          style={{ border: "1px solid rgba(255,171,74,0.25)" }}
-        >
-          {saving ? "Saving..." : "Save"}
-        </button>
-        <button type="button" onClick={onCancel} className={`${smallBtn} text-muted/60 hover:text-foreground/80`}>
-          Cancel
-        </button>
+      <div className="mt-1 flex items-center justify-between gap-2">
+        <div className="flex gap-2">
+          <button
+            type="button"
+            onClick={handleSave}
+            disabled={!title.trim() || saving}
+            className={`${smallBtn} bg-accent/12 text-accent/85`}
+            style={{ border: "1px solid rgba(255,171,74,0.25)" }}
+          >
+            {saving ? "Saving..." : "Save"}
+          </button>
+          <button type="button" onClick={onCancel} className={`${smallBtn} text-muted/60 hover:text-foreground/80`}>
+            Cancel
+          </button>
+        </div>
+        {onDelete && (
+          <button
+            type="button"
+            onClick={onDelete}
+            className={`${smallBtn} text-muted/50 hover:text-[rgba(255,120,120,0.85)]`}
+          >
+            Delete
+          </button>
+        )}
       </div>
     </div>
   );
@@ -365,6 +380,7 @@ function QuestCard({
         setEditing(false);
         onChanged();
       }}
+      onDelete={() => setConfirmingDelete(true)}
     />
   ) : (
     <>
@@ -401,27 +417,8 @@ function QuestCard({
           <button type="button" onClick={() => setEditing(true)} className={`${smallBtn} text-muted/50 hover:text-foreground/75`}>
             Edit
           </button>
-          <button
-            type="button"
-            onClick={() => setConfirmingDelete(true)}
-            className={`${smallBtn} text-muted/50 hover:text-[rgba(255,120,120,0.85)]`}
-          >
-            Delete
-          </button>
         </div>
       </div>
-
-      {confirmingDelete && (
-        <ConfirmDialog
-          title="Delete this Quest?"
-          message={`"${quest.title}" and all of its Builds will be permanently removed. This cannot be undone.`}
-          confirmLabel="Delete"
-          destructive
-          busy={deleting}
-          onConfirm={handleDelete}
-          onCancel={() => setConfirmingDelete(false)}
-        />
-      )}
 
       {/* Builds — steps. Completed ones stay collapsed by default so a
           long-running Quest's history doesn't drown out what's actionable. */}
@@ -470,15 +467,30 @@ function QuestCard({
     </>
   );
 
-  if (highlight) {
-    return (
-      <div className="flex flex-col gap-3 rounded-sm border border-accent-glow/20 bg-accent-glow/[0.03] px-3.5 py-3">
-        {content}
-      </div>
-    );
-  }
+  const card = highlight ? (
+    <div className="flex flex-col gap-3 rounded-sm border border-accent-glow/20 bg-accent-glow/[0.03] px-3.5 py-3">
+      {content}
+    </div>
+  ) : (
+    <ElevatedCard>{content}</ElevatedCard>
+  );
 
-  return <ElevatedCard>{content}</ElevatedCard>;
+  return (
+    <>
+      {card}
+      {confirmingDelete && (
+        <ConfirmDialog
+          title="Delete this Quest?"
+          message={`"${quest.title}" and all of its Builds will be permanently removed. This cannot be undone.`}
+          confirmLabel="Delete"
+          destructive
+          busy={deleting}
+          onConfirm={handleDelete}
+          onCancel={() => setConfirmingDelete(false)}
+        />
+      )}
+    </>
+  );
 }
 
 /* ── ELEVATED CARD ────────────────────────────────────────────────────────── */
