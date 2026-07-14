@@ -112,8 +112,8 @@ export default async function Home() {
 
 /* ── CURRENT FOCUS ───────────────────────────────────────────────────────── */
 function CurrentFocus({ progress }: { progress: FreedomEngineProgress }) {
-  const activeQuestline = getActiveQuestline(progress);
-  const activeQuest = activeQuestline ? getActiveQuest(activeQuestline) : undefined;
+  const activeQuest = getActiveQuest(progress);
+  const activeQuestline = activeQuest ? getActiveQuestline(progress, activeQuest) : undefined;
   const currentBuild = activeQuest ? getCurrentBuild(activeQuest) : undefined;
 
   if (!activeQuestline || !activeQuest || !currentBuild) return null;

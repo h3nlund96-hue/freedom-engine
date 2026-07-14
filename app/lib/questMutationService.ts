@@ -7,15 +7,13 @@
  * so Quest Board can be a real interactive tool instead of a read-only
  * display of data seeded by hand.
  *
- * Only one Questline / Quest / Build can be "active" within its parent
- * scope at a time (the rest of the app assumes this — see
- * getActiveQuestline / getActiveQuest / getCurrentBuild). Activating one
- * here demotes any previously-active sibling back to "available".
- *
- * Activating a Quest also puts its parent Questline on the Active Path
- * (demoting any other active Questline), so the Active Path panel always
- * reflects whichever Quest you most recently activated. And only one Quest
- * or Side Quest can hold the Active Path at a time — activating either one
+ * Questlines don't have their own "active" status — a Questline only ever
+ * appears on the Active Path because it's the parent of the active Quest
+ * (see getActiveQuestline / getActiveQuest in freedomEngineProgress.ts).
+ * Only one Quest (globally, not just within a Questline) or Build (within
+ * its Quest) can be "active" at a time — activating one demotes any
+ * previously-active sibling back to "available". And only one Quest or
+ * Side Quest can hold the Active Path at a time — activating either one
  * demotes whatever is active on the other side.
  */
 
@@ -94,7 +92,7 @@ function toPatch(fields: EditableFields): Record<string, unknown> {
 /** Demote every currently-active row in a table back to Available. Used to
  * enforce that only one Quest or Side Quest can hold the Active Path at a
  * time — activating one clears any active row on the other side. */
-async function demoteAllActive(table: "questlines" | "quests" | "side_quests"): Promise<void> {
+async function demoteAllActive(table: "quests" | "side_quests"): Promise<void> {
   const supabase = createClient();
   const { error } = await supabase.from(table).update({ status: "available" }).eq("status", "active");
   if (error) throw new Error(error.message);
@@ -150,17 +148,6 @@ export async function createQuestline(title: string, description: string): Promi
 export async function updateQuestline(id: string, fields: EditableFields): Promise<void> {
   const supabase = createClient();
 
-  if (fields.status === "active") {
-    const { error: demoteError } = await supabase
-      .from("questlines")
-      .update({ status: "available" })
-      .eq("status", "active")
-      .neq("id", id);
-    if (demoteError) throw new Error(demoteError.message);
-
-    await demoteAllActive("side_quests");
-  }
-
   const { error } = await supabase.from("questlines").update(toPatch(fields)).eq("id", id);
   if (error) throw new Error(error.message);
 }
@@ -196,37 +183,27 @@ export async function createQuest(
 export async function updateQuest(
   id: string,
   questlineId: string,
-  fields: EditableFields
+  fields: EditableFields & { newQuestlineId?: string }
 ): Promise<void> {
   const supabase = createClient();
 
   if (fields.status === "active") {
+    // Only one Quest can be active at a time, across all Questlines — this
+    // is what puts a Questline on the Active Path (see getActiveQuestline).
     const { error: demoteError } = await supabase
       .from("quests")
       .update({ status: "available" })
-      .eq("questline_id", questlineId)
       .eq("status", "active")
       .neq("id", id);
     if (demoteError) throw new Error(demoteError.message);
 
-    // Activating a Quest puts its Questline on the Active Path too.
-    const { error: demoteQuestlinesError } = await supabase
-      .from("questlines")
-      .update({ status: "available" })
-      .eq("status", "active")
-      .neq("id", questlineId);
-    if (demoteQuestlinesError) throw new Error(demoteQuestlinesError.message);
-
-    const { error: activateQuestlineError } = await supabase
-      .from("questlines")
-      .update({ status: "active" })
-      .eq("id", questlineId);
-    if (activateQuestlineError) throw new Error(activateQuestlineError.message);
-
     await demoteAllActive("side_quests");
   }
 
-  const { error } = await supabase.from("quests").update(toPatch(fields)).eq("id", id);
+  const patch = toPatch(fields);
+  if (fields.newQuestlineId !== undefined) patch.questline_id = fields.newQuestlineId;
+
+  const { error } = await supabase.from("quests").update(patch).eq("id", id);
   if (error) throw new Error(error.message);
 }
 
@@ -320,7 +297,6 @@ export async function updateSideQuest(id: string, fields: EditableFields): Promi
 
     // Only one Quest or Side Quest can hold the Active Path at a time.
     await demoteAllActive("quests");
-    await demoteAllActive("questlines");
   }
 
   const { error } = await supabase.from("side_quests").update(toPatch(fields)).eq("id", id);

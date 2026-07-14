@@ -41,12 +41,18 @@ export interface FreedomEngineProgress {
 
 /* ── DERIVED HELPERS ──────────────────────────────────────────────────────── */
 
-export function getActiveQuestline(p: FreedomEngineProgress): Questline | undefined {
-  return p.questlines.find((q) => q.status === "active");
+/** Questlines don't carry their own "active" status — a Questline is only
+ * ever on the Active Path because it's the parent of the active Quest. */
+export function getActiveQuest(p: FreedomEngineProgress): Quest | undefined {
+  for (const questline of p.questlines) {
+    const quest = questline.quests?.find((q) => q.status === "active");
+    if (quest) return quest;
+  }
+  return undefined;
 }
 
-export function getActiveQuest(questline: Questline): Quest | undefined {
-  return questline.quests?.find((q) => q.status === "active");
+export function getActiveQuestline(p: FreedomEngineProgress, quest: Quest): Questline | undefined {
+  return p.questlines.find((questline) => questline.quests?.some((q) => q.id === quest.id));
 }
 
 export function getCurrentBuild(quest: Quest): Build | undefined {

@@ -9,7 +9,7 @@ import type {
   SideQuest,
   QuestStatus,
 } from "../data/freedomEngineProgress";
-import { getActiveQuestline, getActiveQuest, getCurrentBuild } from "../data/freedomEngineProgress";
+import { getActiveQuest, getActiveQuestline, getCurrentBuild } from "../data/freedomEngineProgress";
 import {
   getProgressClient,
   createQuestline,
@@ -42,6 +42,8 @@ function StatusPill({ status }: { status: QuestStatus }) {
   );
 }
 
+const ALL_STATUS_OPTIONS: QuestStatus[] = ["available", "active", "completed"];
+
 /** Title + description [+ nextStep] + status editor, used for every entity type. */
 function EntityEditForm({
   initialTitle,
@@ -49,6 +51,8 @@ function EntityEditForm({
   initialNextStep,
   showNextStep = false,
   initialStatus,
+  statusOptions = ALL_STATUS_OPTIONS,
+  questlinePicker,
   onSave,
   onCancel,
 }: {
@@ -57,13 +61,22 @@ function EntityEditForm({
   initialNextStep?: string;
   showNextStep?: boolean;
   initialStatus: QuestStatus;
-  onSave: (fields: { title: string; description: string; nextStep?: string; status: QuestStatus }) => Promise<void>;
+  statusOptions?: QuestStatus[];
+  questlinePicker?: { options: { id: string; title: string }[]; initialQuestlineId: string };
+  onSave: (fields: {
+    title: string;
+    description: string;
+    nextStep?: string;
+    status: QuestStatus;
+    questlineId?: string;
+  }) => Promise<void>;
   onCancel: () => void;
 }) {
   const [title, setTitle] = useState(initialTitle);
   const [description, setDescription] = useState(initialDescription);
   const [nextStep, setNextStep] = useState(initialNextStep ?? "");
   const [status, setStatus] = useState<QuestStatus>(initialStatus);
+  const [questlineId, setQuestlineId] = useState(questlinePicker?.initialQuestlineId ?? "");
   const [saving, setSaving] = useState(false);
   const [saveError, setSaveError] = useState<string | null>(null);
 
@@ -72,7 +85,13 @@ function EntityEditForm({
     setSaving(true);
     setSaveError(null);
     try {
-      await onSave({ title: title.trim(), description, nextStep: showNextStep ? nextStep : undefined, status });
+      await onSave({
+        title: title.trim(),
+        description,
+        nextStep: showNextStep ? nextStep : undefined,
+        status,
+        questlineId: questlinePicker ? questlineId : undefined,
+      });
     } catch {
       setSaveError("Could not save. Try again.");
       setSaving(false);
@@ -81,6 +100,19 @@ function EntityEditForm({
 
   return (
     <div className="flex flex-col gap-2 rounded-sm border border-accent/[0.12] bg-black/25 p-3">
+      {questlinePicker && (
+        <select
+          value={questlineId}
+          onChange={(e) => setQuestlineId(e.target.value)}
+          className={`${inputClass} cursor-pointer font-display uppercase tracking-wide text-accent-glow/80`}
+        >
+          {questlinePicker.options.map((ql) => (
+            <option key={ql.id} value={ql.id}>
+              {ql.title}
+            </option>
+          ))}
+        </select>
+      )}
       <input value={title} onChange={(e) => setTitle(e.target.value)} placeholder="Title" className={inputClass} />
       <textarea
         value={description}
@@ -102,9 +134,11 @@ function EntityEditForm({
         onChange={(e) => setStatus(e.target.value as QuestStatus)}
         className={`${inputClass} cursor-pointer font-display uppercase tracking-wide text-accent/75`}
       >
-        <option value="available">Available</option>
-        <option value="active">Active</option>
-        <option value="completed">Completed</option>
+        {statusOptions.map((s) => (
+          <option key={s} value={s}>
+            {s === "available" ? "Available" : s === "active" ? "Active" : "Completed"}
+          </option>
+        ))}
       </select>
       {saveError && <p className="text-[0.65rem] text-[rgba(255,120,120,0.9)]">{saveError}</p>}
       <div className="mt-1 flex gap-2">
@@ -282,12 +316,14 @@ function QuestCard({
   quest,
   questlineId,
   questlineTitle,
+  questlineOptions,
   onChanged,
   highlight = false,
 }: {
   quest: Quest;
   questlineId: string;
   questlineTitle?: string;
+  questlineOptions?: { id: string; title: string }[];
   onChanged: () => void;
   highlight?: boolean;
 }) {
@@ -300,9 +336,14 @@ function QuestCard({
       initialTitle={quest.title}
       initialDescription={quest.description}
       initialStatus={quest.status}
+      questlinePicker={
+        questlineOptions && questlineOptions.length > 0
+          ? { options: questlineOptions, initialQuestlineId: questlineId }
+          : undefined
+      }
       onCancel={() => setEditing(false)}
       onSave={async (fields) => {
-        await updateQuest(quest.id, questlineId, fields);
+        await updateQuest(quest.id, questlineId, { ...fields, newQuestlineId: fields.questlineId });
         setEditing(false);
         onChanged();
       }}
@@ -410,6 +451,7 @@ function QuestlineCard({ questline, onChanged }: { questline: Questline; onChang
           initialTitle={questline.title}
           initialDescription={questline.description}
           initialStatus={questline.status}
+          statusOptions={["available", "completed"]}
           onCancel={() => setEditing(false)}
           onSave={async (fields) => {
             await updateQuestline(questline.id, fields);
@@ -432,15 +474,6 @@ function QuestlineCard({ questline, onChanged }: { questline: Questline; onChang
           <p className="mt-1 text-xs leading-relaxed text-muted/60">{questline.description}</p>
         </div>
         <div className="flex shrink-0 gap-1.5">
-          {questline.status !== "active" && questline.status !== "completed" && (
-            <button
-              type="button"
-              onClick={() => updateQuestline(questline.id, { status: "active" }).then(onChanged)}
-              className={`${smallBtn} text-accent-glow/70 hover:text-accent-glow`}
-            >
-              Activate
-            </button>
-          )}
           {questline.status !== "completed" && (
             <button
               type="button"
@@ -731,6 +764,7 @@ function QuestsTab({ questlines, onChanged }: { questlines: Questline[]; onChang
               quest={quest}
               questlineId={questlineId}
               questlineTitle={questlineTitle}
+              questlineOptions={questlineOptions}
               onChanged={onChanged}
             />
           ))
@@ -808,12 +842,14 @@ function ActiveFocusPanel({
   quest,
   build,
   sideQuest,
+  questlineOptions,
   onChanged,
 }: {
   questline?: Questline;
   quest?: Quest;
   build?: Build;
   sideQuest?: SideQuest;
+  questlineOptions: { id: string; title: string }[];
   onChanged: () => void;
 }) {
   return (
@@ -876,7 +912,13 @@ function ActiveFocusPanel({
 
             {/* Full quest card — edit, complete, manage builds, right here */}
             <div className="mt-8 border-t border-accent/[0.06] pt-6">
-              <QuestCard quest={quest} questlineId={questline.id} onChanged={onChanged} highlight />
+              <QuestCard
+                quest={quest}
+                questlineId={questline.id}
+                questlineOptions={questlineOptions}
+                onChanged={onChanged}
+                highlight
+              />
             </div>
           </>
         ) : sideQuest ? (
@@ -985,10 +1027,11 @@ export function QuestBoardClient({ initialProgress }: { initialProgress: Freedom
     setProgress(fresh);
   }
 
-  const activeQuestline = getActiveQuestline(progress);
-  const activeQuest = activeQuestline ? getActiveQuest(activeQuestline) : undefined;
+  const activeQuest = getActiveQuest(progress);
+  const activeQuestline = activeQuest ? getActiveQuestline(progress, activeQuest) : undefined;
   const currentBuild = activeQuest ? getCurrentBuild(activeQuest) : undefined;
   const activeSideQuest = progress.sideQuests.find((s) => s.status === "active");
+  const questlineOptions = progress.questlines.map((ql) => ({ id: ql.id, title: ql.title }));
 
   const questlinesCount = progress.questlines.filter((q) => q.status !== "completed").length;
   const questsCount = progress.questlines.reduce(
@@ -1018,6 +1061,7 @@ export function QuestBoardClient({ initialProgress }: { initialProgress: Freedom
             quest={activeQuest}
             build={currentBuild}
             sideQuest={activeSideQuest}
+            questlineOptions={questlineOptions}
             onChanged={onChanged}
           />
         )}

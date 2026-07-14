@@ -117,8 +117,8 @@ export async function POST(request: Request) {
 
     // Build live context from the shared progress data source.
     const progress = await getProgress();
-    const activeQuestline = getActiveQuestline(progress);
-    const activeQuest = activeQuestline ? getActiveQuest(activeQuestline) : undefined;
+    const activeQuest = getActiveQuest(progress);
+    const activeQuestline = activeQuest ? getActiveQuestline(progress, activeQuest) : undefined;
     const currentBuild = activeQuest ? getCurrentBuild(activeQuest) : undefined;
 
     const ctx: StewardContext = {
