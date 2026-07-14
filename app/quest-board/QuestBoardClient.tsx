@@ -329,7 +329,10 @@ function QuestCard({
 }) {
   const [editing, setEditing] = useState(false);
   const [addingBuild, setAddingBuild] = useState(false);
+  const [showCompletedBuilds, setShowCompletedBuilds] = useState(false);
   const builds = quest.builds ?? [];
+  const openBuilds = builds.filter((b) => b.status !== "completed");
+  const completedBuilds = builds.filter((b) => b.status === "completed");
 
   const content = editing ? (
     <EntityEditForm
@@ -386,15 +389,36 @@ function QuestCard({
         </div>
       </div>
 
-      {/* Builds — steps */}
+      {/* Builds — steps. Completed ones stay collapsed by default so a
+          long-running Quest's history doesn't drown out what's actionable. */}
       <div className="space-y-1 border-t border-accent/[0.06] pt-2.5">
-        {builds.length > 0 && (
+        {openBuilds.length > 0 && (
           <ul className="space-y-0.5">
-            {builds.map((b) => (
+            {openBuilds.map((b) => (
               <BuildRow key={b.id} build={b} questId={quest.id} onChanged={onChanged} />
             ))}
           </ul>
         )}
+
+        {completedBuilds.length > 0 && (
+          <div>
+            <button
+              type="button"
+              onClick={() => setShowCompletedBuilds((v) => !v)}
+              className="font-display text-[0.6rem] tracking-[0.1em] uppercase text-muted/45 transition-colors duration-300 hover:text-foreground/70"
+            >
+              {showCompletedBuilds ? "▾" : "▸"} {completedBuilds.length} completed
+            </button>
+            {showCompletedBuilds && (
+              <ul className="mt-1 space-y-0.5">
+                {completedBuilds.map((b) => (
+                  <BuildRow key={b.id} build={b} questId={quest.id} onChanged={onChanged} />
+                ))}
+              </ul>
+            )}
+          </div>
+        )}
+
         {addingBuild ? (
           <AddEntityForm
             showNextStep
