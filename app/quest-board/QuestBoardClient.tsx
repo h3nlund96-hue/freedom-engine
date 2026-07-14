@@ -465,52 +465,71 @@ function QuestlineCard({ questline, onChanged }: { questline: Questline; onChang
 
 /* ── SIDE QUEST CARD ──────────────────────────────────────────────────────── */
 
-function SideQuestCard({ sideQuest, onChanged }: { sideQuest: SideQuest; onChanged: () => void }) {
+function SideQuestCard({
+  sideQuest,
+  onChanged,
+  highlight = false,
+}: {
+  sideQuest: SideQuest;
+  onChanged: () => void;
+  highlight?: boolean;
+}) {
   const [editing, setEditing] = useState(false);
 
-  return (
-    <ElevatedCard>
-      {editing ? (
-        <EntityEditForm
-          initialTitle={sideQuest.title}
-          initialDescription={sideQuest.description}
-          initialStatus={sideQuest.status}
-          onCancel={() => setEditing(false)}
-          onSave={async (fields) => {
-            await updateSideQuest(sideQuest.id, fields);
-            setEditing(false);
-            onChanged();
-          }}
-        />
-      ) : (
-        <div className="flex items-start justify-between gap-3">
-          <div className="min-w-0">
-            <div className="flex items-center gap-2.5">
-              <h3 className="font-display text-base tracking-wide text-foreground/95">{sideQuest.title}</h3>
-              <StatusPill status={sideQuest.status} />
-            </div>
-            {sideQuest.description && (
-              <p className="mt-1 text-xs leading-relaxed text-muted/60">{sideQuest.description}</p>
-            )}
-          </div>
-          <div className="flex shrink-0 gap-1.5">
-            {sideQuest.status !== "completed" && (
-              <button
-                type="button"
-                onClick={() => updateSideQuest(sideQuest.id, { status: "completed" }).then(onChanged)}
-                className={`${smallBtn} text-accent/60 hover:text-accent/85`}
-              >
-                Complete
-              </button>
-            )}
-            <button type="button" onClick={() => setEditing(true)} className={`${smallBtn} text-muted/50 hover:text-foreground/75`}>
-              Edit
-            </button>
-          </div>
+  const content = editing ? (
+    <EntityEditForm
+      initialTitle={sideQuest.title}
+      initialDescription={sideQuest.description}
+      initialStatus={sideQuest.status}
+      onCancel={() => setEditing(false)}
+      onSave={async (fields) => {
+        await updateSideQuest(sideQuest.id, fields);
+        setEditing(false);
+        onChanged();
+      }}
+    />
+  ) : (
+    <div className="flex items-start justify-between gap-3">
+      <div className="min-w-0">
+        <div className="flex items-center gap-2.5">
+          <h3 className="font-display text-base tracking-wide text-foreground/95">{sideQuest.title}</h3>
+          <StatusPill status={sideQuest.status} />
         </div>
-      )}
-    </ElevatedCard>
+        {sideQuest.description && (
+          <p className="mt-1 text-xs leading-relaxed text-muted/60">{sideQuest.description}</p>
+        )}
+      </div>
+      <div className="flex shrink-0 gap-1.5">
+        {sideQuest.status !== "active" && sideQuest.status !== "completed" && (
+          <button
+            type="button"
+            onClick={() => updateSideQuest(sideQuest.id, { status: "active" }).then(onChanged)}
+            className={`${smallBtn} text-accent-glow/70 hover:text-accent-glow`}
+          >
+            Activate
+          </button>
+        )}
+        {sideQuest.status !== "completed" && (
+          <button
+            type="button"
+            onClick={() => updateSideQuest(sideQuest.id, { status: "completed" }).then(onChanged)}
+            className={`${smallBtn} text-accent/60 hover:text-accent/85`}
+          >
+            Complete
+          </button>
+        )}
+        <button type="button" onClick={() => setEditing(true)} className={`${smallBtn} text-muted/50 hover:text-foreground/75`}>
+          Edit
+        </button>
+      </div>
+    </div>
   );
+
+  if (highlight) {
+    return <div className="rounded-sm border border-accent-glow/20 bg-accent-glow/[0.03] px-3.5 py-3">{content}</div>;
+  }
+
+  return <ElevatedCard>{content}</ElevatedCard>;
 }
 
 /* ── TABS ─────────────────────────────────────────────────────────────────── */
@@ -632,11 +651,13 @@ function ActiveFocusPanel({
   questline,
   quest,
   build,
+  sideQuest,
   onChanged,
 }: {
   questline?: Questline;
   quest?: Quest;
   build?: Build;
+  sideQuest?: SideQuest;
   onChanged: () => void;
 }) {
   return (
@@ -662,11 +683,7 @@ function ActiveFocusPanel({
           <span className="font-display text-[0.6rem] tracking-[0.28em] uppercase text-accent-glow/75">Active Path</span>
         </div>
 
-        {!questline || !quest ? (
-          <p className="text-sm leading-relaxed text-muted/60">
-            No Quest is marked Active yet. Activate one from the Quests tab below.
-          </p>
-        ) : (
+        {questline && quest ? (
           <>
             <dl className="space-y-0 border-b border-accent/[0.07] pb-6">
               <div className="flex flex-col gap-1.5 border-b border-accent/[0.05] py-3.5 sm:flex-row sm:items-baseline sm:gap-6">
@@ -706,6 +723,23 @@ function ActiveFocusPanel({
               <QuestCard quest={quest} questlineId={questline.id} onChanged={onChanged} highlight />
             </div>
           </>
+        ) : sideQuest ? (
+          <>
+            <p className="mb-2 font-display text-[0.6rem] tracking-[0.3em] uppercase text-accent/55">Active Side Quest</p>
+            <h2 className="font-display text-2xl tracking-wide text-foreground sm:text-3xl">{sideQuest.title}</h2>
+            {sideQuest.description && (
+              <p className="mt-3 max-w-lg text-sm leading-relaxed text-foreground/65 sm:text-base">{sideQuest.description}</p>
+            )}
+
+            {/* Full side quest card — edit, complete, right here */}
+            <div className="mt-8 border-t border-accent/[0.06] pt-6">
+              <SideQuestCard sideQuest={sideQuest} onChanged={onChanged} highlight />
+            </div>
+          </>
+        ) : (
+          <p className="text-sm leading-relaxed text-muted/60">
+            Nothing is marked Active yet. Activate a Quest or Side Quest below.
+          </p>
         )}
       </div>
     </div>
@@ -795,6 +829,7 @@ export function QuestBoardClient({ initialProgress }: { initialProgress: Freedom
   const activeQuestline = getActiveQuestline(progress);
   const activeQuest = activeQuestline ? getActiveQuest(activeQuestline) : undefined;
   const currentBuild = activeQuest ? getCurrentBuild(activeQuest) : undefined;
+  const activeSideQuest = progress.sideQuests.find((s) => s.status === "active");
 
   const questsCount = progress.questlines.reduce(
     (sum, ql) => sum + (ql.quests ?? []).filter((q) => q.status !== "completed").length,
@@ -810,7 +845,13 @@ export function QuestBoardClient({ initialProgress }: { initialProgress: Freedom
       {/* ── 1. CURRENT FOCUS ── */}
       <section className="animate-fade-up" style={{ animationDelay: "0.16s" }}>
         <SectionLabel>Current Focus</SectionLabel>
-        <ActiveFocusPanel questline={activeQuestline} quest={activeQuest} build={currentBuild} onChanged={onChanged} />
+        <ActiveFocusPanel
+          questline={activeQuestline}
+          quest={activeQuest}
+          build={currentBuild}
+          sideQuest={activeSideQuest}
+          onChanged={onChanged}
+        />
       </section>
 
       {/* ── 2. MAIN QUEST ── */}
