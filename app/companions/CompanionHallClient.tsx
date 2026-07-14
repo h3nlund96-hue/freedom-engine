@@ -1,6 +1,7 @@
 "use client";
 
 import { EmberPanel } from "../components/EmberPanel";
+import { EmberGlyph } from "../components/EmberGlyph";
 
 /* ── COMPANION HALL CLIENT ────────────────────────────────────────────────── */
 
@@ -55,11 +56,14 @@ function EmberCard() {
         </div>
 
         {/* Name + role */}
-        <div className="space-y-2">
-          <h2 className="font-display text-2xl tracking-wide text-foreground">Ember</h2>
-          <p className="text-xs leading-relaxed text-muted/60">
-            Direction, decisions, prioritization and protection of the Freedom Engine vision.
-          </p>
+        <div className="flex items-start gap-4">
+          <EmberGlyph size="text-4xl" />
+          <div className="space-y-2 pt-0.5">
+            <h2 className="font-display text-2xl tracking-wide text-foreground">Ember</h2>
+            <p className="text-xs leading-relaxed text-muted/60">
+              Direction, decisions, prioritization and protection of the Freedom Engine vision.
+            </p>
+          </div>
         </div>
 
         {/* Console — same shared conversation as the widget on HQ, Quest Board and Idea Vault */}
