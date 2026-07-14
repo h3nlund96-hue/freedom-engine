@@ -151,6 +151,31 @@
     glyph-glow-pulse 4.5s ease-in-out infinite alternate;
 }
 
+/* Ember's glyph — a living core breathing between amber and cyan, not a
+ * mechanical dial like the HQ glyph. She's a Companion, not a location. */
+@keyframes ember-core-breathe {
+  0%,
+  100% {
+    transform: scale(1);
+    text-shadow: 0 0 10px rgba(255, 171, 74, 0.45);
+  }
+  50% {
+    transform: scale(1.08);
+    text-shadow: 0 0 20px rgba(77, 216, 255, 0.6), 0 0 10px rgba(255, 171, 74, 0.5);
+  }
+}
+
+.ember-glyph-mount {
+  display: inline-block;
+  opacity: 0;
+  animation: glyph-spin-up 1s cubic-bezier(0.2, 0.8, 0.25, 1.05) forwards;
+}
+
+.ember-glyph-core {
+  display: inline-block;
+  animation: ember-core-breathe 3.2s ease-in-out infinite;
+}
+
 .animate-fade-up {
   animation: fade-up 1s cubic-bezier(0.22, 1, 0.36, 1) both;
 }
@@ -211,11 +236,13 @@
   .animate-glow-pulse,
   .hq-glyph-spin,
   .hq-glyph-char,
-  .icon-pulse-glow {
+  .icon-pulse-glow,
+  .ember-glyph-core {
     animation: none;
   }
   .hq-glyph-mount,
-  .hq-title-settle {
+  .hq-title-settle,
+  .ember-glyph-mount {
     animation: none;
     opacity: 1;
     transform: none;
