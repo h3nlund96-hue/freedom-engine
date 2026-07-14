@@ -459,47 +459,48 @@ function SideQuestCard({ sideQuest, onChanged }: { sideQuest: SideQuest; onChang
 
   if (editing) {
     return (
-      <li>
-        <EntityEditForm
-          initialTitle={sideQuest.title}
-          initialDescription={sideQuest.description}
-          initialStatus={sideQuest.status}
-          onCancel={() => setEditing(false)}
-          onSave={async (fields) => {
-            await updateSideQuest(sideQuest.id, fields);
-            setEditing(false);
-            onChanged();
-          }}
-        />
-      </li>
+      <EntityEditForm
+        initialTitle={sideQuest.title}
+        initialDescription={sideQuest.description}
+        initialStatus={sideQuest.status}
+        onCancel={() => setEditing(false)}
+        onSave={async (fields) => {
+          await updateSideQuest(sideQuest.id, fields);
+          setEditing(false);
+          onChanged();
+        }}
+      />
     );
   }
 
   return (
-    <li className="group flex items-start gap-3.5 rounded-md px-4 py-3.5 transition-colors duration-300 hover:bg-[rgba(255,171,74,0.025)]">
-      <span className="mt-1 size-1.5 shrink-0 rounded-full bg-accent/20 shadow-[0_0_4px_rgba(255,171,74,0.15)]" aria-hidden />
-      <div className="min-w-0 flex-1">
-        <div className="flex items-center gap-2">
-          <p className="text-sm leading-relaxed text-foreground/75">{sideQuest.title}</p>
-          <StatusPill status={sideQuest.status} />
+    <div className="rounded-sm border border-white/[0.06] bg-white/[0.015] px-3.5 py-3">
+      <div className="flex items-start justify-between gap-3">
+        <div className="min-w-0">
+          <div className="flex items-center gap-2">
+            <h4 className="font-display text-sm tracking-wide text-foreground/90">{sideQuest.title}</h4>
+            <StatusPill status={sideQuest.status} />
+          </div>
+          {sideQuest.description && (
+            <p className="mt-1 text-xs leading-relaxed text-muted/60">{sideQuest.description}</p>
+          )}
         </div>
-        <p className="mt-0.5 text-xs leading-relaxed text-muted/45">{sideQuest.description}</p>
-      </div>
-      <div className="flex shrink-0 gap-1.5">
-        {sideQuest.status !== "completed" && (
-          <button
-            type="button"
-            onClick={() => updateSideQuest(sideQuest.id, { status: "completed" }).then(onChanged)}
-            className={`${smallBtn} text-accent/60 hover:text-accent/85`}
-          >
-            Complete
+        <div className="flex shrink-0 gap-1.5">
+          {sideQuest.status !== "completed" && (
+            <button
+              type="button"
+              onClick={() => updateSideQuest(sideQuest.id, { status: "completed" }).then(onChanged)}
+              className={`${smallBtn} text-accent/60 hover:text-accent/85`}
+            >
+              Complete
+            </button>
+          )}
+          <button type="button" onClick={() => setEditing(true)} className={`${smallBtn} text-muted/50 hover:text-foreground/75`}>
+            Edit
           </button>
-        )}
-        <button type="button" onClick={() => setEditing(true)} className={`${smallBtn} text-muted/50 hover:text-foreground/75`}>
-          Edit
-        </button>
+        </div>
       </div>
-    </li>
+    </div>
   );
 }
 
@@ -540,11 +541,11 @@ function SideQuestsTab({ sideQuests, onChanged }: { sideQuests: SideQuest[]; onC
       <p className="text-xs leading-relaxed text-muted/50">
         Smaller useful quests that support the main path without becoming the main path.
       </p>
-      <ul className="space-y-2">
+      <div className="space-y-2.5">
         {visible.map((sq) => (
           <SideQuestCard key={sq.id} sideQuest={sq} onChanged={onChanged} />
         ))}
-      </ul>
+      </div>
 
       {adding ? (
         <AddEntityForm
@@ -605,11 +606,11 @@ function CompletedTab({
         {completedSideQuests.length === 0 ? (
           <p className="text-xs italic text-muted/40">None yet.</p>
         ) : (
-          <ul className="space-y-2">
+          <div className="space-y-2.5">
             {completedSideQuests.map((sq) => (
               <SideQuestCard key={sq.id} sideQuest={sq} onChanged={onChanged} />
             ))}
-          </ul>
+          </div>
         )}
       </div>
     </div>
