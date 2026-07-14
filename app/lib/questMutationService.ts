@@ -207,6 +207,14 @@ export async function updateQuest(
   if (error) throw new Error(error.message);
 }
 
+/** Permanently remove a Quest — its Builds cascade-delete with it (see the
+ * quest_id foreign key in quest-board.sql). */
+export async function deleteQuest(id: string): Promise<void> {
+  const supabase = createClient();
+  const { error } = await supabase.from("quests").delete().eq("id", id);
+  if (error) throw new Error(error.message);
+}
+
 /* ── BUILDS ───────────────────────────────────────────────────────────────── */
 
 export async function createBuild(

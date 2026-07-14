@@ -1,9 +1,8 @@
 type HQHeaderProps = {
   title: string;
-  welcome: string;
 };
 
-export function HQHeader({ title, welcome }: HQHeaderProps) {
+export function HQHeader({ title }: HQHeaderProps) {
   return (
     <header className="animate-fade-up space-y-4">
       <div className="flex items-center gap-3">
@@ -23,7 +22,6 @@ export function HQHeader({ title, welcome }: HQHeaderProps) {
         </span>
         <span className="hq-title-settle">{title}</span>
       </h1>
-      <p className="text-lg text-muted sm:text-xl">{welcome}</p>
     </header>
   );
 }
