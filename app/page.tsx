@@ -4,7 +4,6 @@ import { BuildPrompt } from "./components/BuildPrompt";
 import { EmberGreeting } from "./components/EmberGreeting";
 import { FounderStatusBar } from "./components/FounderStatusBar";
 import { HQHeader } from "./components/HQHeader";
-import { PrincipleBlock } from "./components/PrincipleBlock";
 import { SignOutButton } from "./components/SignOutButton";
 import { WorldCard } from "./components/WorldCard";
 import { getActiveQuest } from "./data/freedomEngineProgress";
@@ -52,26 +51,18 @@ export default async function Home() {
       <FounderStatusBar progress={progress} />
 
       <main className="relative mx-auto flex w-full max-w-2xl flex-1 flex-col gap-14 px-6 py-14 sm:px-8 sm:py-20 lg:max-w-3xl">
-        <HQHeader
-          title="AI Mastery HQ"
-          welcome="Welcome back, Founder."
-        />
+        <HQHeader title="AI Mastery HQ" />
 
         <EmberGreeting activeQuestTitle={activeQuest?.title} />
 
         <ActiveQuest progress={progress} />
 
-        <PrincipleBlock principle="The system exists to serve The Founder. The Founder does not exist to serve the system." />
-
         {/* World navigation — three locations */}
         <section className="space-y-8">
           <div
             className="animate-fade-up space-y-2"
-            style={{ animationDelay: "0.35s" }}
+            style={{ animationDelay: "0.3s" }}
           >
-            <p className="text-[0.65rem] tracking-[0.25em] uppercase text-muted/60">
-              Within these walls
-            </p>
             <h2 className="font-display text-2xl tracking-wide text-foreground/90">
               Explore the World
             </h2>
