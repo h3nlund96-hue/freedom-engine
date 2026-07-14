@@ -2,7 +2,7 @@
  * Quest System service layer.
  *
  * All Supabase calls for Questlines, Quests, Builds and Side Quests go
- * through here. Server Components and the Steward API import from this
+ * through here. Server Components and the Ember API import from this
  * module — not from Supabase directly.
  */
 

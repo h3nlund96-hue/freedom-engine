@@ -4,53 +4,11 @@ import { useState } from "react";
 
 /* ── TYPES ────────────────────────────────────────────────────────────────── */
 
-type CompanionStatus = "awake" | "emerging" | "dormant";
-
-interface Companion {
-  name: string;
-  role: string;
-  status: CompanionStatus;
-  description: string;
-}
-
-interface StewardResponse {
+interface EmberResponse {
   answer: string;
   recommendedDirection: string;
   smallestStep: string;
 }
-
-/* ── COMPANION DATA ───────────────────────────────────────────────────────── */
-
-const companions: Companion[] = [
-  {
-    name: "The Steward",
-    role: "Direction, decisions, prioritization and protection of the Freedom Engine vision.",
-    status: "awake",
-    description:
-      "Helps The Founder think clearly, choose the next Build, and protect the Main Quest, the Founder Constitution, and the long-term vision.",
-  },
-  {
-    name: "The Builder",
-    role: "Code, implementation and technical execution.",
-    status: "emerging",
-    description:
-      "Helps turn Builds into working software and keeps the technical foundation strong.",
-  },
-  {
-    name: "The Scribe",
-    role: "Ideas, memory, documentation and source of truth.",
-    status: "dormant",
-    description:
-      "Keeps the world organized without forcing The Founder to organize everything manually.",
-  },
-  {
-    name: "The Scholar",
-    role: "Learning, research, explanation and skill development.",
-    status: "dormant",
-    description:
-      "Helps The Founder understand what he is building and grow through the process.",
-  },
-];
 
 const SUGGESTED_QUESTIONS = [
   "What should the next Build be?",
@@ -59,39 +17,10 @@ const SUGGESTED_QUESTIONS = [
   "What is the smallest useful next step?",
 ];
 
-/* ── STATUS CONFIG ────────────────────────────────────────────────────────── */
+/* ── EMBER RESPONSE PROTOTYPE ─────────────────────────────────────────────── */
 
-const statusConfig: Record<
-  CompanionStatus,
-  { label: string; panelClass: string; glowStyle: string; dotClass: string; nameClass: string }
-> = {
-  awake: {
-    label: "Awake",
-    panelClass: "from-[rgba(11,20,35,0.94)] to-[rgba(6,9,16,0.97)]",
-    glowStyle: "radial-gradient(ellipse at top left, rgba(77,216,255,0.10) 0%, transparent 60%)",
-    dotClass: "bg-accent-glow shadow-[0_0_10px_rgba(77,216,255,0.65)]",
-    nameClass: "text-foreground",
-  },
-  emerging: {
-    label: "Emerging",
-    panelClass: "from-[rgba(10,17,27,0.90)] to-[rgba(6,8,14,0.94)]",
-    glowStyle: "radial-gradient(ellipse at top left, rgba(255,171,74,0.06) 0%, transparent 60%)",
-    dotClass: "bg-accent/60 shadow-[0_0_6px_rgba(255,171,74,0.35)]",
-    nameClass: "text-foreground/90",
-  },
-  dormant: {
-    label: "Dormant",
-    panelClass: "from-[rgba(8,12,19,0.85)] to-[rgba(4,6,11,0.90)]",
-    glowStyle: "none",
-    dotClass: "bg-muted/30",
-    nameClass: "text-foreground/55",
-  },
-};
-
-/* ── RESPONSE PROTOTYPE ───────────────────────────────────────────────────── */
-
-async function fetchStewardResponse(question: string): Promise<StewardResponse> {
-  const res = await fetch("/api/steward", {
+async function fetchEmberResponse(question: string): Promise<EmberResponse> {
+  const res = await fetch("/api/ember", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ question }),
@@ -100,9 +29,7 @@ async function fetchStewardResponse(question: string): Promise<StewardResponse> 
   const data = await res.json();
 
   if (!res.ok || data.error) {
-    throw new Error(
-      data.error ?? "The Steward could not answer right now. The fire is still burning."
-    );
+    throw new Error(data.error ?? "Ember could not answer right now. The fire is still burning.");
   }
 
   return {
@@ -115,56 +42,25 @@ async function fetchStewardResponse(question: string): Promise<StewardResponse> 
 /* ── COMPANION HALL CLIENT ────────────────────────────────────────────────── */
 
 export function CompanionHallClient() {
-  const [stewardOpen, setStewardOpen] = useState(false);
-  const [steward, ...others] = companions;
-
   return (
     <section className="animate-fade-up space-y-8" style={{ animationDelay: "0.24s" }}>
       <div className="flex items-center gap-3">
         <p className="font-display text-[0.65rem] tracking-[0.25em] uppercase text-muted/55">
-          The Council
+          Companion
         </p>
         <span className="h-px flex-1 bg-linear-to-r from-accent/10 to-transparent" aria-hidden />
       </div>
 
-      <div className="grid gap-5 sm:grid-cols-2">
-        {/* Steward — spans full width when open */}
-        <div className={`transition-all duration-500 ${stewardOpen ? "sm:col-span-2" : ""}`}>
-          <StewardCard
-            companion={steward}
-            open={stewardOpen}
-            onToggle={() => setStewardOpen((v) => !v)}
-          />
-        </div>
-
-        {/* Remaining companions */}
-        {others.map((companion, i) => (
-          <CompanionCard
-            key={companion.name}
-            companion={companion}
-            delay={0.28 + (i + 1) * 0.08}
-          />
-        ))}
-      </div>
+      <EmberCard />
     </section>
   );
 }
 
-/* ── STEWARD CARD ─────────────────────────────────────────────────────────── */
+/* ── EMBER CARD ───────────────────────────────────────────────────────────── */
 
-function StewardCard({
-  companion,
-  open,
-  onToggle,
-}: {
-  companion: Companion;
-  open: boolean;
-  onToggle: () => void;
-}) {
-  const cfg = statusConfig[companion.status];
-
+function EmberCard() {
   const [question, setQuestion] = useState("");
-  const [response, setResponse] = useState<StewardResponse | null>(null);
+  const [response, setResponse] = useState<EmberResponse | null>(null);
   const [askedQuestion, setAskedQuestion] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -178,13 +74,11 @@ function StewardCard({
     setError(null);
     setLoading(true);
     try {
-      const result = await fetchStewardResponse(trimmed);
+      const result = await fetchEmberResponse(trimmed);
       setResponse(result);
     } catch (err) {
       setError(
-        err instanceof Error
-          ? err.message
-          : "The Steward could not answer right now. The fire is still burning."
+        err instanceof Error ? err.message : "Ember could not answer right now. The fire is still burning."
       );
     } finally {
       setLoading(false);
@@ -204,14 +98,14 @@ function StewardCard({
   }
 
   return (
-    <article className="group relative flex flex-col overflow-hidden rounded-md border border-white/[0.07] transition-all duration-700 hover:-translate-y-0.5 hover:shadow-[0_24px_60px_rgba(0,0,0,0.55)]">
+    <article className="relative flex flex-col overflow-hidden rounded-md border border-white/[0.07]">
       {/* Base */}
-      <div className={`absolute inset-0 bg-linear-to-br ${cfg.panelClass}`} />
+      <div className="absolute inset-0 bg-linear-to-br from-[rgba(11,20,35,0.94)] to-[rgba(6,9,16,0.97)]" />
 
       {/* Glow */}
       <div
-        className="pointer-events-none absolute inset-0 transition-opacity duration-700 group-hover:opacity-125"
-        style={{ background: cfg.glowStyle }}
+        className="pointer-events-none absolute inset-0"
+        style={{ background: "radial-gradient(ellipse at top left, rgba(77,216,255,0.10) 0%, transparent 60%)" }}
         aria-hidden
       />
 
@@ -222,217 +116,169 @@ function StewardCard({
         aria-hidden
       />
 
-      {/* Top accent line */}
-      <div
-        className={`absolute inset-x-0 top-0 h-px bg-linear-to-r from-transparent to-transparent transition-all duration-500 ${
-          open ? "via-accent-glow/35" : "via-accent-glow/0 group-hover:via-accent-glow/15"
-        }`}
-        aria-hidden
-      />
-
-      <div className="relative flex flex-1 flex-col gap-5 p-6 sm:p-7">
+      <div className="relative flex flex-col gap-6 p-6 sm:p-7">
 
         {/* Status row */}
         <div className="flex items-center gap-2">
           <span className="relative flex size-2" aria-hidden>
             <span className="absolute inline-flex size-full animate-glow-pulse rounded-full bg-accent-glow/55" />
-            <span className={`relative inline-flex size-2 rounded-full ${cfg.dotClass}`} />
+            <span className="relative inline-flex size-2 rounded-full bg-accent-glow shadow-[0_0_10px_rgba(77,216,255,0.65)]" />
           </span>
           <span className="font-display text-[0.58rem] tracking-[0.22em] uppercase text-accent-glow/75">
-            {cfg.label}
+            Awake
           </span>
         </div>
 
         {/* Name + role */}
         <div className="space-y-2">
-          <h2 className={`font-display text-2xl tracking-wide ${cfg.nameClass}`}>
-            {companion.name}
-          </h2>
-          <p className="text-xs leading-relaxed text-muted/60">{companion.role}</p>
+          <h2 className="font-display text-2xl tracking-wide text-foreground">Ember</h2>
+          <p className="text-xs leading-relaxed text-muted/60">
+            Direction, decisions, prioritization and protection of the Freedom Engine vision.
+          </p>
         </div>
 
-        {/* Toggle */}
-        <div className="flex items-center">
-          <button
-            type="button"
-            onClick={onToggle}
-            className="inline-flex items-center gap-2 rounded text-xs transition-colors duration-300"
-            style={{ color: open ? "rgba(255,171,74,0.50)" : "rgba(255,171,74,0.70)" }}
-          >
-            <span
-              className={`inline-block transition-transform duration-300 ${open ? "" : "group-hover:translate-x-0.5"}`}
-              aria-hidden
-            >
-              {open ? "↑" : "→"}
-            </span>
-            <span className="font-display tracking-[0.12em] uppercase">
-              {open ? "Close" : "Consult The Steward"}
-            </span>
-          </button>
-        </div>
+        {/* ── CONSOLE ──────────────────────────────────────────────────────── */}
+        <div className="flex flex-col gap-6 border-t border-accent/[0.07] pt-5">
 
-        {/* ── INLINE CONSOLE ──────────────────────────────────────────────── */}
-        <div
-          className={`overflow-hidden transition-all duration-500 ${
-            open ? "max-h-[1200px] opacity-100" : "max-h-0 opacity-0"
-          }`}
-        >
-          <div className="flex flex-col gap-6 pt-1">
-
-            {/* Console header */}
-            <div className="space-y-1 border-t border-accent/[0.07] pt-5">
-              <h3 className="font-display text-lg tracking-wide text-foreground/90">Ask The Steward</h3>
-              <p className="text-xs text-muted/50">
-                A quiet place to ask for direction before choosing the next Build.
-              </p>
-            </div>
-
-            {/* Suggested questions */}
-            <div className="space-y-2.5">
-              <p className="font-display text-[0.55rem] tracking-[0.2em] uppercase text-muted/35">
-                Suggested Questions
-              </p>
-              <div className="flex flex-wrap gap-2">
-                {SUGGESTED_QUESTIONS.map((q) => (
-                  <button
-                    key={q}
-                    type="button"
-                    onClick={() => handleSuggestion(q)}
-                    className={`rounded-sm border px-3 py-1.5 text-xs leading-snug transition-all duration-300 ${
-                      question === q
-                        ? "border-accent/30 bg-accent/8 text-accent/90"
-                        : "border-accent/[0.07] bg-black/20 text-muted/45 hover:border-accent/18 hover:text-muted/70"
-                    }`}
-                  >
-                    {q}
-                  </button>
-                ))}
-              </div>
-            </div>
-
-            {/* Input */}
-            <div className="space-y-2.5">
-              <div className="relative overflow-hidden rounded-md border border-white/[0.07]">
-                <div className="absolute inset-0 bg-black/35" />
-                <div
-                  className="pointer-events-none absolute inset-0 rounded-md"
-                  style={{ boxShadow: "inset 0 1px 0 rgba(255,171,74,0.05), inset 0 0 0 1px rgba(255,171,74,0.07)" }}
-                  aria-hidden
-                />
-                <textarea
-                  value={question}
-                  onChange={handleInputChange}
-                  onKeyDown={(e) => {
-                    if (e.key === "Enter" && !e.shiftKey) {
-                      e.preventDefault();
-                      void handleAsk();
-                    }
-                  }}
-                  rows={3}
-                  disabled={loading}
-                  placeholder="Ask about the next Build, a product decision, or where to focus..."
-                  className="relative w-full resize-none bg-transparent px-5 py-4 text-sm leading-relaxed text-foreground/80 placeholder:text-muted/30 focus:outline-none disabled:opacity-50"
-                />
-              </div>
-
-              <div className="flex items-center justify-between gap-4">
-                <p className="text-[0.6rem] tracking-wide text-muted/30">
-                  {loading ? "The Steward is listening..." : "Shift+Enter for new line · Enter to ask"}
-                </p>
-                <button
-                  type="button"
-                  onClick={() => void handleAsk()}
-                  disabled={!question.trim() || loading}
-                  className="group/ask relative overflow-hidden rounded-sm px-4 py-2 font-display text-[0.65rem] tracking-[0.15em] uppercase transition-all duration-300 disabled:cursor-not-allowed disabled:opacity-40"
-                  style={{
-                    background:
-                      question.trim() && !loading
-                        ? "linear-gradient(135deg, rgba(255,171,74,0.18) 0%, rgba(77,216,255,0.12) 100%)"
-                        : "rgba(255,255,255,0.02)",
-                    boxShadow:
-                      question.trim() && !loading
-                        ? "inset 0 1px 0 rgba(255,171,74,0.15), 0 4px 16px rgba(0,0,0,0.3)"
-                        : "inset 0 1px 0 rgba(255,171,74,0.04)",
-                    color:
-                      question.trim() && !loading
-                        ? "rgba(255,171,74,0.90)"
-                        : "rgba(255,171,74,0.35)",
-                    border:
-                      question.trim() && !loading
-                        ? "1px solid rgba(255,171,74,0.14)"
-                        : "1px solid rgba(255,171,74,0.06)",
-                  }}
-                >
-                  <span className="relative z-10">
-                    {loading ? "Listening..." : "Ask The Steward"}
-                  </span>
-                  {question.trim() && !loading && (
-                    <span
-                      className="pointer-events-none absolute inset-0 opacity-0 transition-opacity duration-500 group-hover/ask:opacity-100"
-                      style={{ background: "radial-gradient(ellipse at center, rgba(77,216,255,0.08) 0%, transparent 70%)" }}
-                      aria-hidden
-                    />
-                  )}
-                </button>
-              </div>
-            </div>
-
-            {/* ── LOADING ────────────────────────────────────────────────── */}
-            <div
-              className={`overflow-hidden transition-all duration-500 ${
-                loading ? "max-h-20 opacity-100" : "max-h-0 opacity-0"
-              }`}
-            >
-              <div className="flex items-center gap-3 px-1 py-2">
-                <span className="relative flex size-1.5" aria-hidden>
-                  <span className="absolute inline-flex size-full animate-glow-pulse rounded-full bg-accent-glow/55" />
-                  <span className="relative inline-flex size-1.5 rounded-full bg-accent-glow" />
-                </span>
-                <p className="text-xs text-muted/45 italic">The Steward is listening...</p>
-              </div>
-            </div>
-
-            {/* ── ERROR ──────────────────────────────────────────────────── */}
-            <div
-              className={`overflow-hidden transition-all duration-500 ${
-                error && !loading ? "max-h-24 opacity-100" : "max-h-0 opacity-0"
-              }`}
-            >
-              {error && (
-                <div className="rounded-sm border border-accent/[0.07] bg-black/20 px-4 py-3">
-                  <p className="text-xs leading-relaxed text-muted/50">{error}</p>
-                </div>
-              )}
-            </div>
-
-            {/* ── RESPONSE ───────────────────────────────────────────────── */}
-            <div
-              className={`overflow-hidden transition-all duration-700 ${
-                response && !loading ? "max-h-[900px] opacity-100" : "max-h-0 opacity-0"
-              }`}
-            >
-              {response && (
-                <StewardResponsePanel question={askedQuestion} response={response} />
-              )}
-            </div>
-
+          <div className="space-y-1">
+            <h3 className="font-display text-lg tracking-wide text-foreground/90">Ask Ember</h3>
+            <p className="text-xs text-muted/50">
+              A quiet place to ask for direction before choosing the next Build.
+            </p>
           </div>
-        </div>
 
+          {/* Suggested questions */}
+          <div className="space-y-2.5">
+            <p className="font-display text-[0.55rem] tracking-[0.2em] uppercase text-muted/35">
+              Suggested Questions
+            </p>
+            <div className="flex flex-wrap gap-2">
+              {SUGGESTED_QUESTIONS.map((q) => (
+                <button
+                  key={q}
+                  type="button"
+                  onClick={() => handleSuggestion(q)}
+                  className={`rounded-sm border px-3 py-1.5 text-xs leading-snug transition-all duration-300 ${
+                    question === q
+                      ? "border-accent/30 bg-accent/8 text-accent/90"
+                      : "border-accent/[0.07] bg-black/20 text-muted/45 hover:border-accent/18 hover:text-muted/70"
+                  }`}
+                >
+                  {q}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          {/* Input */}
+          <div className="space-y-2.5">
+            <div className="relative overflow-hidden rounded-md border border-white/[0.07]">
+              <div className="absolute inset-0 bg-black/35" />
+              <div
+                className="pointer-events-none absolute inset-0 rounded-md"
+                style={{ boxShadow: "inset 0 1px 0 rgba(255,171,74,0.05), inset 0 0 0 1px rgba(255,171,74,0.07)" }}
+                aria-hidden
+              />
+              <textarea
+                value={question}
+                onChange={handleInputChange}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter" && !e.shiftKey) {
+                    e.preventDefault();
+                    void handleAsk();
+                  }
+                }}
+                rows={3}
+                disabled={loading}
+                placeholder="Ask about the next Build, a product decision, or where to focus..."
+                className="relative w-full resize-none bg-transparent px-5 py-4 text-sm leading-relaxed text-foreground/80 placeholder:text-muted/30 focus:outline-none disabled:opacity-50"
+              />
+            </div>
+
+            <div className="flex items-center justify-between gap-4">
+              <p className="text-[0.6rem] tracking-wide text-muted/30">
+                {loading ? "Ember is listening..." : "Shift+Enter for new line · Enter to ask"}
+              </p>
+              <button
+                type="button"
+                onClick={() => void handleAsk()}
+                disabled={!question.trim() || loading}
+                className="group/ask relative overflow-hidden rounded-sm px-4 py-2 font-display text-[0.65rem] tracking-[0.15em] uppercase transition-all duration-300 disabled:cursor-not-allowed disabled:opacity-40"
+                style={{
+                  background:
+                    question.trim() && !loading
+                      ? "linear-gradient(135deg, rgba(255,171,74,0.18) 0%, rgba(77,216,255,0.12) 100%)"
+                      : "rgba(255,255,255,0.02)",
+                  boxShadow:
+                    question.trim() && !loading
+                      ? "inset 0 1px 0 rgba(255,171,74,0.15), 0 4px 16px rgba(0,0,0,0.3)"
+                      : "inset 0 1px 0 rgba(255,171,74,0.04)",
+                  color:
+                    question.trim() && !loading ? "rgba(255,171,74,0.90)" : "rgba(255,171,74,0.35)",
+                  border:
+                    question.trim() && !loading
+                      ? "1px solid rgba(255,171,74,0.14)"
+                      : "1px solid rgba(255,171,74,0.06)",
+                }}
+              >
+                <span className="relative z-10">{loading ? "Listening..." : "Ask Ember"}</span>
+                {question.trim() && !loading && (
+                  <span
+                    className="pointer-events-none absolute inset-0 opacity-0 transition-opacity duration-500 group-hover/ask:opacity-100"
+                    style={{ background: "radial-gradient(ellipse at center, rgba(77,216,255,0.08) 0%, transparent 70%)" }}
+                    aria-hidden
+                  />
+                )}
+              </button>
+            </div>
+          </div>
+
+          {/* ── LOADING ──────────────────────────────────────────────────── */}
+          <div
+            className={`overflow-hidden transition-all duration-500 ${
+              loading ? "max-h-20 opacity-100" : "max-h-0 opacity-0"
+            }`}
+          >
+            <div className="flex items-center gap-3 px-1 py-2">
+              <span className="relative flex size-1.5" aria-hidden>
+                <span className="absolute inline-flex size-full animate-glow-pulse rounded-full bg-accent-glow/55" />
+                <span className="relative inline-flex size-1.5 rounded-full bg-accent-glow" />
+              </span>
+              <p className="text-xs text-muted/45 italic">Ember is listening...</p>
+            </div>
+          </div>
+
+          {/* ── ERROR ────────────────────────────────────────────────────── */}
+          <div
+            className={`overflow-hidden transition-all duration-500 ${
+              error && !loading ? "max-h-24 opacity-100" : "max-h-0 opacity-0"
+            }`}
+          >
+            {error && (
+              <div className="rounded-sm border border-accent/[0.07] bg-black/20 px-4 py-3">
+                <p className="text-xs leading-relaxed text-muted/50">{error}</p>
+              </div>
+            )}
+          </div>
+
+          {/* ── RESPONSE ─────────────────────────────────────────────────── */}
+          <div
+            className={`overflow-hidden transition-all duration-700 ${
+              response && !loading ? "max-h-[900px] opacity-100" : "max-h-0 opacity-0"
+            }`}
+          >
+            {response && <EmberResponsePanel question={askedQuestion} response={response} />}
+          </div>
+
+        </div>
       </div>
     </article>
   );
 }
 
-/* ── STEWARD RESPONSE PANEL ───────────────────────────────────────────────── */
+/* ── EMBER RESPONSE PANEL ─────────────────────────────────────────────────── */
 
-function StewardResponsePanel({
-  question,
-  response,
-}: {
-  question: string;
-  response: StewardResponse;
-}) {
+function EmberResponsePanel({ question, response }: { question: string; response: EmberResponse }) {
   return (
     <div className="relative overflow-hidden rounded-md border border-white/[0.07]">
       {/* Background */}
@@ -461,7 +307,7 @@ function StewardResponsePanel({
               <span className="relative inline-flex size-1.5 rounded-full bg-accent-glow shadow-[0_0_6px_rgba(77,216,255,0.6)]" />
             </span>
             <p className="font-display text-[0.58rem] tracking-[0.22em] uppercase text-accent-glow/65">
-              The Steward
+              Ember
             </p>
           </div>
           <p className="text-[0.55rem] italic text-muted/30 max-w-[55%] truncate">
@@ -471,8 +317,8 @@ function StewardResponsePanel({
 
         <div className="h-px bg-linear-to-r from-accent/10 to-transparent" aria-hidden />
 
-        {/* Steward's Answer */}
-        <ResponseSection label="Steward's Answer">
+        {/* Ember's Answer */}
+        <ResponseSection label="Ember's Answer">
           <p className="text-sm leading-relaxed text-foreground/72">{response.answer}</p>
         </ResponseSection>
 
@@ -502,92 +348,11 @@ function StewardResponsePanel({
 
 /* ── RESPONSE SECTION ─────────────────────────────────────────────────────── */
 
-function ResponseSection({
-  label,
-  children,
-}: {
-  label: string;
-  children: React.ReactNode;
-}) {
+function ResponseSection({ label, children }: { label: string; children: React.ReactNode }) {
   return (
     <div className="space-y-2">
       <p className="font-display text-[0.52rem] tracking-[0.2em] uppercase text-muted/35">{label}</p>
       {children}
     </div>
-  );
-}
-
-/* ── STANDARD COMPANION CARD ─────────────────────────────────────────────── */
-
-function CompanionCard({
-  companion,
-  delay,
-}: {
-  companion: Companion;
-  delay: number;
-}) {
-  const cfg = statusConfig[companion.status];
-  const isEmerging = companion.status === "emerging";
-
-  return (
-    <article
-      className={`animate-fade-up group relative flex flex-col overflow-hidden rounded-md border border-white/[0.06] transition-all duration-700 ${
-        isEmerging
-          ? "hover:-translate-y-1 hover:shadow-[0_20px_56px_rgba(0,0,0,0.5)]"
-          : "opacity-75 hover:opacity-90"
-      }`}
-      style={{ animationDelay: `${delay}s` }}
-    >
-      <div className={`absolute inset-0 bg-linear-to-br ${cfg.panelClass}`} />
-
-      {cfg.glowStyle !== "none" && (
-        <div
-          className="pointer-events-none absolute inset-0 transition-opacity duration-700 group-hover:opacity-125"
-          style={{ background: cfg.glowStyle }}
-          aria-hidden
-        />
-      )}
-
-      <div
-        className="pointer-events-none absolute inset-0 rounded-md"
-        style={{
-          boxShadow: isEmerging
-            ? "inset 0 1px 0 rgba(255,171,74,0.07), inset 0 0 0 1px rgba(255,171,74,0.03)"
-            : "inset 0 1px 0 rgba(255,171,74,0.04)",
-        }}
-        aria-hidden
-      />
-
-      <div className="relative flex flex-1 flex-col gap-5 p-6 sm:p-7">
-        <div className="flex items-center gap-2">
-          <span className={`size-1.5 rounded-full ${cfg.dotClass}`} aria-hidden />
-          <span
-            className={`font-display text-[0.58rem] tracking-[0.22em] uppercase ${
-              isEmerging ? "text-accent/55" : "text-muted/35"
-            }`}
-          >
-            {cfg.label}
-          </span>
-        </div>
-
-        <div className="space-y-2">
-          <h2 className={`font-display text-2xl tracking-wide ${cfg.nameClass}`}>
-            {companion.name}
-          </h2>
-          <p className={`text-xs leading-relaxed ${isEmerging ? "text-muted/60" : "text-muted/35"}`}>
-            {companion.role}
-          </p>
-        </div>
-
-        <div
-          className={`h-px bg-linear-to-r from-accent/12 to-transparent ${isEmerging ? "" : "opacity-50"}`}
-          aria-hidden
-        />
-
-        <p className={`text-sm leading-relaxed ${isEmerging ? "text-foreground/50" : "text-foreground/35"}`}>
-          {companion.description}
-        </p>
-      </div>
-    </article>
   );
 }

@@ -44,7 +44,7 @@ export default function CompanionHallPage() {
           </div>
         </div>
 
-        {/* Companion cards + expandable Steward Console */}
+        {/* Ember card + ask console */}
         <CompanionHallClient />
 
         {/* Alpha notice */}
@@ -52,7 +52,7 @@ export default function CompanionHallPage() {
           <div className="flex items-start gap-4 rounded-md border border-dashed border-accent/[0.08] px-5 py-4">
             <span className="mt-0.5 font-display text-xs text-accent/40">Alpha</span>
             <p className="text-xs leading-relaxed text-muted/45">
-              Companions are visible in Alpha, but real AI interaction will be added in a future Questline. For now, The Steward already works through the current Cursor workflow.
+              Ember is the first Companion awake in Alpha. More will join in future Questlines as they earn a real, working role.
             </p>
           </div>
         </div>
