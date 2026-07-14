@@ -1,17 +1,13 @@
-import Link from "next/link";
+import { ActiveQuest } from "./components/ActiveQuest";
 import { AtmosphericBackground } from "./components/AtmosphericBackground";
 import { BuildPrompt } from "./components/BuildPrompt";
+import { EmberGreeting } from "./components/EmberGreeting";
 import { FounderStatusBar } from "./components/FounderStatusBar";
 import { HQHeader } from "./components/HQHeader";
 import { PrincipleBlock } from "./components/PrincipleBlock";
 import { SignOutButton } from "./components/SignOutButton";
 import { WorldCard } from "./components/WorldCard";
-import {
-  getActiveQuestline,
-  getActiveQuest,
-  getCurrentBuild,
-  type FreedomEngineProgress,
-} from "./data/freedomEngineProgress";
+import { getActiveQuest } from "./data/freedomEngineProgress";
 import { getProgress } from "./lib/questService";
 
 const worldPlaces = [
@@ -47,6 +43,7 @@ const worldPlaces = [
 
 export default async function Home() {
   const progress = await getProgress();
+  const activeQuest = getActiveQuest(progress);
 
   return (
     <div className="relative flex min-h-full flex-1 flex-col overflow-hidden">
@@ -60,9 +57,11 @@ export default async function Home() {
           welcome="Welcome back, Founder."
         />
 
-        <PrincipleBlock principle="The system exists to serve The Founder. The Founder does not exist to serve the system." />
+        <EmberGreeting activeQuestTitle={activeQuest?.title} />
 
-        <CurrentFocus progress={progress} />
+        <ActiveQuest progress={progress} />
+
+        <PrincipleBlock principle="The system exists to serve The Founder. The Founder does not exist to serve the system." />
 
         {/* World navigation — three locations */}
         <section className="space-y-8">
@@ -106,90 +105,6 @@ export default async function Home() {
           <SignOutButton />
         </div>
       </main>
-    </div>
-  );
-}
-
-/* ── CURRENT FOCUS ───────────────────────────────────────────────────────── */
-function CurrentFocus({ progress }: { progress: FreedomEngineProgress }) {
-  const activeQuest = getActiveQuest(progress);
-  const activeQuestline = activeQuest ? getActiveQuestline(progress, activeQuest) : undefined;
-  const currentBuild = activeQuest ? getCurrentBuild(activeQuest) : undefined;
-
-  if (!activeQuestline || !activeQuest || !currentBuild) return null;
-
-  return (
-    <section
-      className="animate-fade-up"
-      style={{ animationDelay: "0.22s" }}
-      aria-label="Current Focus"
-    >
-      <div className="relative overflow-hidden rounded-md border border-white/[0.07]">
-        {/* Base */}
-        <div className="absolute inset-0 bg-linear-to-b from-[rgba(12,20,35,0.94)] to-[rgba(6,8,14,0.97)]" />
-        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_left,rgba(77,216,255,0.07)_0%,transparent_55%)]" />
-        <div
-          className="pointer-events-none absolute inset-0 rounded-md"
-          style={{ boxShadow: "inset 0 1px 0 rgba(255,171,74,0.10), inset 0 -1px 0 rgba(0,0,0,0.3)" }}
-          aria-hidden
-        />
-        <span className="pointer-events-none absolute left-4 top-4 h-3.5 w-3.5 border-l border-t border-accent/18" aria-hidden />
-        <span className="pointer-events-none absolute right-4 top-4 h-3.5 w-3.5 border-r border-t border-accent/18" aria-hidden />
-        <span className="pointer-events-none absolute bottom-4 left-4 h-3.5 w-3.5 border-b border-l border-accent/10" aria-hidden />
-        <span className="pointer-events-none absolute bottom-4 right-4 h-3.5 w-3.5 border-b border-r border-accent/10" aria-hidden />
-
-        <div className="relative px-6 py-7 sm:px-8 sm:py-8">
-          {/* Active indicator */}
-          <div className="mb-5 flex items-center gap-2.5">
-            <span className="relative flex size-1.5" aria-hidden>
-              <span className="absolute inline-flex size-full animate-glow-pulse rounded-full bg-accent-glow/65" />
-              <span className="relative inline-flex size-1.5 rounded-full bg-accent-glow shadow-[0_0_8px_rgba(77,216,255,0.6)]" />
-            </span>
-            <span className="font-display text-[0.6rem] tracking-[0.28em] uppercase text-accent-glow/70">
-              Current Focus
-            </span>
-          </div>
-
-          {/* Focus rows */}
-          <dl className="space-y-0">
-            <FocusRow label="Questline"     value={activeQuestline.title} />
-            <FocusRow label="Quest"         value={activeQuest.title} />
-            <FocusRow label="Current Build" value={currentBuild.title} highlight />
-          </dl>
-
-          {/* Link to Quest Board */}
-          <div className="mt-6 border-t border-accent/[0.07] pt-5">
-            <Link
-              href="/quest-board"
-              className="group inline-flex items-center gap-2 text-xs text-muted/50 transition-colors duration-300 hover:text-accent/80 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-accent/30 rounded"
-            >
-              <span>View full Quest Board</span>
-              <span className="transition-transform duration-300 group-hover:translate-x-0.5" aria-hidden>→</span>
-            </Link>
-          </div>
-        </div>
-      </div>
-    </section>
-  );
-}
-
-function FocusRow({
-  label,
-  value,
-  highlight = false,
-}: {
-  label: string;
-  value: string;
-  highlight?: boolean;
-}) {
-  return (
-    <div className={`flex flex-col gap-1.5 py-3.5 sm:flex-row sm:items-baseline sm:gap-6 ${!highlight ? "border-b border-accent/[0.05]" : ""}`}>
-      <dt className="min-w-32 shrink-0 text-[0.65rem] font-medium tracking-[0.18em] uppercase text-muted/55">
-        {label}
-      </dt>
-      <dd className={`text-sm leading-relaxed ${highlight ? "font-display text-accent-glow/90" : "text-foreground/75"}`}>
-        {value}
-      </dd>
     </div>
   );
 }

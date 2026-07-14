@@ -6,7 +6,7 @@ export function PrincipleBlock({ principle }: PrincipleBlockProps) {
   return (
     <blockquote
       className="animate-fade-up relative py-1 pl-7"
-      style={{ animationDelay: "0.15s" }}
+      style={{ animationDelay: "0.3s" }}
     >
       <span
         className="absolute left-0 top-0 h-full w-px bg-linear-to-b from-accent-glow/50 via-accent/20 to-transparent"

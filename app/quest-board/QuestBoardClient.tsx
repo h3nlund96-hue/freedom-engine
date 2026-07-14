@@ -16,11 +16,13 @@ import {
   updateQuestline,
   createQuest,
   updateQuest,
+  deleteQuest,
   createBuild,
   updateBuild,
   createSideQuest,
   updateSideQuest,
 } from "../lib/questMutationService";
+import { ConfirmDialog } from "../components/ConfirmDialog";
 
 /* ── SHARED BITS ──────────────────────────────────────────────────────────── */
 
@@ -330,9 +332,22 @@ function QuestCard({
   const [editing, setEditing] = useState(false);
   const [addingBuild, setAddingBuild] = useState(false);
   const [showCompletedBuilds, setShowCompletedBuilds] = useState(false);
+  const [confirmingDelete, setConfirmingDelete] = useState(false);
+  const [deleting, setDeleting] = useState(false);
   const builds = quest.builds ?? [];
   const openBuilds = builds.filter((b) => b.status !== "completed");
   const completedBuilds = builds.filter((b) => b.status === "completed");
+
+  async function handleDelete() {
+    setDeleting(true);
+    try {
+      await deleteQuest(quest.id);
+      onChanged();
+    } catch {
+      setDeleting(false);
+      // Leave the dialog open so the Founder can retry.
+    }
+  }
 
   const content = editing ? (
     <EntityEditForm
@@ -386,8 +401,27 @@ function QuestCard({
           <button type="button" onClick={() => setEditing(true)} className={`${smallBtn} text-muted/50 hover:text-foreground/75`}>
             Edit
           </button>
+          <button
+            type="button"
+            onClick={() => setConfirmingDelete(true)}
+            className={`${smallBtn} text-muted/50 hover:text-[rgba(255,120,120,0.85)]`}
+          >
+            Delete
+          </button>
         </div>
       </div>
+
+      {confirmingDelete && (
+        <ConfirmDialog
+          title="Delete this Quest?"
+          message={`"${quest.title}" and all of its Builds will be permanently removed. This cannot be undone.`}
+          confirmLabel="Delete"
+          destructive
+          busy={deleting}
+          onConfirm={handleDelete}
+          onCancel={() => setConfirmingDelete(false)}
+        />
+      )}
 
       {/* Builds — steps. Completed ones stay collapsed by default so a
           long-running Quest's history doesn't drown out what's actionable. */}
