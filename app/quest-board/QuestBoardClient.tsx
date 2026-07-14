@@ -14,6 +14,7 @@ import {
   getProgressClient,
   createQuestline,
   updateQuestline,
+  deleteQuestline,
   createQuest,
   updateQuest,
   deleteQuest,
@@ -21,6 +22,7 @@ import {
   updateBuild,
   createSideQuest,
   updateSideQuest,
+  deleteSideQuest,
 } from "../lib/questMutationService";
 import { ConfirmDialog } from "../components/ConfirmDialog";
 
@@ -513,52 +515,75 @@ function ElevatedCard({ children }: { children: React.ReactNode }) {
 
 function QuestlineCard({ questline, onChanged }: { questline: Questline; onChanged: () => void }) {
   const [editing, setEditing] = useState(false);
+  const [confirmingDelete, setConfirmingDelete] = useState(false);
+  const [deleting, setDeleting] = useState(false);
 
-  if (editing) {
-    return (
-      <ElevatedCard>
-        <EntityEditForm
-          initialTitle={questline.title}
-          initialDescription={questline.description}
-          initialStatus={questline.status}
-          statusOptions={["available", "completed"]}
-          onCancel={() => setEditing(false)}
-          onSave={async (fields) => {
-            await updateQuestline(questline.id, fields);
-            setEditing(false);
-            onChanged();
-          }}
-        />
-      </ElevatedCard>
-    );
+  async function handleDelete() {
+    setDeleting(true);
+    try {
+      await deleteQuestline(questline.id);
+      onChanged();
+    } catch {
+      setDeleting(false);
+      // Leave the dialog open so the Founder can retry.
+    }
   }
 
-  return (
-    <ElevatedCard>
-      <div className="flex items-start justify-between gap-3">
-        <div className="min-w-0">
-          <div className="flex items-center gap-2.5">
-            <h3 className="font-display text-base tracking-wide text-foreground/95">{questline.title}</h3>
-            <StatusPill status={questline.status} />
-          </div>
-          <p className="mt-1 text-xs leading-relaxed text-muted/60">{questline.description}</p>
+  const content = editing ? (
+    <EntityEditForm
+      initialTitle={questline.title}
+      initialDescription={questline.description}
+      initialStatus={questline.status}
+      statusOptions={["available", "completed"]}
+      onCancel={() => setEditing(false)}
+      onSave={async (fields) => {
+        await updateQuestline(questline.id, fields);
+        setEditing(false);
+        onChanged();
+      }}
+      onDelete={() => setConfirmingDelete(true)}
+    />
+  ) : (
+    <div className="flex items-start justify-between gap-3">
+      <div className="min-w-0">
+        <div className="flex items-center gap-2.5">
+          <h3 className="font-display text-base tracking-wide text-foreground/95">{questline.title}</h3>
+          <StatusPill status={questline.status} />
         </div>
-        <div className="flex shrink-0 gap-1.5">
-          {questline.status !== "completed" && (
-            <button
-              type="button"
-              onClick={() => updateQuestline(questline.id, { status: "completed" }).then(onChanged)}
-              className={`${smallBtn} text-accent/60 hover:text-accent/85`}
-            >
-              Complete
-            </button>
-          )}
-          <button type="button" onClick={() => setEditing(true)} className={`${smallBtn} text-muted/50 hover:text-foreground/75`}>
-            Edit
-          </button>
-        </div>
+        <p className="mt-1 text-xs leading-relaxed text-muted/60">{questline.description}</p>
       </div>
-    </ElevatedCard>
+      <div className="flex shrink-0 gap-1.5">
+        {questline.status !== "completed" && (
+          <button
+            type="button"
+            onClick={() => updateQuestline(questline.id, { status: "completed" }).then(onChanged)}
+            className={`${smallBtn} text-accent/60 hover:text-accent/85`}
+          >
+            Complete
+          </button>
+        )}
+        <button type="button" onClick={() => setEditing(true)} className={`${smallBtn} text-muted/50 hover:text-foreground/75`}>
+          Edit
+        </button>
+      </div>
+    </div>
+  );
+
+  return (
+    <>
+      <ElevatedCard>{content}</ElevatedCard>
+      {confirmingDelete && (
+        <ConfirmDialog
+          title="Delete this Questline?"
+          message={`"${questline.title}" and all of its Quests and Builds will be permanently removed. This cannot be undone.`}
+          confirmLabel="Delete"
+          destructive
+          busy={deleting}
+          onConfirm={handleDelete}
+          onCancel={() => setConfirmingDelete(false)}
+        />
+      )}
+    </>
   );
 }
 
@@ -574,6 +599,19 @@ function SideQuestCard({
   highlight?: boolean;
 }) {
   const [editing, setEditing] = useState(false);
+  const [confirmingDelete, setConfirmingDelete] = useState(false);
+  const [deleting, setDeleting] = useState(false);
+
+  async function handleDelete() {
+    setDeleting(true);
+    try {
+      await deleteSideQuest(sideQuest.id);
+      onChanged();
+    } catch {
+      setDeleting(false);
+      // Leave the dialog open so the Founder can retry.
+    }
+  }
 
   const content = editing ? (
     <EntityEditForm
@@ -586,6 +624,7 @@ function SideQuestCard({
         setEditing(false);
         onChanged();
       }}
+      onDelete={() => setConfirmingDelete(true)}
     />
   ) : (
     <div className="flex items-start justify-between gap-3">
@@ -624,11 +663,28 @@ function SideQuestCard({
     </div>
   );
 
-  if (highlight) {
-    return <div className="rounded-sm border border-accent-glow/20 bg-accent-glow/[0.03] px-3.5 py-3">{content}</div>;
-  }
+  const card = highlight ? (
+    <div className="rounded-sm border border-accent-glow/20 bg-accent-glow/[0.03] px-3.5 py-3">{content}</div>
+  ) : (
+    <ElevatedCard>{content}</ElevatedCard>
+  );
 
-  return <ElevatedCard>{content}</ElevatedCard>;
+  return (
+    <>
+      {card}
+      {confirmingDelete && (
+        <ConfirmDialog
+          title="Delete this Side Quest?"
+          message={`"${sideQuest.title}" will be permanently removed. This cannot be undone.`}
+          confirmLabel="Delete"
+          destructive
+          busy={deleting}
+          onConfirm={handleDelete}
+          onCancel={() => setConfirmingDelete(false)}
+        />
+      )}
+    </>
+  );
 }
 
 /* ── SUB TAB BAR (Active / Completed, within a main tab) ──────────────────── */

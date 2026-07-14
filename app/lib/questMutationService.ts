@@ -152,6 +152,14 @@ export async function updateQuestline(id: string, fields: EditableFields): Promi
   if (error) throw new Error(error.message);
 }
 
+/** Permanently remove a Questline — its Quests (and their Builds) cascade-delete
+ * with it (see the questline_id foreign key in quest-board.sql). */
+export async function deleteQuestline(id: string): Promise<void> {
+  const supabase = createClient();
+  const { error } = await supabase.from("questlines").delete().eq("id", id);
+  if (error) throw new Error(error.message);
+}
+
 /* ── QUESTS ───────────────────────────────────────────────────────────────── */
 
 export async function createQuest(
@@ -308,5 +316,12 @@ export async function updateSideQuest(id: string, fields: EditableFields): Promi
   }
 
   const { error } = await supabase.from("side_quests").update(toPatch(fields)).eq("id", id);
+  if (error) throw new Error(error.message);
+}
+
+/** Permanently remove a Side Quest. */
+export async function deleteSideQuest(id: string): Promise<void> {
+  const supabase = createClient();
+  const { error } = await supabase.from("side_quests").delete().eq("id", id);
   if (error) throw new Error(error.message);
 }
