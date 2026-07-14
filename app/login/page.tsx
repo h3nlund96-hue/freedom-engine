@@ -58,7 +58,7 @@ export default function LoginPage() {
 
           {/* Footer mark */}
           <p className="mt-8 text-center text-[0.6rem] tracking-[0.18em] uppercase text-muted/25">
-            Founder access only · Freedom Engine Alpha
+            Founder access only
           </p>
 
         </div>
