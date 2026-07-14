@@ -6,8 +6,6 @@ import { useState } from "react";
 
 interface EmberResponse {
   answer: string;
-  recommendedDirection: string;
-  smallestStep: string;
 }
 
 const SUGGESTED_QUESTIONS = [
@@ -32,11 +30,7 @@ async function fetchEmberResponse(question: string): Promise<EmberResponse> {
     throw new Error(data.error ?? "Ember could not answer right now. The fire is still burning.");
   }
 
-  return {
-    answer: data.answer,
-    recommendedDirection: data.recommendedDirection,
-    smallestStep: data.smallestStep,
-  };
+  return { answer: data.answer };
 }
 
 /* ── COMPANION HALL CLIENT ────────────────────────────────────────────────── */
@@ -317,24 +311,8 @@ function EmberResponsePanel({ question, response }: { question: string; response
 
         <div className="h-px bg-linear-to-r from-accent/10 to-transparent" aria-hidden />
 
-        {/* Ember's Answer */}
-        <ResponseSection label="Ember's Answer">
-          <p className="text-sm leading-relaxed text-foreground/72">{response.answer}</p>
-        </ResponseSection>
-
-        <div className="h-px bg-linear-to-r from-accent/7 to-transparent" aria-hidden />
-
-        {/* Recommended Direction */}
-        <ResponseSection label="Recommended Direction">
-          <p className="text-sm leading-relaxed text-foreground/65">{response.recommendedDirection}</p>
-        </ResponseSection>
-
-        <div className="h-px bg-linear-to-r from-accent/7 to-transparent" aria-hidden />
-
-        {/* Smallest Useful Step */}
-        <ResponseSection label="Smallest Useful Step">
-          <p className="text-sm leading-relaxed text-accent/78">{response.smallestStep}</p>
-        </ResponseSection>
+        {/* Answer */}
+        <p className="text-sm leading-relaxed text-foreground/72">{response.answer}</p>
 
         {/* Constitution attribution */}
         <p className="pt-1 text-[0.55rem] tracking-[0.14em] text-muted/28 italic">
@@ -342,17 +320,6 @@ function EmberResponsePanel({ question, response }: { question: string; response
         </p>
 
       </div>
-    </div>
-  );
-}
-
-/* ── RESPONSE SECTION ─────────────────────────────────────────────────────── */
-
-function ResponseSection({ label, children }: { label: string; children: React.ReactNode }) {
-  return (
-    <div className="space-y-2">
-      <p className="font-display text-[0.52rem] tracking-[0.2em] uppercase text-muted/35">{label}</p>
-      {children}
     </div>
   );
 }

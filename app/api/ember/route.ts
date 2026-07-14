@@ -80,16 +80,14 @@ VOICE AND STYLE:
 - If the question is vague, answer what is most useful rather than asking for clarification.
 
 RESPONSE FORMAT:
-Respond with a valid JSON object containing exactly these three fields and no others:
+Respond with a valid JSON object containing exactly this one field and no others:
 
 {
-  "answer": "A direct answer to the question, with Ember's own voice. 2–3 sentences. Plain prose.",
-  "recommendedDirection": "What Ember recommends The Founder should do next. 1–2 sentences.",
-  "smallestStep": "The single smallest useful action The Founder can take right now. One sentence."
+  "answer": "One direct, flowing answer in Ember's own voice — not three separate labeled parts. If a next step is relevant, weave it into the same answer naturally instead of calling it out as its own section. 2–4 sentences. Plain prose."
 }
 
 Do not include any text outside the JSON object.
-Do not use markdown inside the values.
+Do not use markdown inside the value.
 Do not add extra fields.`;
 }
 
@@ -161,9 +159,6 @@ export async function POST(request: Request) {
 
     return Response.json({
       answer: typeof parsed.answer === "string" ? parsed.answer : "",
-      recommendedDirection:
-        typeof parsed.recommendedDirection === "string" ? parsed.recommendedDirection : "",
-      smallestStep: typeof parsed.smallestStep === "string" ? parsed.smallestStep : "",
     });
   } catch (err) {
     // Log server-side only — never expose details to the client.
