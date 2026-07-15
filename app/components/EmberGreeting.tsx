@@ -36,7 +36,7 @@ export function EmberGreeting({ activeQuestTitle }: { activeQuestTitle?: string 
   return (
     <section className="animate-fade-up" style={{ animationDelay: "0.14s" }} aria-label="Ember">
       <div className="flex items-start gap-3">
-        <EmberGlyph size="text-xl" />
+        <EmberGlyph className="h-5 w-5" />
         <p className="pt-1 text-base leading-relaxed text-foreground/80 sm:text-lg">{message}</p>
       </div>
     </section>
