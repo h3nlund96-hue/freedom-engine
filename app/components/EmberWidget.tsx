@@ -24,7 +24,7 @@ export function EmberWidget() {
         aria-expanded={open}
         className="fixed bottom-6 right-6 z-40 flex size-12 items-center justify-center rounded-full border border-accent-glow/25 bg-[rgba(10,17,30,0.94)] shadow-[0_8px_28px_rgba(0,0,0,0.5)] transition-transform duration-300 hover:scale-105"
       >
-        {open ? <span className="font-display text-sm text-muted/70">✕</span> : <EmberGlyph size="text-xl" />}
+        {open ? <span className="font-display text-sm text-muted/70">✕</span> : <EmberGlyph className="h-6 w-6" />}
       </button>
 
       {open && (
@@ -37,7 +37,7 @@ export function EmberWidget() {
               aria-hidden
             />
             <div className="relative flex items-center gap-2.5 border-b border-white/[0.06] px-5 py-4">
-              <EmberGlyph size="text-lg" />
+              <EmberGlyph className="h-5 w-5" />
               <span className="font-display text-sm tracking-wide text-foreground/90">Ember</span>
             </div>
             <div className="relative overflow-y-auto px-5 py-5">
