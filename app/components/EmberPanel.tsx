@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import {
   useEmberConversation,
   type EmberMessage,
@@ -59,9 +59,10 @@ function buildSuggestedQuestions(info: ActiveInfo | null): string[] {
  * the floating widget on HQ, Quest Board and Idea Vault. Same conversation
  * either way, since both read from the same EmberProvider context. */
 export function EmberPanel() {
-  const { messages, loading, error, ask, resolveProposal } = useEmberConversation();
+  const { messages, loading, error, ask, resolveProposal, clearConversation } = useEmberConversation();
   const [question, setQuestion] = useState("");
   const [activeInfo, setActiveInfo] = useState<ActiveInfo | null>(null);
+  const historyRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     getProgressClient()
@@ -74,6 +75,11 @@ export function EmberPanel() {
         // Leave null — the generic suggestions below still work fine.
       });
   }, []);
+
+  useEffect(() => {
+    const el = historyRef.current;
+    if (el) el.scrollTop = el.scrollHeight;
+  }, [messages.length]);
 
   const suggestedQuestions = buildSuggestedQuestions(activeInfo);
 
@@ -90,15 +96,26 @@ export function EmberPanel() {
 
   return (
     <div className="flex flex-col gap-5">
-      <div className="space-y-1">
-        <h3 className="font-display text-lg tracking-wide text-foreground/90">Ask Ember</h3>
-        <p className="text-xs text-muted/50">
-          A quiet place to ask for direction before choosing the next Build.
-        </p>
+      <div className="flex items-start justify-between gap-4">
+        <div className="space-y-1">
+          <h3 className="font-display text-lg tracking-wide text-foreground/90">Ask Ember</h3>
+          <p className="text-xs text-muted/50">
+            A quiet place to ask for direction before choosing the next Build.
+          </p>
+        </div>
+        {messages.length > 0 && (
+          <button
+            type="button"
+            onClick={clearConversation}
+            className="shrink-0 rounded-sm px-2.5 py-1 font-display text-[0.6rem] tracking-[0.12em] uppercase text-muted/40 transition-colors duration-300 hover:text-accent-glow/70"
+          >
+            New conversation
+          </button>
+        )}
       </div>
 
       {messages.length > 0 && (
-        <div className="flex max-h-[420px] flex-col gap-4 overflow-y-auto pr-1">
+        <div ref={historyRef} className="flex max-h-[420px] flex-col gap-4 overflow-y-auto pr-1">
           {messages.map((m, i) => (
             <MessageBubble key={i} message={m} index={i} onResolveProposal={resolveProposal} />
           ))}
