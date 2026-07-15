@@ -20,6 +20,7 @@ import {
   deleteQuest,
   createBuild,
   updateBuild,
+  deleteBuild,
   createSideQuest,
   updateSideQuest,
   deleteSideQuest,
@@ -265,67 +266,93 @@ function AddToggle({ label, onClick }: { label: string; onClick: () => void }) {
 
 function BuildRow({ build, questId, onChanged }: { build: Build; questId: string; onChanged: () => void }) {
   const [editing, setEditing] = useState(false);
+  const [confirmingDelete, setConfirmingDelete] = useState(false);
+  const [deleting, setDeleting] = useState(false);
 
-  if (editing) {
-    return (
-      <EntityEditForm
-        initialTitle={build.title}
-        initialDescription={build.description ?? ""}
-        initialNextStep={build.nextStep ?? ""}
-        showNextStep
-        initialStatus={build.status}
-        onCancel={() => setEditing(false)}
-        onSave={async (fields) => {
-          await updateBuild(build.id, questId, fields);
-          setEditing(false);
-          onChanged();
-        }}
-      />
-    );
+  async function handleDelete() {
+    setDeleting(true);
+    try {
+      await deleteBuild(build.id);
+      onChanged();
+    } catch {
+      setDeleting(false);
+      // Leave the dialog open so the Founder can retry.
+    }
   }
 
   return (
-    <li className="flex items-start gap-2.5 rounded-sm px-2.5 py-2 transition-colors duration-300 hover:bg-[rgba(255,171,74,0.03)]">
-      <span
-        className={`mt-1 size-1.5 shrink-0 rounded-full ${
-          build.status === "completed"
-            ? "bg-accent/50"
-            : build.status === "active"
-            ? "bg-accent-glow shadow-[0_0_5px_rgba(77,216,255,0.6)]"
-            : "bg-muted/25"
-        }`}
-        aria-hidden
-      />
-      <div className="min-w-0 flex-1">
-        <div className="flex items-center gap-2">
-          <p
-            className={`text-xs leading-relaxed ${
-              build.status === "completed" ? "text-foreground/45 line-through" : "text-foreground/80"
+    <>
+      {editing ? (
+        <EntityEditForm
+          initialTitle={build.title}
+          initialDescription={build.description ?? ""}
+          initialNextStep={build.nextStep ?? ""}
+          showNextStep
+          initialStatus={build.status}
+          onCancel={() => setEditing(false)}
+          onSave={async (fields) => {
+            await updateBuild(build.id, questId, fields);
+            setEditing(false);
+            onChanged();
+          }}
+          onDelete={() => setConfirmingDelete(true)}
+        />
+      ) : (
+        <li className="flex items-start gap-2.5 rounded-sm px-2.5 py-2 transition-colors duration-300 hover:bg-[rgba(255,171,74,0.03)]">
+          <span
+            className={`mt-1 size-1.5 shrink-0 rounded-full ${
+              build.status === "completed"
+                ? "bg-accent/50"
+                : build.status === "active"
+                ? "bg-accent-glow shadow-[0_0_5px_rgba(77,216,255,0.6)]"
+                : "bg-muted/25"
             }`}
-          >
-            {build.title}
-          </p>
-          <StatusPill status={build.status} />
-        </div>
-        {build.nextStep && build.status !== "completed" && (
-          <p className="mt-0.5 text-[0.7rem] leading-relaxed text-accent-glow/60">→ {build.nextStep}</p>
-        )}
-      </div>
-      <div className="flex shrink-0 gap-1.5">
-        {build.status !== "completed" && (
-          <button
-            type="button"
-            onClick={() => updateBuild(build.id, questId, { status: "completed" }).then(onChanged)}
-            className={`${smallBtn} text-accent/60 hover:text-accent/85`}
-          >
-            Complete
-          </button>
-        )}
-        <button type="button" onClick={() => setEditing(true)} className={`${smallBtn} text-muted/50 hover:text-foreground/75`}>
-          Edit
-        </button>
-      </div>
-    </li>
+            aria-hidden
+          />
+          <div className="min-w-0 flex-1">
+            <div className="flex items-center gap-2">
+              <p
+                className={`text-xs leading-relaxed ${
+                  build.status === "completed" ? "text-foreground/45 line-through" : "text-foreground/80"
+                }`}
+              >
+                {build.title}
+              </p>
+              <StatusPill status={build.status} />
+            </div>
+            {build.nextStep && build.status !== "completed" && (
+              <p className="mt-0.5 text-[0.7rem] leading-relaxed text-accent-glow/60">→ {build.nextStep}</p>
+            )}
+          </div>
+          <div className="flex shrink-0 gap-1.5">
+            {build.status !== "completed" && (
+              <button
+                type="button"
+                onClick={() => updateBuild(build.id, questId, { status: "completed" }).then(onChanged)}
+                className={`${smallBtn} text-accent/60 hover:text-accent/85`}
+              >
+                Complete
+              </button>
+            )}
+            <button type="button" onClick={() => setEditing(true)} className={`${smallBtn} text-muted/50 hover:text-foreground/75`}>
+              Edit
+            </button>
+          </div>
+        </li>
+      )}
+
+      {confirmingDelete && (
+        <ConfirmDialog
+          title="Delete this Build?"
+          message={`"${build.title}" will be permanently removed. This cannot be undone.`}
+          confirmLabel="Delete"
+          destructive
+          busy={deleting}
+          onConfirm={handleDelete}
+          onCancel={() => setConfirmingDelete(false)}
+        />
+      )}
+    </>
   );
 }
 
