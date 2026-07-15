@@ -5,7 +5,7 @@ import { usePathname } from "next/navigation";
 import { EmberPanel } from "./EmberPanel";
 import { EmberGlyph } from "./EmberGlyph";
 
-// Only shown on these routes — Companion Hall already has Ember front and
+// Only shown on these routes — Hall of Embers already has Ember front and
 // center, and the widget would be noise on Constitution/Profile/Login.
 const WIDGET_PATHS = new Set(["/", "/quest-board", "/idea-vault"]);
 

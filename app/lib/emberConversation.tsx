@@ -4,7 +4,7 @@
  * Shared Ember conversation state.
  *
  * Mounted once at the root layout so the same conversation follows The
- * Founder across HQ, Quest Board, Idea Vault and Companion Hall — asking
+ * Founder across HQ, Quest Board, Idea Vault and Hall of Embers — asking
  * something on one page and continuing it on another just works. Persisted
  * to sessionStorage so it also survives a hard refresh within the tab.
  */
@@ -13,12 +13,13 @@ import { createContext, useContext, useEffect, useRef, useState } from "react";
 
 /* ── TYPES ────────────────────────────────────────────────────────────────── */
 
-export interface EmberProposal {
-  type: "quest" | "idea";
-  title: string;
-  description: string;
-  questlineId: string | null;
-}
+/** What Ember can propose doing — she never acts on any of these herself;
+ * The Founder approves before anything is written (see ProposalCard). */
+export type EmberProposal =
+  | { action: "create_quest"; title: string; description: string; questlineId: string | null }
+  | { action: "create_idea"; title: string; description: string }
+  | { action: "activate_quest"; questId: string; questlineId: string; questTitle: string }
+  | { action: "complete_build"; buildId: string; questId: string; buildTitle: string };
 
 export interface EmberMessage {
   role: "user" | "assistant";

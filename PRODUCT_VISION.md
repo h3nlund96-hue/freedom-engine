@@ -83,4 +83,5 @@ Freedom Engine ships with one Companion for now — more will wake up in future 
 | Constitution Hall | `/constitution` | Live |
 | Quest Board | `/quest-board` | Live |
 | Idea Vault | `/idea-vault` | Live |
+| Hall of Embers | `/hall-of-embers` | Live |
 | Tend the Fire | — | Embedded in HQ (not a separate location) |

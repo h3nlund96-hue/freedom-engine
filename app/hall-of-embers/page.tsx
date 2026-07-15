@@ -1,16 +1,16 @@
 import type { Metadata } from "next";
 import { AtmosphericBackground } from "../components/AtmosphericBackground";
 import { LocationHeader } from "../components/LocationHeader";
-import { CompanionHallClient } from "./CompanionHallClient";
+import { HallOfEmbersClient } from "./HallOfEmbersClient";
 
 export const metadata: Metadata = {
-  title: "Companion Hall — Freedom Engine",
+  title: "Hall of Embers — Freedom Engine",
   description: "Allies who walk the path with The Founder.",
 };
 
 /* ── PAGE ─────────────────────────────────────────────────────────────────── */
 
-export default function CompanionHallPage() {
+export default function HallOfEmbersPage() {
   return (
     <div className="relative flex min-h-full flex-1 flex-col overflow-hidden">
       <AtmosphericBackground variant="companions" />
@@ -20,7 +20,7 @@ export default function CompanionHallPage() {
         <LocationHeader
           icon="⋈"
           eyebrow="Council Chamber"
-          title="Companion Hall"
+          title="Hall of Embers"
           description="Focused AI allies who help The Founder build, decide, learn and keep momentum."
         />
 
@@ -45,7 +45,7 @@ export default function CompanionHallPage() {
         </div>
 
         {/* Ember card + ask console */}
-        <CompanionHallClient />
+        <HallOfEmbersClient />
 
         {/* Footer */}
         <footer
@@ -54,7 +54,7 @@ export default function CompanionHallPage() {
         >
           <span className="h-px flex-1 bg-linear-to-r from-transparent via-accent/8 to-transparent" aria-hidden />
           <p className="text-[0.65rem] tracking-[0.18em] uppercase text-muted/30">
-            Companion Hall · Freedom Engine
+            Hall of Embers · Freedom Engine
           </p>
           <span className="h-px flex-1 bg-linear-to-r from-transparent via-accent/8 to-transparent" aria-hidden />
         </footer>
