@@ -277,6 +277,13 @@ export async function updateBuild(
   if (error) throw new Error(error.message);
 }
 
+/** Permanently remove a Build. */
+export async function deleteBuild(id: string): Promise<void> {
+  const supabase = createClient();
+  const { error } = await supabase.from("builds").delete().eq("id", id);
+  if (error) throw new Error(error.message);
+}
+
 /* ── SIDE QUESTS ──────────────────────────────────────────────────────────── */
 
 export async function createSideQuest(title: string, description: string): Promise<{ id: string }> {
