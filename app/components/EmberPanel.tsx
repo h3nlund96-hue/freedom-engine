@@ -7,21 +7,75 @@ import {
   type EmberProposal,
 } from "../lib/emberConversation";
 import { createIdea } from "../lib/ideaService";
-import { createQuest, getQuestlineOptions, type QuestlineSummary } from "../lib/questMutationService";
+import {
+  createQuest,
+  getQuestlineOptions,
+  getProgressClient,
+  updateQuest,
+  updateBuild,
+  type QuestlineSummary,
+} from "../lib/questMutationService";
+import { getActiveQuest, getCurrentBuild } from "../data/freedomEngineProgress";
 
-const SUGGESTED_QUESTIONS = [
-  "What should the next Build be?",
-  "Does this serve the Main Quest?",
-  "Is this a Side Quest or part of the active Questline?",
-  "What is the smallest useful next step?",
-];
+/* ── DYNAMIC SUGGESTED QUESTIONS ──────────────────────────────────────────── */
 
-/** The shared Ember ask console — reused inline on Companion Hall and inside
+interface ActiveInfo {
+  questTitle?: string;
+  buildTitle?: string;
+}
+
+/** Pure logic, no LLM call — mirrors what Ember can already see (the active
+ * Quest/Build), plus a couple of prompts that call out what Ember can now
+ * actually do (activate a Quest, complete a Build, capture an idea) so
+ * those tools stay discoverable. */
+function buildSuggestedQuestions(info: ActiveInfo | null): string[] {
+  if (info?.questTitle && info?.buildTitle) {
+    return [
+      `What's blocking ${info.buildTitle}?`,
+      `Mark ${info.buildTitle} as complete`,
+      `Is ${info.questTitle} still the right focus?`,
+      "Capture this as an idea",
+    ];
+  }
+
+  if (info?.questTitle) {
+    return [
+      `What should the next Build for ${info.questTitle} be?`,
+      "Activate a different Quest",
+      "What is the smallest useful next step?",
+      "Capture this as an idea",
+    ];
+  }
+
+  return [
+    "Activate a Quest for me",
+    "What should the next Quest be?",
+    "Help me create a new Quest",
+    "Capture this as an idea",
+  ];
+}
+
+/** The shared Ember ask console — reused inline on Hall of Embers and inside
  * the floating widget on HQ, Quest Board and Idea Vault. Same conversation
  * either way, since both read from the same EmberProvider context. */
 export function EmberPanel() {
   const { messages, loading, error, ask, resolveProposal } = useEmberConversation();
   const [question, setQuestion] = useState("");
+  const [activeInfo, setActiveInfo] = useState<ActiveInfo | null>(null);
+
+  useEffect(() => {
+    getProgressClient()
+      .then((progress) => {
+        const quest = getActiveQuest(progress);
+        const build = quest ? getCurrentBuild(quest) : undefined;
+        setActiveInfo({ questTitle: quest?.title, buildTitle: build?.title });
+      })
+      .catch(() => {
+        // Leave null — the generic suggestions below still work fine.
+      });
+  }, []);
+
+  const suggestedQuestions = buildSuggestedQuestions(activeInfo);
 
   async function handleAsk() {
     if (!question.trim() || loading) return;
@@ -57,7 +111,7 @@ export function EmberPanel() {
             Suggested Questions
           </p>
           <div className="flex flex-wrap gap-2">
-            {SUGGESTED_QUESTIONS.map((q) => (
+            {suggestedQuestions.map((q) => (
               <button
                 key={q}
                 type="button"
@@ -138,6 +192,58 @@ export function EmberPanel() {
   );
 }
 
+/* ── PROPOSAL COPY ────────────────────────────────────────────────────────── */
+
+function proposalHeading(proposal: EmberProposal): string {
+  switch (proposal.action) {
+    case "create_quest":
+      return "Proposed Quest";
+    case "create_idea":
+      return "Proposed Idea";
+    case "activate_quest":
+      return "Proposed: Activate Quest";
+    case "complete_build":
+      return "Proposed: Complete Build";
+  }
+}
+
+function proposalTitle(proposal: EmberProposal): string {
+  switch (proposal.action) {
+    case "create_quest":
+    case "create_idea":
+      return proposal.title;
+    case "activate_quest":
+      return proposal.questTitle;
+    case "complete_build":
+      return proposal.buildTitle;
+  }
+}
+
+function approveLabel(proposal: EmberProposal): string {
+  switch (proposal.action) {
+    case "create_quest":
+    case "create_idea":
+      return "Approve & Create";
+    case "activate_quest":
+      return "Approve & Activate";
+    case "complete_build":
+      return "Approve & Complete";
+  }
+}
+
+function successLabel(proposal: EmberProposal): string {
+  switch (proposal.action) {
+    case "create_quest":
+      return `✓ Created Quest — "${proposal.title}"`;
+    case "create_idea":
+      return `✓ Created Idea — "${proposal.title}"`;
+    case "activate_quest":
+      return `✓ Activated Quest — "${proposal.questTitle}"`;
+    case "complete_build":
+      return `✓ Completed Build — "${proposal.buildTitle}"`;
+  }
+}
+
 /* ── MESSAGE BUBBLE ───────────────────────────────────────────────────────── */
 
 function MessageBubble({
@@ -164,9 +270,7 @@ function MessageBubble({
         <ProposalCard proposal={message.proposal} onResolve={(status) => onResolveProposal(index, status)} />
       )}
       {message.proposal && message.proposalStatus === "created" && (
-        <p className="text-xs text-accent-glow/70">
-          ✓ Created {message.proposal.type === "quest" ? "Quest" : "Idea"} — &ldquo;{message.proposal.title}&rdquo;
-        </p>
+        <p className="text-xs text-accent-glow/70">{successLabel(message.proposal)}</p>
       )}
     </div>
   );
@@ -182,12 +286,14 @@ function ProposalCard({
   onResolve: (status: "created" | "dismissed") => void;
 }) {
   const [questlineOptions, setQuestlineOptions] = useState<QuestlineSummary[]>([]);
-  const [questlineId, setQuestlineId] = useState(proposal.questlineId ?? "");
-  const [creating, setCreating] = useState(false);
-  const [createError, setCreateError] = useState<string | null>(null);
+  const [questlineId, setQuestlineId] = useState(
+    proposal.action === "create_quest" ? proposal.questlineId ?? "" : ""
+  );
+  const [working, setWorking] = useState(false);
+  const [actionError, setActionError] = useState<string | null>(null);
 
   useEffect(() => {
-    if (proposal.type !== "quest") return;
+    if (proposal.action !== "create_quest") return;
     getQuestlineOptions()
       .then((options) => {
         setQuestlineOptions(options);
@@ -196,36 +302,42 @@ function ProposalCard({
       .catch(() => {
         // Leave the picker empty — the "no Questlines" message below covers it.
       });
-  }, [proposal.type]);
+  }, [proposal.action]);
 
   async function handleApprove() {
-    setCreating(true);
-    setCreateError(null);
+    setWorking(true);
+    setActionError(null);
     try {
-      if (proposal.type === "idea") {
+      if (proposal.action === "create_idea") {
         await createIdea(proposal.title, proposal.description, "raw");
-      } else {
+      } else if (proposal.action === "create_quest") {
         if (!questlineId) throw new Error("Choose a Questline first.");
         await createQuest(questlineId, proposal.title, proposal.description);
+      } else if (proposal.action === "activate_quest") {
+        await updateQuest(proposal.questId, proposal.questlineId, { status: "active" });
+      } else if (proposal.action === "complete_build") {
+        await updateBuild(proposal.buildId, proposal.questId, { status: "completed" });
       }
       onResolve("created");
     } catch (err) {
-      setCreateError(err instanceof Error ? err.message : "Could not create this. Try again.");
-      setCreating(false);
+      setActionError(err instanceof Error ? err.message : "Could not do this. Try again.");
+      setWorking(false);
     }
   }
+
+  const description = proposal.action === "create_quest" || proposal.action === "create_idea" ? proposal.description : "";
 
   return (
     <div className="space-y-3 rounded-md border border-accent-glow/20 bg-accent-glow/[0.04] p-4">
       <p className="font-display text-[0.55rem] tracking-[0.2em] uppercase text-accent-glow/70">
-        Proposed {proposal.type === "quest" ? "Quest" : "Idea"}
+        {proposalHeading(proposal)}
       </p>
       <div>
-        <p className="text-sm font-medium text-foreground/90">{proposal.title}</p>
-        {proposal.description && <p className="mt-1 text-xs leading-relaxed text-muted/60">{proposal.description}</p>}
+        <p className="text-sm font-medium text-foreground/90">{proposalTitle(proposal)}</p>
+        {description && <p className="mt-1 text-xs leading-relaxed text-muted/60">{description}</p>}
       </div>
 
-      {proposal.type === "quest" &&
+      {proposal.action === "create_quest" &&
         (questlineOptions.length > 0 ? (
           <select
             value={questlineId}
@@ -242,22 +354,22 @@ function ProposalCard({
           <p className="text-xs text-muted/50">No Questlines exist yet — create one on Quest Board first.</p>
         ))}
 
-      {createError && <p className="text-xs text-[rgba(255,120,120,0.9)]">{createError}</p>}
+      {actionError && <p className="text-xs text-[rgba(255,120,120,0.9)]">{actionError}</p>}
 
       <div className="flex gap-2">
         <button
           type="button"
           onClick={() => void handleApprove()}
-          disabled={creating || (proposal.type === "quest" && !questlineId)}
+          disabled={working || (proposal.action === "create_quest" && !questlineId)}
           className="rounded-sm px-3.5 py-1.5 font-display text-[0.6rem] tracking-[0.12em] uppercase text-accent-glow/85 transition-colors duration-300 disabled:cursor-not-allowed disabled:opacity-40"
           style={{ background: "rgba(77,216,255,0.12)", border: "1px solid rgba(77,216,255,0.25)" }}
         >
-          {creating ? "Creating..." : "Approve & Create"}
+          {working ? "Working..." : approveLabel(proposal)}
         </button>
         <button
           type="button"
           onClick={() => onResolve("dismissed")}
-          disabled={creating}
+          disabled={working}
           className="rounded-sm px-3.5 py-1.5 font-display text-[0.6rem] tracking-[0.12em] uppercase text-muted/60 transition-colors duration-300 hover:text-foreground/80 disabled:cursor-not-allowed disabled:opacity-40"
         >
           Dismiss

@@ -5,7 +5,7 @@
  * UI components import from this module — not from Supabase directly.
  *
  * Keeps Idea Vault decoupled from the underlying storage, making it easy to:
- * - add quick-capture from HQ or Companion Hall
+ * - add quick-capture from HQ or Hall of Embers
  * - extend the Idea schema (tags, notes, linked Quest)
  * - swap storage later if needed
  */

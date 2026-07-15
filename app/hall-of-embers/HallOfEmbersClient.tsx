@@ -3,9 +3,9 @@
 import { EmberPanel } from "../components/EmberPanel";
 import { EmberGlyph } from "../components/EmberGlyph";
 
-/* ── COMPANION HALL CLIENT ────────────────────────────────────────────────── */
+/* ── HALL OF EMBERS CLIENT ────────────────────────────────────────────────── */
 
-export function CompanionHallClient() {
+export function HallOfEmbersClient() {
   return (
     <section className="animate-fade-up space-y-8" style={{ animationDelay: "0.24s" }}>
       <div className="flex items-center gap-3">

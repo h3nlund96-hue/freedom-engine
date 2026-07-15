@@ -33,9 +33,9 @@ const worldPlaces = [
   },
   {
     icon: "⋈",
-    title: "Companion Hall",
+    title: "Hall of Embers",
     description: "Allies who walk the path with The Founder. Not bots — focused AI specialists.",
-    href: "/companions",
+    href: "/hall-of-embers",
     glow: "ember" as const,
   },
 ];

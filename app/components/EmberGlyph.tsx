@@ -1,6 +1,6 @@
 /** Ember's own glyph — a small living core with a breathing amber-to-cyan
  * glow and an expanding pulse halo behind it. Reused everywhere Ember shows
- * up (Companion Hall, the floating widget) so she reads as one consistent
+ * up (Hall of Embers, the floating widget) so she reads as one consistent
  * character rather than a generic status dot. */
 export function EmberGlyph({ size = "text-2xl" }: { size?: string }) {
   return (

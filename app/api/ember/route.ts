@@ -6,6 +6,7 @@ import {
   getCurrentBuild,
 } from "../../data/freedomEngineProgress";
 import { getProgress } from "../../lib/questService";
+import type { EmberProposal } from "../../lib/emberConversation";
 
 /* ── CLIENT ───────────────────────────────────────────────────────────────── */
 
@@ -53,6 +54,8 @@ interface EmberContext {
   nextStep: string;
   questlines: { id: string; title: string }[];
   recentIdeas: { title: string; status: string }[];
+  availableQuests: { id: string; title: string; questlineId: string }[];
+  openBuilds: { id: string; title: string; questId: string; questTitle: string }[];
 }
 
 function buildSystemPrompt(ctx: EmberContext): string {
@@ -65,6 +68,20 @@ function buildSystemPrompt(ctx: EmberContext): string {
     ctx.recentIdeas.length > 0
       ? ctx.recentIdeas.map((i) => `- ${i.title} [${i.status}]`).join("\n")
       : "None yet.";
+
+  const availableQuestsList =
+    ctx.availableQuests.length > 0
+      ? ctx.availableQuests
+          .map((q) => `- ${q.title} (id: ${q.id}, questline id: ${q.questlineId})`)
+          .join("\n")
+      : "None — every Quest is either already active or completed.";
+
+  const openBuildsList =
+    ctx.openBuilds.length > 0
+      ? ctx.openBuilds
+          .map((b) => `- ${b.title} (id: ${b.id}, quest id: ${b.questId}, from Quest: ${b.questTitle})`)
+          .join("\n")
+      : "None open right now.";
 
   return `You are Ember — a Companion inside Freedom Engine, a personal AI operating system for The Founder.
 
@@ -94,11 +111,17 @@ Current Build: ${ctx.currentBuild}
 Build description: ${ctx.currentBuildDescription}
 Next step: ${ctx.nextStep}
 
-AVAILABLE QUESTLINES (use the exact id when proposing a Quest):
+AVAILABLE QUESTLINES (use the exact id when proposing a new Quest):
 ${questlineList}
 
 RECENT IDEAS IN THE VAULT:
 ${ideaList}
+
+QUESTS YOU CAN PROPOSE ACTIVATING (not already active or completed):
+${availableQuestsList}
+
+OPEN BUILDS YOU CAN PROPOSE MARKING COMPLETE:
+${openBuildsList}
 
 FREEDOM ENGINE LANGUAGE (always use these terms — never generic alternatives):
 - "Build" not "task", "sprint", "ticket", or "work item"
@@ -122,11 +145,12 @@ VOICE AND STYLE:
 - If the question is vague, answer what is most useful rather than asking for clarification.
 - The conversation history given to you is real — refer back to it naturally when relevant, the way an ally who was actually listening would.
 
-PROPOSING A QUEST OR IDEA:
-- If — and only if — The Founder's message clearly calls for creating a new Quest or a new Idea, include a "proposal" object in your response (see RESPONSE FORMAT). Otherwise leave it null.
-- You never create anything yourself. Proposing is enough — The Founder approves it before anything is written anywhere.
-- For a Quest proposal, pick the single best-fitting Questline id from AVAILABLE QUESTLINES if one clearly fits; if none fit well or none exist, leave questlineId null and say so in your answer.
-- For an Idea proposal, questlineId is always null — Ideas don't belong to a Questline.
+PROPOSING AN ACTION:
+- If — and only if — The Founder's message clearly calls for one of the four actions below, include a "proposal" object in your response (see RESPONSE FORMAT). Otherwise leave it null.
+- You never act yourself. Proposing is enough — The Founder approves it before anything is written anywhere.
+- Only propose "activate_quest" for a Quest listed under QUESTS YOU CAN PROPOSE ACTIVATING, and "complete_build" for a Build listed under OPEN BUILDS YOU CAN PROPOSE MARKING COMPLETE — never invent an id.
+- For a new Quest proposal, pick the single best-fitting Questline id from AVAILABLE QUESTLINES if one clearly fits; if none fit well or none exist, leave questlineId null and say so in your answer.
+- For a new Idea proposal, there is no Questline — Ideas don't belong to one.
 - Keep proposed titles short and concrete. Keep proposed descriptions to one sentence.
 - Mention the proposal naturally in your answer (e.g. "I've put together a proposal below") — don't just silently attach it.
 
@@ -135,17 +159,67 @@ Respond with a valid JSON object containing exactly these two fields and no othe
 
 {
   "answer": "One direct, flowing answer in Ember's own voice — not separate labeled parts. If a next step is relevant, weave it into the same answer naturally. 2–4 sentences. Plain prose.",
-  "proposal": null OR {
-    "type": "quest" or "idea",
-    "title": "Short concrete title",
-    "description": "One sentence.",
-    "questlineId": "an id from AVAILABLE QUESTLINES, or null"
-  }
+  "proposal": null OR exactly one of:
+    { "action": "create_quest", "title": "...", "description": "...", "questlineId": "an id from AVAILABLE QUESTLINES, or null" }
+    { "action": "create_idea", "title": "...", "description": "..." }
+    { "action": "activate_quest", "questId": "an id from QUESTS YOU CAN PROPOSE ACTIVATING", "questlineId": "that Quest's questline id", "questTitle": "that Quest's title" }
+    { "action": "complete_build", "buildId": "an id from OPEN BUILDS YOU CAN PROPOSE MARKING COMPLETE", "questId": "that Build's quest id", "buildTitle": "that Build's title" }
 }
 
 Do not include any text outside the JSON object.
 Do not use markdown inside any value.
 Do not add extra fields.`;
+}
+
+/* ── PROPOSAL VALIDATION ──────────────────────────────────────────────────── */
+
+function isNonEmptyString(value: unknown): value is string {
+  return typeof value === "string" && value.trim().length > 0;
+}
+
+function parseProposal(raw: unknown): EmberProposal | null {
+  if (!raw || typeof raw !== "object") return null;
+  const r = raw as Record<string, unknown>;
+
+  switch (r.action) {
+    case "create_quest":
+      if (!isNonEmptyString(r.title)) return null;
+      return {
+        action: "create_quest",
+        title: r.title,
+        description: typeof r.description === "string" ? r.description : "",
+        questlineId: typeof r.questlineId === "string" ? r.questlineId : null,
+      };
+    case "create_idea":
+      if (!isNonEmptyString(r.title)) return null;
+      return {
+        action: "create_idea",
+        title: r.title,
+        description: typeof r.description === "string" ? r.description : "",
+      };
+    case "activate_quest":
+      if (!isNonEmptyString(r.questId) || !isNonEmptyString(r.questlineId) || !isNonEmptyString(r.questTitle)) {
+        return null;
+      }
+      return {
+        action: "activate_quest",
+        questId: r.questId,
+        questlineId: r.questlineId,
+        questTitle: r.questTitle,
+      };
+    case "complete_build":
+      if (!isNonEmptyString(r.buildId) || !isNonEmptyString(r.questId) || !isNonEmptyString(r.buildTitle)) {
+        return null;
+      }
+      return {
+        action: "complete_build",
+        buildId: r.buildId,
+        questId: r.questId,
+        buildTitle: r.buildTitle,
+      };
+    default:
+      return null;
+  }
 }
 
 /* ── ROUTE ────────────────────────────────────────────────────────────────── */
@@ -183,6 +257,24 @@ export async function POST(request: Request) {
       .order("created_at", { ascending: false })
       .limit(15);
 
+    const availableQuests = progress.questlines
+      .flatMap((ql) =>
+        (ql.quests ?? [])
+          .filter((q) => q.status !== "active" && q.status !== "completed")
+          .map((q) => ({ id: q.id, title: q.title, questlineId: ql.id }))
+      )
+      .slice(0, 20);
+
+    const openBuilds = progress.questlines
+      .flatMap((ql) =>
+        (ql.quests ?? []).flatMap((q) =>
+          (q.builds ?? [])
+            .filter((b) => b.status !== "completed")
+            .map((b) => ({ id: b.id, title: b.title, questId: q.id, questTitle: q.title }))
+        )
+      )
+      .slice(0, 20);
+
     const ctx: EmberContext = {
       mainQuest: progress.mainQuest,
       activeQuestline: activeQuestline?.title ?? "None",
@@ -194,6 +286,8 @@ export async function POST(request: Request) {
       nextStep: currentBuild?.nextStep ?? "",
       questlines: progress.questlines.map((ql) => ({ id: ql.id, title: ql.title })),
       recentIdeas: (ideaRows ?? []) as { title: string; status: string }[],
+      availableQuests,
+      openBuilds,
     };
 
     const model = process.env.OPENAI_MODEL ?? "gpt-4o";
@@ -224,25 +318,9 @@ export async function POST(request: Request) {
       );
     }
 
-    const rawProposal =
-      parsed.proposal && typeof parsed.proposal === "object" ? (parsed.proposal as Record<string, unknown>) : null;
-
-    const proposal =
-      rawProposal &&
-      (rawProposal.type === "quest" || rawProposal.type === "idea") &&
-      typeof rawProposal.title === "string" &&
-      rawProposal.title.trim()
-        ? {
-            type: rawProposal.type,
-            title: rawProposal.title,
-            description: typeof rawProposal.description === "string" ? rawProposal.description : "",
-            questlineId: typeof rawProposal.questlineId === "string" ? rawProposal.questlineId : null,
-          }
-        : null;
-
     return Response.json({
       answer: typeof parsed.answer === "string" ? parsed.answer : "",
-      proposal,
+      proposal: parseProposal(parsed.proposal),
     });
   } catch (err) {
     // Log server-side only — never expose details to the client.
