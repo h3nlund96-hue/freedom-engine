@@ -44,22 +44,22 @@ function EmberCard() {
 
       <div className="relative flex flex-col gap-6 p-6 sm:p-7">
 
-        {/* Status row */}
-        <div className="flex items-center gap-2">
-          <span className="relative flex size-2" aria-hidden>
-            <span className="absolute inline-flex size-full animate-glow-pulse rounded-full bg-accent-glow/55" />
-            <span className="relative inline-flex size-2 rounded-full bg-accent-glow shadow-[0_0_10px_rgba(77,216,255,0.65)]" />
-          </span>
-          <span className="font-display text-[0.58rem] tracking-[0.22em] uppercase text-accent-glow/75">
-            Awake
-          </span>
-        </div>
-
-        {/* Name + role */}
+        {/* Identity row — status, glyph, name + role share one line */}
         <div className="flex items-start gap-4">
           <EmberGlyph size="text-4xl" />
-          <div className="space-y-2 pt-0.5">
-            <h2 className="font-display text-2xl tracking-wide text-foreground">Ember</h2>
+          <div className="min-w-0 flex-1 space-y-2 pt-0.5">
+            <div className="flex flex-wrap items-baseline gap-x-3 gap-y-1">
+              <h2 className="font-display text-2xl tracking-wide text-foreground">Ember</h2>
+              <span className="inline-flex items-center gap-1.5">
+                <span className="relative flex size-1.5" aria-hidden>
+                  <span className="absolute inline-flex size-full animate-glow-pulse rounded-full bg-accent-glow/55" />
+                  <span className="relative inline-flex size-1.5 rounded-full bg-accent-glow shadow-[0_0_8px_rgba(77,216,255,0.65)]" />
+                </span>
+                <span className="font-display text-[0.58rem] tracking-[0.22em] uppercase text-accent-glow/75">
+                  Awake
+                </span>
+              </span>
+            </div>
             <p className="text-xs leading-relaxed text-muted/60">
               Direction, decisions, prioritization and protection of the Freedom Engine vision.
             </p>
@@ -67,7 +67,7 @@ function EmberCard() {
         </div>
 
         {/* Console — same shared conversation as the widget on HQ, Quest Board and Idea Vault */}
-        <div className="border-t border-accent/[0.07] pt-5">
+        <div className="relative overflow-hidden rounded-md border border-white/[0.05] bg-black/15 p-5">
           <EmberPanel />
         </div>
 

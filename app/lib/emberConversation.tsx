@@ -34,6 +34,7 @@ interface EmberConversationValue {
   error: string | null;
   ask: (question: string) => Promise<void>;
   resolveProposal: (index: number, status: "created" | "dismissed") => void;
+  clearConversation: () => void;
 }
 
 const EmberConversationContext = createContext<EmberConversationValue | null>(null);
@@ -121,8 +122,15 @@ export function EmberProvider({ children }: { children: React.ReactNode }) {
     setMessages((prev) => prev.map((m, i) => (i === index ? { ...m, proposalStatus: status } : m)));
   }
 
+  function clearConversation() {
+    setMessages([]);
+    setError(null);
+  }
+
   return (
-    <EmberConversationContext.Provider value={{ messages, loading, error, ask, resolveProposal }}>
+    <EmberConversationContext.Provider
+      value={{ messages, loading, error, ask, resolveProposal, clearConversation }}
+    >
       {children}
     </EmberConversationContext.Provider>
   );
