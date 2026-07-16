@@ -126,16 +126,16 @@ export function EmberWidget() {
 
   return (
     <>
-      <div className="fixed bottom-6 right-6 z-40 flex justify-end">
-        <div className="flex h-12 items-center rounded-full border border-accent-glow/25 bg-surface shadow-[0_8px_28px_rgba(0,0,0,0.5)]">
+      <div className="fixed bottom-8 right-8 z-40 flex justify-end">
+        <div className="flex h-16 items-center rounded-full border border-accent-glow/25 bg-surface shadow-[0_8px_28px_rgba(0,0,0,0.5)]">
           <button
             type="button"
             onClick={() => setOpen((v) => !v)}
             aria-label={open ? "Close Ember" : "Ask Ember"}
             aria-expanded={open}
-            className="flex size-12 shrink-0 items-center justify-center rounded-full"
+            className="flex size-16 shrink-0 items-center justify-center rounded-full"
           >
-            {open ? <span className="font-display text-sm text-muted/70">✕</span> : <EmberGlyph className="h-6 w-6" />}
+            {open ? <span className="font-display text-base text-muted/70">✕</span> : <EmberGlyph className="h-9 w-9" />}
           </button>
 
           {showBubble && (
@@ -143,8 +143,8 @@ export function EmberWidget() {
               <button
                 type="button"
                 onClick={handleOpenPanel}
-                className={`truncate text-left text-xs leading-relaxed text-foreground/85 transition-all duration-500 ease-out ${
-                  expanded ? "max-w-[min(300px,calc(100vw-7rem))] pr-2 opacity-100" : "max-w-0 pr-0 opacity-0"
+                className={`truncate text-left text-sm leading-relaxed text-foreground/85 transition-all duration-500 ease-out ${
+                  expanded ? "max-w-[min(340px,calc(100vw-8rem))] pr-2 opacity-100" : "max-w-0 pr-0 opacity-0"
                 }`}
               >
                 {bubbleText}
@@ -153,8 +153,8 @@ export function EmberWidget() {
                 type="button"
                 onClick={collapseThenClear}
                 aria-label="Dismiss"
-                className={`shrink-0 overflow-hidden font-display text-[0.65rem] text-muted/40 transition-all duration-500 ease-out hover:text-foreground/70 ${
-                  expanded ? "mr-3.5 max-w-4 opacity-100" : "mr-0 max-w-0 opacity-0"
+                className={`shrink-0 overflow-hidden font-display text-xs text-muted/40 transition-all duration-500 ease-out hover:text-foreground/70 ${
+                  expanded ? "mr-4 max-w-4 opacity-100" : "mr-0 max-w-0 opacity-0"
                 }`}
               >
                 ✕
@@ -165,8 +165,8 @@ export function EmberWidget() {
       </div>
 
       {open && (
-        <div className="fixed bottom-24 right-6 z-40 w-[min(420px,calc(100vw-3rem))] max-h-[70vh] overflow-hidden rounded-md border border-card-border">
-          <div className="relative flex max-h-[70vh] flex-col overflow-hidden">
+        <div className="fixed bottom-28 right-8 z-40 w-[min(480px,calc(100vw-3rem))] max-h-[75vh] overflow-hidden rounded-md border border-card-border">
+          <div className="relative flex max-h-[75vh] flex-col overflow-hidden">
             <div className="absolute inset-0 bg-linear-to-br from-surface-raised to-surface" />
             <div
               className="pointer-events-none absolute inset-0 rounded-md"
@@ -174,8 +174,8 @@ export function EmberWidget() {
               aria-hidden
             />
             <div className="relative flex items-center gap-2.5 border-b border-card-border px-5 py-4">
-              <EmberGlyph className="h-5 w-5" />
-              <span className="font-display text-sm tracking-wide text-foreground/90">Ember</span>
+              <EmberGlyph className="h-7 w-7" />
+              <span className="font-display text-base tracking-wide text-foreground/90">Ember</span>
             </div>
             <div className="relative overflow-y-auto px-5 py-5">
               <EmberPanel />

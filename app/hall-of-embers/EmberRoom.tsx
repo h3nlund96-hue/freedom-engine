@@ -128,7 +128,7 @@ export function EmberRoom() {
 
   return (
     <div
-      className={`relative mx-auto flex w-full max-w-2xl flex-1 flex-col items-center gap-7 px-6 py-10 sm:px-8 ${
+      className={`relative mx-auto flex w-full max-w-3xl flex-1 flex-col items-center gap-7 px-6 py-10 sm:px-8 ${
         presenceMode ? "justify-center" : ""
       }`}
     >
@@ -166,7 +166,7 @@ export function EmberRoom() {
       <div className={`flex flex-col items-center gap-3 ${presenceMode ? "flex-1 justify-center" : "pt-2"}`}>
         <EmberGlyph
           speaking={speaking}
-          className={presenceMode ? "h-[min(58vw,58vh)] w-[min(58vw,58vh)]" : "h-28 w-28 sm:h-32 sm:w-32"}
+          className={presenceMode ? "h-[min(58vw,58vh)] w-[min(58vw,58vh)]" : "h-36 w-36 sm:h-44 sm:w-44"}
         />
         <div className="flex flex-col items-center gap-1.5">
           <h1 className="font-display text-lg tracking-wide text-foreground">Ember</h1>
