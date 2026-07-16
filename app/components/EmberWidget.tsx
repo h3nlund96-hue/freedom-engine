@@ -6,6 +6,7 @@ import { EmberPanel } from "./EmberPanel";
 import { EmberGlyph } from "./EmberGlyph";
 import { pickRandom } from "../lib/emberProactiveMessage";
 import { onEmberEvent } from "../lib/emberEvents";
+import { isProactiveEnabled, onProactiveChange } from "../lib/emberPreferences";
 
 /**
  * Ember's floating presence on HQ/Quest Board/Idea Vault — a quiet orb that
@@ -13,7 +14,8 @@ import { onEmberEvent } from "../lib/emberEvents";
  * itself again. Triggers: praise for completing a Quest or Build, a nod for
  * capturing a new Idea (all live, via emberEvents), and a greeting on
  * landing at Headquarters (once per session). No prompting, no "what's
- * next" nudging.
+ * next" nudging. All of it can be turned off from Profile — see
+ * emberPreferences.ts and EmberProactiveToggle.
  */
 
 // Only shown on these routes — Hall of Embers already has Ember front and
@@ -41,6 +43,7 @@ export function EmberWidget() {
   const [bubbleText, setBubbleText] = useState<string | null>(null);
   const [expanded, setExpanded] = useState(false);
   const [lastBubbleText, setLastBubbleText] = useState<string | null>(null);
+  const [proactiveEnabled, setProactiveEnabledState] = useState(isProactiveEnabled);
 
   // A genuinely new message always starts collapsed, so the open animates
   // even if one bubble replaces another mid-cycle.
@@ -49,6 +52,15 @@ export function EmberWidget() {
     setExpanded(false);
   }
 
+  // The widget stays mounted across client-side navigation, so a toggle
+  // flipped on the Profile page has to reach this instance live.
+  useEffect(() => {
+    return onProactiveChange((enabled) => {
+      setProactiveEnabledState(enabled);
+      if (!enabled) setBubbleText(null);
+    });
+  }, []);
+
   // Landing at Headquarters gets a plain greeting, once per browser session.
   // This has to be an effect (not the render-phase pattern used above) —
   // it reads and writes sessionStorage, and doing that mid-render runs on
@@ -56,6 +68,7 @@ export function EmberWidget() {
   // unreliable. An effect only ever runs after commit, on every mount and
   // on every client-side pathname change alike.
   useEffect(() => {
+    if (!proactiveEnabled) return;
     if (pathname !== "/") return;
     if (typeof window === "undefined") return;
     if (window.sessionStorage.getItem(HQ_GREETING_SESSION_KEY)) return;
@@ -64,12 +77,13 @@ export function EmberWidget() {
     // this out of the effect's synchronous body so it reads as reacting to
     // an external system rather than an unconditional render-triggered update.
     queueMicrotask(() => setBubbleText(pickRandom(HQ_ENTRY_NOTES)));
-  }, [pathname]);
+  }, [pathname, proactiveEnabled]);
 
   // Completing a Quest or Build, or capturing an Idea, anywhere in the app
   // takes over the pill immediately — the most timely thing Ember could say.
   useEffect(() => {
     return onEmberEvent((detail) => {
+      if (!proactiveEnabled) return;
       if (detail.kind === "quest_completed") {
         setBubbleText(pickRandom(QUEST_COMPLETE_NOTES));
       } else if (detail.kind === "build_completed") {
@@ -78,7 +92,7 @@ export function EmberWidget() {
         setBubbleText(pickRandom(IDEA_CREATED_NOTES));
       }
     });
-  }, []);
+  }, [proactiveEnabled]);
 
   // The full open → hold → close lifecycle for whatever bubbleText currently is.
   useEffect(() => {

@@ -1,7 +1,10 @@
 import type { Metadata } from "next";
 import { AtmosphericBackground } from "../components/AtmosphericBackground";
 import { LocationHeader } from "../components/LocationHeader";
+import { SignOutButton } from "../components/SignOutButton";
+import { EmberProactiveToggle } from "../components/EmberProactiveToggle";
 import { getProgress } from "../lib/questService";
+import { createClient } from "../../lib/supabase/server";
 import {
   calculateFounderXP,
   getXPProgress,
@@ -19,6 +22,10 @@ export const metadata: Metadata = {
 
 export default async function ProfilePage() {
   const progress = await getProgress();
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
 
   const totalXP = calculateFounderXP(progress);
   const xpData = getXPProgress(totalXP);
@@ -140,8 +147,48 @@ export default async function ProfilePage() {
           </div>
         </section>
 
+        {/* Account & Session */}
+        <section className="animate-fade-up" style={{ animationDelay: "0.2s" }} aria-label="Account and session">
+          <div className="relative overflow-hidden rounded-md border border-white/[0.07]">
+            <div className="absolute inset-0 bg-linear-to-br from-[rgba(10,17,30,0.95)] to-[rgba(5,8,14,0.98)]" />
+            <div
+              className="pointer-events-none absolute inset-0 rounded-md"
+              style={{ boxShadow: "inset 0 1px 0 rgba(255,171,74,0.10), inset 0 0 0 1px rgba(255,171,74,0.04)" }}
+              aria-hidden
+            />
+            <div className="relative flex flex-col gap-5 px-6 py-6 sm:px-8">
+              <p className="font-display text-[0.6rem] tracking-[0.2em] uppercase text-muted/40">
+                Account &amp; Session
+              </p>
+              <div className="flex items-center justify-between gap-4">
+                <div className="space-y-0.5">
+                  <p className="text-sm text-foreground/80">{user?.email ?? "Unknown Founder"}</p>
+                  <p className="text-xs text-muted/45">Signed in to Freedom Engine.</p>
+                </div>
+                <SignOutButton />
+              </div>
+            </div>
+          </div>
+        </section>
+
+        {/* Options */}
+        <section className="animate-fade-up" style={{ animationDelay: "0.26s" }} aria-label="Options">
+          <div className="relative overflow-hidden rounded-md border border-white/[0.07]">
+            <div className="absolute inset-0 bg-linear-to-br from-[rgba(10,17,30,0.95)] to-[rgba(5,8,14,0.98)]" />
+            <div
+              className="pointer-events-none absolute inset-0 rounded-md"
+              style={{ boxShadow: "inset 0 1px 0 rgba(255,171,74,0.10), inset 0 0 0 1px rgba(255,171,74,0.04)" }}
+              aria-hidden
+            />
+            <div className="relative flex flex-col gap-5 px-6 py-6 sm:px-8">
+              <p className="font-display text-[0.6rem] tracking-[0.2em] uppercase text-muted/40">Options</p>
+              <EmberProactiveToggle />
+            </div>
+          </div>
+        </section>
+
         {/* Status line */}
-        <div className="animate-fade-up" style={{ animationDelay: "0.24s" }}>
+        <div className="animate-fade-up" style={{ animationDelay: "0.32s" }}>
           <div className="flex items-center gap-4">
             <span className="h-px flex-1 bg-linear-to-r from-accent/10 to-transparent" aria-hidden />
             <p className="font-display text-[0.6rem] tracking-[0.2em] uppercase text-accent/40">
