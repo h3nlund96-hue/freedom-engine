@@ -34,7 +34,6 @@ export interface BuildRow {
   quest_id: string;
   title: string;
   description: string | null;
-  next_step: string | null;
   status: string;
   sort_order: number;
   build_number: number;
@@ -77,7 +76,6 @@ export function mapProgressRows(
               title: b.title,
               status: b.status as QuestStatus,
               description: b.description ?? undefined,
-              nextStep: b.next_step ?? undefined,
             })),
         })),
     })),

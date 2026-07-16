@@ -49,12 +49,10 @@ function StatusPill({ status }: { status: QuestStatus }) {
 
 const ALL_STATUS_OPTIONS: QuestStatus[] = ["available", "active", "completed"];
 
-/** Title + description [+ nextStep] + status editor, used for every entity type. */
+/** Title + description + status editor, used for every entity type. */
 function EntityEditForm({
   initialTitle,
   initialDescription,
-  initialNextStep,
-  showNextStep = false,
   initialStatus,
   statusOptions = ALL_STATUS_OPTIONS,
   questlinePicker,
@@ -64,18 +62,10 @@ function EntityEditForm({
 }: {
   initialTitle: string;
   initialDescription: string;
-  initialNextStep?: string;
-  showNextStep?: boolean;
   initialStatus: QuestStatus;
   statusOptions?: QuestStatus[];
   questlinePicker?: { options: { id: string; title: string }[]; initialQuestlineId: string };
-  onSave: (fields: {
-    title: string;
-    description: string;
-    nextStep?: string;
-    status: QuestStatus;
-    questlineId?: string;
-  }) => Promise<void>;
+  onSave: (fields: { title: string; description: string; status: QuestStatus; questlineId?: string }) => Promise<void>;
   onCancel: () => void;
   /** When provided, renders a "Delete" action inside the form — the caller
    * owns the confirmation step (see QuestCard's confirmingDelete state). */
@@ -83,7 +73,6 @@ function EntityEditForm({
 }) {
   const [title, setTitle] = useState(initialTitle);
   const [description, setDescription] = useState(initialDescription);
-  const [nextStep, setNextStep] = useState(initialNextStep ?? "");
   const [status, setStatus] = useState<QuestStatus>(initialStatus);
   const [questlineId, setQuestlineId] = useState(questlinePicker?.initialQuestlineId ?? "");
   const [saving, setSaving] = useState(false);
@@ -97,7 +86,6 @@ function EntityEditForm({
       await onSave({
         title: title.trim(),
         description,
-        nextStep: showNextStep ? nextStep : undefined,
         status,
         questlineId: questlinePicker ? questlineId : undefined,
       });
@@ -130,14 +118,6 @@ function EntityEditForm({
         rows={2}
         className={`${inputClass} resize-none`}
       />
-      {showNextStep && (
-        <input
-          value={nextStep}
-          onChange={(e) => setNextStep(e.target.value)}
-          placeholder="Next step (optional)"
-          className={inputClass}
-        />
-      )}
       <select
         value={status}
         onChange={(e) => setStatus(e.target.value as QuestStatus)}
@@ -179,19 +159,16 @@ function EntityEditForm({
   );
 }
 
-/** Title + description [+ nextStep] form for creating a new entity — always starts Available. */
+/** Title + description form for creating a new entity — always starts Available. */
 function AddEntityForm({
-  showNextStep = false,
   onAdd,
   onCancel,
 }: {
-  showNextStep?: boolean;
-  onAdd: (fields: { title: string; description: string; nextStep?: string }) => Promise<void>;
+  onAdd: (fields: { title: string; description: string }) => Promise<void>;
   onCancel: () => void;
 }) {
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
-  const [nextStep, setNextStep] = useState("");
   const [saving, setSaving] = useState(false);
   const [addError, setAddError] = useState<string | null>(null);
 
@@ -200,7 +177,7 @@ function AddEntityForm({
     setSaving(true);
     setAddError(null);
     try {
-      await onAdd({ title: title.trim(), description, nextStep: showNextStep ? nextStep : undefined });
+      await onAdd({ title: title.trim(), description });
     } catch {
       setAddError("Could not add. Try again.");
       setSaving(false);
@@ -223,14 +200,6 @@ function AddEntityForm({
         rows={2}
         className={`${inputClass} resize-none`}
       />
-      {showNextStep && (
-        <input
-          value={nextStep}
-          onChange={(e) => setNextStep(e.target.value)}
-          placeholder="Next step (optional)"
-          className={inputClass}
-        />
-      )}
       {addError && <p className="text-[0.65rem] text-[rgba(255,120,120,0.9)]">{addError}</p>}
       <div className="mt-1 flex gap-2">
         <button
@@ -286,8 +255,6 @@ function BuildRow({ build, questId, onChanged }: { build: Build; questId: string
         <EntityEditForm
           initialTitle={build.title}
           initialDescription={build.description ?? ""}
-          initialNextStep={build.nextStep ?? ""}
-          showNextStep
           initialStatus={build.status}
           onCancel={() => setEditing(false)}
           onSave={async (fields) => {
@@ -323,9 +290,6 @@ function BuildRow({ build, questId, onChanged }: { build: Build; questId: string
               </p>
               <StatusPill status={build.status} />
             </div>
-            {build.nextStep && build.status !== "completed" && (
-              <p className="mt-0.5 text-[0.7rem] leading-relaxed text-accent-glow/60">→ {build.nextStep}</p>
-            )}
           </div>
           <div className="flex shrink-0 gap-1.5">
             {build.status !== "completed" && (
@@ -484,10 +448,9 @@ function QuestCard({
 
         {addingBuild ? (
           <AddEntityForm
-            showNextStep
             onCancel={() => setAddingBuild(false)}
             onAdd={async (fields) => {
-              await createBuild(quest.id, fields.title, fields.description, fields.nextStep ?? "");
+              await createBuild(quest.id, fields.title, fields.description);
               setAddingBuild(false);
               onChanged();
             }}
@@ -1053,12 +1016,6 @@ function ActiveFocusPanel({
                   <h2 className="font-display text-2xl tracking-wide text-foreground sm:text-3xl">{build.title}</h2>
                   {build.description && (
                     <p className="mt-3 max-w-lg text-sm leading-relaxed text-foreground/65 sm:text-base">{build.description}</p>
-                  )}
-                  {build.nextStep && (
-                    <div className="mt-6 border-t border-accent/[0.08] pt-5">
-                      <p className="mb-2 font-display text-[0.6rem] tracking-[0.28em] uppercase text-accent-glow/65">Next Step</p>
-                      <p className="text-sm leading-relaxed text-foreground/80 sm:text-base">{build.nextStep}</p>
-                    </div>
                   )}
                 </>
               ) : (

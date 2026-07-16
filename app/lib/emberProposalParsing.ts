@@ -79,7 +79,6 @@ export function parseProposal(raw: unknown): EmberProposal | null {
         questTitle: r.questTitle,
         title: r.title,
         description: typeof r.description === "string" ? r.description : "",
-        nextStep: typeof r.nextStep === "string" ? r.nextStep : "",
       };
     case "update_status":
       if (!isEntityType(r.entityType) || !isStatusValue(r.status) || !isNonEmptyString(r.entityId) || !isNonEmptyString(r.entityTitle)) {
@@ -186,9 +185,8 @@ export const EMBER_FUNCTION_TOOLS = [
         questTitle: { type: "string", description: "The Active Quest's title." },
         title: { type: "string", description: "Short, concrete Build title." },
         description: { type: "string", description: "One sentence description." },
-        nextStep: { type: "string", description: "One concrete next action, or an empty string." },
       },
-      required: ["questId", "questTitle", "title", "description", "nextStep"],
+      required: ["questId", "questTitle", "title", "description"],
     },
   },
   {

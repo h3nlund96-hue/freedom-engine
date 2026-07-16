@@ -150,7 +150,7 @@ export function ProposalCard({
       } else if (proposal.action === "complete_build") {
         await updateBuild(proposal.buildId, proposal.questId, { status: "completed" });
       } else if (proposal.action === "create_build") {
-        await createBuild(proposal.questId, proposal.title, proposal.description, proposal.nextStep);
+        await createBuild(proposal.questId, proposal.title, proposal.description);
       } else if (proposal.action === "update_status") {
         if (proposal.entityType === "questline") {
           await updateQuestline(proposal.entityId, { status: proposal.status });
@@ -213,9 +213,6 @@ export function ProposalCard({
         {entityLabel && <p className="mb-1 text-[0.65rem] uppercase tracking-wide text-muted/40">{entityLabel}</p>}
         <p className="text-sm font-medium text-foreground/90">{proposalTitle(proposal)}</p>
         {description && <p className="mt-1 text-xs leading-relaxed text-muted/60">{description}</p>}
-        {proposal.action === "create_build" && proposal.nextStep && (
-          <p className="mt-1 text-xs leading-relaxed text-accent-glow/60">→ {proposal.nextStep}</p>
-        )}
         {isDestructive && (
           <p className="mt-1 text-xs leading-relaxed text-[rgba(255,120,120,0.75)]">
             This cannot be undone once approved.

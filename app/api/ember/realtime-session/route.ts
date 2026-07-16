@@ -88,7 +88,6 @@ Active Quest id (use exactly this for propose_create_build's questId; never inve
 Quest description: ${ctx.activeQuestDescription}
 Current Build: ${ctx.currentBuild}
 Build description: ${ctx.currentBuildDescription}
-Next step: ${ctx.nextStep}
 
 AVAILABLE QUESTLINES (use the exact id when proposing a new Quest):
 ${questlineList}

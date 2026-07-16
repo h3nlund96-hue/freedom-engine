@@ -8,7 +8,6 @@ export interface Build {
   title: string;
   status: QuestStatus;
   description?: string;
-  nextStep?: string;
 }
 
 export interface Quest {

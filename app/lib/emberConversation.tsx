@@ -23,7 +23,7 @@ export type EmberProposal =
   | { action: "create_idea"; title: string; description: string }
   | { action: "activate_quest"; questId: string; questlineId: string; questTitle: string }
   | { action: "complete_build"; buildId: string; questId: string; buildTitle: string }
-  | { action: "create_build"; questId: string; questTitle: string; title: string; description: string; nextStep: string }
+  | { action: "create_build"; questId: string; questTitle: string; title: string; description: string }
   | {
       action: "update_status";
       entityType: EmberEntityType;
