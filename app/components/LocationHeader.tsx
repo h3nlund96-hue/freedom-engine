@@ -42,7 +42,7 @@ export function LocationHeader({ icon, eyebrow, title, description, lore }: Loca
             <span className="font-display text-2xl font-medium tracking-wide text-foreground sm:text-3xl">
               {title}
             </span>
-            <span className="font-display text-[0.55rem] tracking-[0.22em] uppercase text-accent/70">
+            <span className="font-display text-[0.55rem] tracking-[0.22em] uppercase text-accent/85">
               {eyebrow}
             </span>
           </h1>

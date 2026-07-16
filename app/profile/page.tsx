@@ -96,7 +96,7 @@ export default async function ProfilePage() {
               <div className="space-y-3">
                 <div className="flex items-center justify-between gap-3">
                   <p className="font-display text-[0.6rem] tracking-[0.2em] uppercase text-muted/40">Experience</p>
-                  <p className="font-display text-[0.6rem] tracking-[0.15em] uppercase text-accent/55">
+                  <p className="font-display text-[0.6rem] tracking-[0.15em] uppercase text-accent/75">
                     {totalXP.toLocaleString()} XP total
                   </p>
                 </div>
@@ -190,7 +190,7 @@ export default async function ProfilePage() {
         <div className="animate-fade-up" style={{ animationDelay: "0.32s" }}>
           <div className="flex items-center gap-4">
             <span className="h-px flex-1 bg-linear-to-r from-accent/10 to-transparent" aria-hidden />
-            <p className="font-display text-[0.6rem] tracking-[0.2em] uppercase text-accent/40">
+            <p className="font-display text-[0.6rem] tracking-[0.2em] uppercase text-accent/65">
               The fire is growing. One Build at a time.
             </p>
             <span className="h-px flex-1 bg-linear-to-l from-accent/10 to-transparent" aria-hidden />

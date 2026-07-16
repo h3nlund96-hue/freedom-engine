@@ -212,7 +212,7 @@ export function EmberRoom() {
 
           {/* type into the same live conversation instead of speaking */}
           <div className="mt-auto flex w-full max-w-lg items-center gap-2.5 border-b border-accent-glow/15 pb-2.5">
-            <span className="font-display text-accent-glow/50" aria-hidden>
+            <span className="font-display text-accent-glow/75" aria-hidden>
               ›
             </span>
             <input
@@ -319,7 +319,7 @@ export function EmberRoom() {
           {/* command line */}
           <div className="mt-auto flex w-full max-w-lg flex-col items-center gap-2.5">
             <div className="flex w-full items-center gap-2.5 border-b border-accent-glow/15 pb-2.5">
-              <span className="font-display text-accent-glow/50" aria-hidden>
+              <span className="font-display text-accent-glow/75" aria-hidden>
                 ›
               </span>
               <input

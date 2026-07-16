@@ -1010,8 +1010,8 @@ function ActiveFocusPanel({
             <div className="mt-6">
               {build ? (
                 <>
-                  <p className="mb-2 font-display text-[0.6rem] tracking-[0.3em] uppercase text-accent/55">
-                    Current Build <span className="tabular-nums text-accent/40">#{build.buildNumber}</span>
+                  <p className="mb-2 font-display text-[0.6rem] tracking-[0.3em] uppercase text-accent/75">
+                    Current Build <span className="tabular-nums text-accent/65">#{build.buildNumber}</span>
                   </p>
                   <h2 className="font-display text-2xl tracking-wide text-foreground sm:text-3xl">{build.title}</h2>
                   {build.description && (
@@ -1038,7 +1038,7 @@ function ActiveFocusPanel({
           </>
         ) : sideQuest ? (
           <>
-            <p className="mb-2 font-display text-[0.6rem] tracking-[0.3em] uppercase text-accent/55">Active Side Quest</p>
+            <p className="mb-2 font-display text-[0.6rem] tracking-[0.3em] uppercase text-accent/75">Active Side Quest</p>
             <h2 className="font-display text-2xl tracking-wide text-foreground sm:text-3xl">{sideQuest.title}</h2>
             {sideQuest.description && (
               <p className="mt-3 max-w-lg text-sm leading-relaxed text-foreground/65 sm:text-base">{sideQuest.description}</p>
@@ -1069,7 +1069,7 @@ function MainQuestTile({ quest }: { quest: string }) {
       <div className="pointer-events-none absolute inset-0 rounded-md shadow-[inset_0_1px_0_rgba(255,171,74,0.07)]" aria-hidden />
       <div className="relative flex flex-col gap-1.5 px-6 py-5 sm:flex-row sm:items-center sm:gap-8 sm:px-7">
         <div className="shrink-0">
-          <p className="font-display text-[0.6rem] tracking-[0.25em] uppercase text-accent/50">North Star</p>
+          <p className="font-display text-[0.6rem] tracking-[0.25em] uppercase text-accent/70">North Star</p>
           <p className="mt-1 font-display text-lg tracking-wide text-foreground/95">{quest}</p>
         </div>
         <p className="border-t border-accent/[0.06] pt-3 text-xs leading-relaxed text-muted/55 sm:border-l sm:border-t-0 sm:pl-8 sm:pt-0">

@@ -109,7 +109,7 @@ function CoreRule() {
       <span className="pointer-events-none absolute bottom-4 right-4 h-4 w-4 border-b border-r border-accent/12" aria-hidden />
 
       <div className="relative px-8 py-9 sm:px-10 sm:py-10">
-        <p className="mb-5 font-display text-[0.6rem] tracking-[0.3em] uppercase text-accent/50">
+        <p className="mb-5 font-display text-[0.6rem] tracking-[0.3em] uppercase text-accent/70">
           Core Rule
         </p>
         <div className="space-y-1">
@@ -159,7 +159,7 @@ function ConstitutionTablet({
       <div className="relative flex flex-col gap-4 p-6 sm:p-7">
         {/* Numeral */}
         <div className="flex items-center gap-3">
-          <span className="font-display text-xs tracking-[0.2em] text-accent/40 transition-colors duration-500 group-hover:text-accent/60">
+          <span className="font-display text-xs tracking-[0.2em] text-accent/65 transition-colors duration-500 group-hover:text-accent/85">
             {numeral}
           </span>
           <span className="h-px flex-1 bg-linear-to-r from-accent/10 to-transparent" aria-hidden />

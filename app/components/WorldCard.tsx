@@ -79,7 +79,7 @@ export function WorldCard({
               {title}
             </h3>
             <span
-              className="mt-0.5 shrink-0 translate-x-1 text-[0.6rem] tracking-widest uppercase text-accent/0 transition-all duration-500 group-hover:translate-x-0 group-hover:text-accent/45"
+              className="mt-0.5 shrink-0 translate-x-1 text-[0.6rem] tracking-widest uppercase text-accent/0 transition-all duration-500 group-hover:translate-x-0 group-hover:text-accent/70"
               aria-hidden
             >
               Enter

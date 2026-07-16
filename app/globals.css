@@ -31,8 +31,12 @@
    * only stays legible against a light background if the base color
    * itself is already dark. */
   --muted: #4a4438;
-  --accent: #b35e14;
-  --accent-glow: #0e7f96;
+  /* Darker than the dark-mode equivalent, same reasoning as --muted above —
+   * these carry the same low-opacity usage pattern (eyebrows, dividers,
+   * icons at 40-90%) that only holds up against a light background if the
+   * base color has real contrast margin to spare. */
+  --accent: #8a4712;
+  --accent-glow: #0a5d6e;
   --surface: #fbf8f2;
   --surface-raised: #ffffff;
   --critical: #c1362b;
