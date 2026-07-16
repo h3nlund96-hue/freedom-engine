@@ -115,7 +115,7 @@ export function EmberPanel() {
   return (
     <div className="flex flex-col gap-5">
       <div className="flex flex-col items-center gap-2.5">
-        <EmberGlyph speaking={speaking} className="h-16 w-16" />
+        <EmberGlyph speaking={speaking} className="h-24 w-24" />
         {presenceMode ? (
           <span className="inline-flex items-center gap-1.5 font-display text-[0.55rem] tracking-[0.2em] uppercase text-accent-glow/75">
             <span className="relative flex size-1.5">
@@ -191,7 +191,7 @@ export function EmberPanel() {
             )}
 
             {currentAnswerMsg ? (
-              <p className="text-sm leading-relaxed text-foreground/92">
+              <p className="text-base leading-relaxed text-foreground/92">
                 {revealed}
                 {revealing && (
                   <span
@@ -203,7 +203,7 @@ export function EmberPanel() {
             ) : loading ? (
               <p className="text-sm text-muted/50">Ember is listening…</p>
             ) : (
-              <p className="text-xs leading-relaxed text-muted/50">
+              <p className="text-sm leading-relaxed text-muted/50">
                 A quiet place to ask for direction before choosing the next Build.
               </p>
             )}

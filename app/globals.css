@@ -26,14 +26,18 @@
 :root[data-theme="light"] {
   --background: #f4efe6;
   --foreground: #201a12;
-  --muted: #6f6656;
+  /* Noticeably darker than a "naive" mid-gray equivalent of the dark-mode
+   * value — most of the app uses --muted at low opacity (30-55%), which
+   * only stays legible against a light background if the base color
+   * itself is already dark. */
+  --muted: #4a4438;
   --accent: #b35e14;
   --accent-glow: #0e7f96;
   --surface: #fbf8f2;
   --surface-raised: #ffffff;
   --critical: #c1362b;
-  --card-border: rgba(32, 26, 18, 0.1);
-  --surface-sunken: rgba(32, 26, 18, 0.045);
+  --card-border: rgba(32, 26, 18, 0.14);
+  --surface-sunken: rgba(32, 26, 18, 0.05);
 }
 
 @theme inline {
@@ -214,4 +218,43 @@ body {
   background: var(--background);
   color: var(--foreground);
   font-family: var(--font-geist-sans), system-ui, sans-serif;
+}
+
+/* Scale the whole UI up on large screens — every rem-based size (type,
+ * spacing, icons, radii) grows with it, since it's all relative to this
+ * root value. Meant for the "everything feels too small on a big
+ * monitor" case, not a breakpoint-by-breakpoint redesign. */
+@media (min-width: 1536px) {
+  html {
+    font-size: 112.5%;
+  }
+}
+
+@media (min-width: 1920px) {
+  html {
+    font-size: 125%;
+  }
+}
+
+/* Light mode: the glow-pulse text-shadow was tuned as a warm bloom against
+ * a near-black background — against a light one it just blurs the glyph's
+ * edges instead of adding presence. Swap it for a crisp, dark contact
+ * shadow so location icons and the HQ glyph stay sharp. Each override
+ * keeps the same animation-name list length as the original rule
+ * (icon-pulse-glow runs two animations, hq-glyph-char just one). */
+:root[data-theme="light"] .icon-pulse-glow {
+  animation-name: icon-breathe, glyph-glow-pulse-light;
+}
+
+:root[data-theme="light"] .hq-glyph-char {
+  animation-name: glyph-glow-pulse-light;
+}
+
+@keyframes glyph-glow-pulse-light {
+  from {
+    text-shadow: 0 1px 2px rgba(32, 26, 18, 0.18);
+  }
+  to {
+    text-shadow: 0 1px 5px rgba(32, 26, 18, 0.3);
+  }
 }
