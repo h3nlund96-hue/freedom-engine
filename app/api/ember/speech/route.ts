@@ -17,8 +17,13 @@ function getClient() {
 // OpenAI's TTS input limit.
 const MAX_INPUT_LENGTH = 4096;
 
-const VOICE_INSTRUCTIONS =
-  "Speak warmly and confidently, with a calm, grounded delivery and a touch of dry wit — like a trusted ally, not a customer service agent. Unhurried, never robotic.";
+const VOICE_INSTRUCTIONS = `Voice: Ember — a close, trusted ally speaking one-on-one, in the moment, to someone she knows well and respects. Not a narrator. Not a voice assistant. Not reading a script aloud.
+
+Tone: Warm, low-key confident, a little dry and amused underneath — like someone who's already made up their mind and is just letting you in on it.
+
+Delivery: Real conversational rhythm, not an even recitation. Let the pacing breathe — a small pause before the point that actually matters, then land it plainly instead of speeding through every word at the same rate. Some phrases can be quicker and more offhand; slow down and get a touch quieter for the one thing she wants remembered. Vary emphasis the way a person naturally does when they mean what they're saying, not the flat cadence of text being read aloud.
+
+Avoid: Cheerfulness, sing-song intonation, customer-service brightness, or a flat monotone read-through.`;
 
 export async function POST(request: Request) {
   try {
@@ -47,6 +52,7 @@ export async function POST(request: Request) {
       input: text.trim().slice(0, MAX_INPUT_LENGTH),
       instructions: VOICE_INSTRUCTIONS,
       response_format: "mp3",
+      speed: 0.95,
     });
 
     const audio = await speech.arrayBuffer();
