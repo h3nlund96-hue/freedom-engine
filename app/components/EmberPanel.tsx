@@ -5,17 +5,54 @@ import { useEmberConversation, type EmberMessage } from "../lib/emberConversatio
 import { getProgressClient } from "../lib/questMutationService";
 import { getActiveQuest, getCurrentBuild } from "../data/freedomEngineProgress";
 import { buildSuggestedQuestions, type ActiveInfo } from "../lib/emberSuggestions";
+import { pairHistory } from "../lib/emberHistory";
 import { ProposalCard, successLabel } from "./EmberProposalCard";
+import { EmberGlyph } from "./EmberGlyph";
+import { useTypewriterReveal } from "../lib/useTypewriterReveal";
+import { useEmberRealtime } from "../lib/useEmberRealtime";
 
-/** The compact Ember ask console used inside the floating widget on HQ,
- * Quest Board and Idea Vault. Hall of Embers has its own full-room
- * experience (see EmberRoom) but shares the same EmberProvider context,
- * so it's the same conversation either way. */
+/**
+ * The Ember console inside the floating widget's popup on HQ, Quest Board
+ * and Idea Vault — the same experience as Hall of Embers (current exchange,
+ * typewriter reveal, Presence mode voice), scaled down to fit a compact
+ * panel instead of a full page. Shares the same EmberProvider context, so
+ * it's the same ongoing conversation either way.
+ */
 export function EmberPanel() {
-  const { messages, loading, error, ask, resolveProposal, clearConversation } = useEmberConversation();
+  const { messages, loading, error, ask, resolveProposal, clearConversation, appendExchanges } =
+    useEmberConversation();
   const [question, setQuestion] = useState("");
   const [activeInfo, setActiveInfo] = useState<ActiveInfo | null>(null);
-  const historyRef = useRef<HTMLDivElement>(null);
+  const [historyOpen, setHistoryOpen] = useState(false);
+  const [presenceMode, setPresenceMode] = useState(false);
+
+  const {
+    connected,
+    connecting,
+    error: voiceError,
+    talking,
+    listening,
+    liveCaption,
+    pendingToolCall,
+    connect,
+    disconnect,
+    sendText,
+    resolveToolCall,
+  } = useEmberRealtime();
+
+  const appendExchangesRef = useRef(appendExchanges);
+  useEffect(() => {
+    appendExchangesRef.current = appendExchanges;
+  }, [appendExchanges]);
+
+  useEffect(() => {
+    if (!presenceMode) return;
+    void connect();
+    return () => {
+      const transcript = disconnect();
+      if (transcript.length > 0) appendExchangesRef.current(transcript);
+    };
+  }, [presenceMode, connect, disconnect]);
 
   useEffect(() => {
     getProgressClient()
@@ -29,10 +66,26 @@ export function EmberPanel() {
       });
   }, []);
 
-  useEffect(() => {
-    const el = historyRef.current;
-    if (el) el.scrollTop = el.scrollHeight;
-  }, [messages.length]);
+  const lastMsg = messages[messages.length - 1];
+  const secondLastMsg = messages[messages.length - 2];
+
+  let currentQuestion: string | undefined;
+  let currentAnswerMsg: EmberMessage | undefined;
+  let currentAnswerIndex = -1;
+
+  if (lastMsg?.role === "assistant") {
+    currentAnswerMsg = lastMsg;
+    currentAnswerIndex = messages.length - 1;
+    currentQuestion = secondLastMsg?.role === "user" ? secondLastMsg.content : undefined;
+  } else if (lastMsg?.role === "user") {
+    currentQuestion = lastMsg.content;
+  }
+
+  const earlierCount = currentAnswerMsg ? messages.length - 2 : lastMsg ? messages.length - 1 : 0;
+  const history = pairHistory(messages.slice(0, Math.max(earlierCount, 0)));
+
+  const { revealed, speaking: revealing } = useTypewriterReveal(currentAnswerMsg?.content ?? "");
+  const speaking = presenceMode ? talking : loading || revealing;
 
   const suggestedQuestions = buildSuggestedQuestions(activeInfo);
 
@@ -43,152 +96,222 @@ export function EmberPanel() {
     await ask(q);
   }
 
-  function handleSuggestion(q: string) {
-    setQuestion(q);
+  function handleSendPresenceText() {
+    if (!question.trim() || !connected) return;
+    sendText(question);
+    setQuestion("");
   }
+
+  const presenceStatus = connecting
+    ? "Connecting…"
+    : connected && listening
+    ? "Listening…"
+    : connected && talking
+    ? "Speaking…"
+    : connected
+    ? "Awake"
+    : "";
 
   return (
     <div className="flex flex-col gap-5">
-      <div className="flex items-start justify-between gap-4">
-        <div className="space-y-1">
-          <h3 className="font-display text-lg tracking-wide text-foreground/90">Ask Ember</h3>
-          <p className="text-xs text-muted/50">
-            A quiet place to ask for direction before choosing the next Build.
-          </p>
-        </div>
-        {messages.length > 0 && (
+      <div className="flex flex-col items-center gap-2.5">
+        <EmberGlyph speaking={speaking} className="h-16 w-16" />
+        {presenceMode ? (
+          <span className="inline-flex items-center gap-1.5 font-display text-[0.55rem] tracking-[0.2em] uppercase text-accent-glow/75">
+            <span className="relative flex size-1.5">
+              <span className="absolute inline-flex size-full animate-glow-pulse rounded-full bg-accent-glow/55" />
+              <span className="relative inline-flex size-1.5 rounded-full bg-accent-glow shadow-[0_0_8px_rgba(77,216,255,0.65)]" />
+            </span>
+            {presenceStatus}
+          </span>
+        ) : (
           <button
             type="button"
-            onClick={clearConversation}
-            className="shrink-0 rounded-sm px-2.5 py-1 font-display text-[0.6rem] tracking-[0.12em] uppercase text-muted/40 transition-colors duration-300 hover:text-accent-glow/70"
+            onClick={() => setPresenceMode(true)}
+            title="Talk to Ember live — voice, not typing"
+            className="font-display text-[0.55rem] tracking-[0.16em] uppercase text-muted/30 transition-colors duration-300 hover:text-accent-glow/60"
           >
-            New conversation
+            Presence mode
           </button>
         )}
       </div>
 
-      {messages.length > 0 && (
-        <div ref={historyRef} className="flex max-h-[420px] flex-col gap-4 overflow-y-auto pr-1">
-          {messages.map((m, i) => (
-            <MessageBubble key={i} message={m} index={i} onResolveProposal={resolveProposal} />
-          ))}
-        </div>
-      )}
+      {presenceMode ? (
+        <>
+          <div className="flex flex-col items-center gap-3 text-center">
+            {voiceError ? (
+              <p className="text-sm text-muted/50">{voiceError}</p>
+            ) : liveCaption ? (
+              <p className="text-sm leading-relaxed text-foreground/90">{liveCaption}</p>
+            ) : null}
 
-      {messages.length === 0 && (
-        <div className="space-y-2.5">
-          <p className="font-display text-[0.55rem] tracking-[0.2em] uppercase text-muted/35">
-            Suggested Questions
-          </p>
-          <div className="flex flex-wrap gap-2">
+            {pendingToolCall && (
+              <div className="w-full text-left">
+                <ProposalCard
+                  proposal={pendingToolCall.proposal}
+                  onResolve={(status) => resolveToolCall(pendingToolCall.callId, status)}
+                />
+              </div>
+            )}
+          </div>
+
+          <div className="flex items-center gap-2.5 border-b border-accent-glow/15 pb-2.5">
+            <span className="font-display text-accent-glow/50" aria-hidden>
+              ›
+            </span>
+            <input
+              type="text"
+              value={question}
+              onChange={(e) => setQuestion(e.target.value)}
+              onKeyDown={(e) => {
+                if (e.key === "Enter") {
+                  e.preventDefault();
+                  handleSendPresenceText();
+                }
+              }}
+              disabled={!connected}
+              placeholder={connected ? "Or type instead of talking…" : "Connecting…"}
+              className="flex-1 bg-transparent text-sm text-foreground/85 placeholder:text-muted/35 focus:outline-none disabled:opacity-50"
+            />
+          </div>
+
+          <button
+            type="button"
+            onClick={() => setPresenceMode(false)}
+            className="self-center font-display text-[0.6rem] tracking-[0.14em] uppercase text-muted/40 transition-colors duration-300 hover:text-foreground/80"
+          >
+            ✕ Exit presence mode
+          </button>
+        </>
+      ) : (
+        <>
+          <div className="flex flex-col items-center gap-3 text-center">
+            {currentQuestion && (
+              <p className="font-display text-xs italic text-accent/60">&ldquo;{currentQuestion}&rdquo;</p>
+            )}
+
+            {currentAnswerMsg ? (
+              <p className="text-sm leading-relaxed text-foreground/92">
+                {revealed}
+                {revealing && (
+                  <span
+                    className="ml-0.5 inline-block h-[1em] w-[2px] animate-pulse bg-accent-glow align-text-bottom"
+                    aria-hidden
+                  />
+                )}
+              </p>
+            ) : loading ? (
+              <p className="text-sm text-muted/50">Ember is listening…</p>
+            ) : (
+              <p className="text-xs leading-relaxed text-muted/50">
+                A quiet place to ask for direction before choosing the next Build.
+              </p>
+            )}
+
+            {currentAnswerMsg?.proposal && currentAnswerMsg.proposalStatus === "pending" && !revealing && (
+              <div className="w-full text-left">
+                <ProposalCard
+                  proposal={currentAnswerMsg.proposal}
+                  onResolve={(status) => resolveProposal(currentAnswerIndex, status)}
+                />
+              </div>
+            )}
+            {currentAnswerMsg?.proposal && currentAnswerMsg.proposalStatus === "created" && (
+              <p className="text-xs text-accent-glow/70">{successLabel(currentAnswerMsg.proposal)}</p>
+            )}
+          </div>
+
+          <div className="flex flex-wrap justify-center gap-2">
             {suggestedQuestions.map((q) => (
               <button
                 key={q}
                 type="button"
-                onClick={() => handleSuggestion(q)}
-                className={`rounded-sm border px-3 py-1.5 text-xs leading-snug transition-all duration-300 ${
+                onClick={() => setQuestion(q)}
+                className={`rounded-full border px-3 py-1.5 font-display text-[0.6rem] tracking-wide transition-all duration-300 ${
                   question === q
-                    ? "border-accent/30 bg-accent/8 text-accent/90"
-                    : "border-accent/[0.07] bg-black/20 text-muted/45 hover:border-accent/18 hover:text-muted/70"
+                    ? "border-accent-glow/30 bg-accent-glow/10 text-accent-glow/90"
+                    : "border-accent-glow/[0.1] bg-black/20 text-muted/50 hover:border-accent-glow/25 hover:text-muted/75"
                 }`}
               >
                 {q}
               </button>
             ))}
           </div>
-        </div>
-      )}
 
-      <div className="space-y-2.5">
-        <div className="relative overflow-hidden rounded-md border border-white/[0.07]">
-          <div className="absolute inset-0 bg-black/35" />
-          <div
-            className="pointer-events-none absolute inset-0 rounded-md"
-            style={{ boxShadow: "inset 0 1px 0 rgba(255,171,74,0.05), inset 0 0 0 1px rgba(255,171,74,0.07)" }}
-            aria-hidden
-          />
-          <textarea
-            value={question}
-            onChange={(e) => setQuestion(e.target.value)}
-            onKeyDown={(e) => {
-              if (e.key === "Enter" && !e.shiftKey) {
-                e.preventDefault();
-                void handleAsk();
-              }
-            }}
-            rows={3}
-            disabled={loading}
-            placeholder="Ask about the next Build, a product decision, or where to focus..."
-            className="relative w-full resize-none bg-transparent px-5 py-4 text-sm leading-relaxed text-foreground/80 placeholder:text-muted/30 focus:outline-none disabled:opacity-50"
-          />
-        </div>
+          {history.length > 0 && (
+            <div className="flex flex-col items-center gap-3">
+              <button
+                type="button"
+                onClick={() => setHistoryOpen((v) => !v)}
+                className="inline-flex items-center gap-1.5 font-display text-[0.6rem] tracking-[0.14em] uppercase text-muted/40 transition-colors duration-300 hover:text-accent-glow/70"
+              >
+                Earlier in this session
+                <span
+                  className={`inline-block transition-transform duration-300 ${historyOpen ? "rotate-180" : ""}`}
+                  aria-hidden
+                >
+                  ⌄
+                </span>
+              </button>
+              {historyOpen && (
+                <div className="flex w-full flex-col gap-3">
+                  {history.map((h, i) => (
+                    <div key={i} className="border-b border-white/[0.05] pb-2.5 text-left text-xs leading-relaxed text-muted/55">
+                      <p>
+                        <span className="font-medium text-muted/80">You —</span> {h.question}
+                      </p>
+                      <p className="mt-1">
+                        <span className="font-medium text-muted/80">Ember —</span> {h.answer}
+                      </p>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+          )}
 
-        <div className="flex items-center justify-between gap-4">
-          <p className="text-[0.6rem] tracking-wide text-muted/30">
-            {loading ? "Ember is listening..." : "Shift+Enter for new line · Enter to ask"}
-          </p>
-          <button
-            type="button"
-            onClick={() => void handleAsk()}
-            disabled={!question.trim() || loading}
-            className="group/ask relative overflow-hidden rounded-sm px-4 py-2 font-display text-[0.65rem] tracking-[0.15em] uppercase transition-all duration-300 disabled:cursor-not-allowed disabled:opacity-40"
-            style={{
-              background:
-                question.trim() && !loading
-                  ? "linear-gradient(135deg, rgba(255,171,74,0.18) 0%, rgba(77,216,255,0.12) 100%)"
-                  : "rgba(255,255,255,0.02)",
-              boxShadow:
-                question.trim() && !loading
-                  ? "inset 0 1px 0 rgba(255,171,74,0.15), 0 4px 16px rgba(0,0,0,0.3)"
-                  : "inset 0 1px 0 rgba(255,171,74,0.04)",
-              color: question.trim() && !loading ? "rgba(255,171,74,0.90)" : "rgba(255,171,74,0.35)",
-              border:
-                question.trim() && !loading
-                  ? "1px solid rgba(255,171,74,0.14)"
-                  : "1px solid rgba(255,171,74,0.06)",
-            }}
-          >
-            <span className="relative z-10">{loading ? "Listening..." : "Ask Ember"}</span>
-          </button>
-        </div>
-      </div>
+          <div className="flex flex-col items-center gap-2.5">
+            <div className="flex w-full items-center gap-2.5 border-b border-accent-glow/15 pb-2.5">
+              <span className="font-display text-accent-glow/50" aria-hidden>
+                ›
+              </span>
+              <input
+                type="text"
+                value={question}
+                onChange={(e) => setQuestion(e.target.value)}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter") {
+                    e.preventDefault();
+                    void handleAsk();
+                  }
+                }}
+                disabled={loading}
+                placeholder="Ask Ember, or just start talking…"
+                className="flex-1 bg-transparent text-sm text-foreground/85 placeholder:text-muted/35 focus:outline-none disabled:opacity-50"
+              />
+              <button
+                type="button"
+                onClick={() => setPresenceMode(true)}
+                title="Talk to Ember live"
+                className="font-display text-sm text-muted/30 transition-colors duration-300 hover:text-accent-glow/60"
+              >
+                )))
+              </button>
+            </div>
 
-      {error && !loading && (
-        <div className="rounded-sm border border-accent/[0.07] bg-black/20 px-4 py-3">
-          <p className="text-xs leading-relaxed text-muted/50">{error}</p>
-        </div>
-      )}
-    </div>
-  );
-}
+            {messages.length > 0 && (
+              <button
+                type="button"
+                onClick={clearConversation}
+                className="font-display text-[0.6rem] tracking-[0.12em] uppercase text-muted/35 transition-colors duration-300 hover:text-accent-glow/70"
+              >
+                New conversation
+              </button>
+            )}
 
-/* ── MESSAGE BUBBLE ───────────────────────────────────────────────────────── */
-
-function MessageBubble({
-  message,
-  index,
-  onResolveProposal,
-}: {
-  message: EmberMessage;
-  index: number;
-  onResolveProposal: (index: number, status: "created" | "dismissed") => void;
-}) {
-  if (message.role === "user") {
-    return (
-      <p className="self-end max-w-[85%] rounded-md bg-white/[0.04] px-4 py-2.5 text-sm leading-relaxed text-foreground/80">
-        {message.content}
-      </p>
-    );
-  }
-
-  return (
-    <div className="flex flex-col gap-3">
-      <p className="text-sm leading-relaxed text-foreground/72">{message.content}</p>
-      {message.proposal && message.proposalStatus === "pending" && (
-        <ProposalCard proposal={message.proposal} onResolve={(status) => onResolveProposal(index, status)} />
-      )}
-      {message.proposal && message.proposalStatus === "created" && (
-        <p className="text-xs text-accent-glow/70">{successLabel(message.proposal)}</p>
+            {error && !loading && <p className="text-xs leading-relaxed text-muted/50">{error}</p>}
+          </div>
+        </>
       )}
     </div>
   );

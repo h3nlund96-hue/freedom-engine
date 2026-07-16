@@ -10,6 +10,7 @@ import { getActiveQuest, getCurrentBuild } from "../data/freedomEngineProgress";
 import { buildSuggestedQuestions, type ActiveInfo } from "../lib/emberSuggestions";
 import { useTypewriterReveal } from "../lib/useTypewriterReveal";
 import { useEmberRealtime } from "../lib/useEmberRealtime";
+import { pairHistory } from "../lib/emberHistory";
 
 /**
  * Ember's own room — not a console bolted onto a page. Only the most recent
@@ -23,27 +24,10 @@ import { useEmberRealtime } from "../lib/useEmberRealtime";
  * same shared history typed conversations use. She can propose the same
  * five actions as text chat there too (see useEmberRealtime) — the same
  * ProposalCard and approval gate, nothing skipped just because it's voice.
+ *
+ * The floating widget's popup (EmberPanel) shares this same experience,
+ * scaled down to fit a compact panel instead of a full page.
  */
-
-interface Exchange {
-  question: string;
-  answer: string;
-}
-
-function pairHistory(messages: EmberMessage[]): Exchange[] {
-  const pairs: Exchange[] = [];
-  let i = 0;
-  while (i < messages.length) {
-    const m = messages[i];
-    if (m.role === "user" && messages[i + 1]?.role === "assistant") {
-      pairs.push({ question: m.content, answer: messages[i + 1].content });
-      i += 2;
-    } else {
-      i += 1;
-    }
-  }
-  return pairs;
-}
 
 export function EmberRoom() {
   const { messages, loading, error, ask, resolveProposal, clearConversation, appendExchanges } =
