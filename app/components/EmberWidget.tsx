@@ -41,7 +41,6 @@ export function EmberWidget() {
   const [bubbleText, setBubbleText] = useState<string | null>(null);
   const [expanded, setExpanded] = useState(false);
   const [lastBubbleText, setLastBubbleText] = useState<string | null>(null);
-  const [lastPathname, setLastPathname] = useState<string | null>(null);
 
   // A genuinely new message always starts collapsed, so the open animates
   // even if one bubble replaces another mid-cycle.
@@ -50,17 +49,22 @@ export function EmberWidget() {
     setExpanded(false);
   }
 
-  // Landing at Headquarters gets a plain greeting — checked here (not an
-  // effect) so it fires on the very first render too, not just subsequent
-  // navigations. Only once per session: sessionStorage survives navigating
-  // away and back, unlike this component's own state.
-  if (pathname !== lastPathname) {
-    setLastPathname(pathname);
-    if (pathname === "/" && typeof window !== "undefined" && !window.sessionStorage.getItem(HQ_GREETING_SESSION_KEY)) {
-      window.sessionStorage.setItem(HQ_GREETING_SESSION_KEY, "1");
-      setBubbleText(pickRandom(HQ_ENTRY_NOTES));
-    }
-  }
+  // Landing at Headquarters gets a plain greeting, once per browser session.
+  // This has to be an effect (not the render-phase pattern used above) —
+  // it reads and writes sessionStorage, and doing that mid-render runs on
+  // the very first hydration pass, before the DOM has settled, which is
+  // unreliable. An effect only ever runs after commit, on every mount and
+  // on every client-side pathname change alike.
+  useEffect(() => {
+    if (pathname !== "/") return;
+    if (typeof window === "undefined") return;
+    if (window.sessionStorage.getItem(HQ_GREETING_SESSION_KEY)) return;
+    window.sessionStorage.setItem(HQ_GREETING_SESSION_KEY, "1");
+    // Deferred a tick, same as the event-subscription effect below — keeps
+    // this out of the effect's synchronous body so it reads as reacting to
+    // an external system rather than an unconditional render-triggered update.
+    queueMicrotask(() => setBubbleText(pickRandom(HQ_ENTRY_NOTES)));
+  }, [pathname]);
 
   // Completing a Quest or Build, or capturing an Idea, anywhere in the app
   // takes over the pill immediately — the most timely thing Ember could say.
