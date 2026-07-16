@@ -16,14 +16,14 @@ export function buildSuggestedQuestions(info: ActiveInfo | null): string[] {
     return [
       `What's blocking ${info.buildTitle}?`,
       `Mark ${info.buildTitle} as complete`,
-      `Is ${info.questTitle} still the right focus?`,
+      `Generate the next Build for ${info.questTitle}`,
       "Capture this as an idea",
     ];
   }
 
   if (info?.questTitle) {
     return [
-      `What should the next Build for ${info.questTitle} be?`,
+      `Generate the next Build for ${info.questTitle}`,
       "Activate a different Quest",
       "What is the smallest useful next step?",
       "Capture this as an idea",

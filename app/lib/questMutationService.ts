@@ -110,6 +110,49 @@ async function nextSortOrder(
   return (count ?? 0) + 1;
 }
 
+/** The running Build log number — global per Founder, not scoped to a Quest.
+ * Uses the highest existing number rather than a row count so it keeps
+ * climbing even after a Build has been deleted. */
+async function nextBuildNumber(userId: string): Promise<number> {
+  const supabase = createClient();
+  const { data } = await supabase
+    .from("builds")
+    .select("build_number")
+    .eq("user_id", userId)
+    .order("build_number", { ascending: false })
+    .limit(1)
+    .maybeSingle();
+  return (data?.build_number ?? 0) + 1;
+}
+
+/** Enforces "the next Build on the list is always the active one" — if a
+ * Quest has no active Build, whichever remaining open Build is first in
+ * line (by sort order) gets promoted automatically. Called after creating,
+ * completing or deleting a Build. */
+async function promoteNextBuild(questId: string): Promise<void> {
+  const supabase = createClient();
+  const { data: existingActive } = await supabase
+    .from("builds")
+    .select("id")
+    .eq("quest_id", questId)
+    .eq("status", "active")
+    .maybeSingle();
+  if (existingActive) return;
+
+  const { data: next } = await supabase
+    .from("builds")
+    .select("id")
+    .eq("quest_id", questId)
+    .eq("status", "available")
+    .order("sort_order", { ascending: true })
+    .limit(1)
+    .maybeSingle();
+  if (!next) return;
+
+  const { error } = await supabase.from("builds").update({ status: "active" }).eq("id", next.id);
+  if (error) throw new Error(error.message);
+}
+
 /* ── QUESTLINES ───────────────────────────────────────────────────────────── */
 
 /** Lightweight list for pickers (e.g. choosing where a converted idea's Quest lives). */
@@ -234,6 +277,7 @@ export async function createBuild(
   const supabase = createClient();
   const userId = await currentUserId();
   const sortOrder = await nextSortOrder("builds", "quest_id", questId);
+  const buildNumber = await nextBuildNumber(userId);
 
   const { data, error } = await supabase
     .from("builds")
@@ -245,11 +289,17 @@ export async function createBuild(
       next_step: nextStep.trim() || null,
       status: "available",
       sort_order: sortOrder,
+      build_number: buildNumber,
     })
     .select("id")
     .single();
 
   if (error) throw new Error(error.message);
+
+  // "Next Build on the list" invariant — a Quest with no active Build yet
+  // means this new one, being next in line, becomes it.
+  await promoteNextBuild(questId);
+
   return data;
 }
 
@@ -275,13 +325,18 @@ export async function updateBuild(
 
   const { error } = await supabase.from("builds").update(patch).eq("id", id);
   if (error) throw new Error(error.message);
+
+  if (fields.status === "completed") {
+    await promoteNextBuild(questId);
+  }
 }
 
 /** Permanently remove a Build. */
-export async function deleteBuild(id: string): Promise<void> {
+export async function deleteBuild(id: string, questId: string): Promise<void> {
   const supabase = createClient();
   const { error } = await supabase.from("builds").delete().eq("id", id);
   if (error) throw new Error(error.message);
+  await promoteNextBuild(questId);
 }
 
 /* ── SIDE QUESTS ──────────────────────────────────────────────────────────── */

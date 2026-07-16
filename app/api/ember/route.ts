@@ -48,6 +48,7 @@ interface EmberContext {
   activeQuestline: string;
   activeQuestlineDescription: string;
   activeQuest: string;
+  activeQuestId: string | null;
   activeQuestDescription: string;
   currentBuild: string;
   currentBuildDescription: string;
@@ -106,6 +107,7 @@ Main Quest: ${ctx.mainQuest}
 Active Questline: ${ctx.activeQuestline}
 Questline description: ${ctx.activeQuestlineDescription}
 Active Quest: ${ctx.activeQuest}
+Active Quest id (use exactly this for create_build's questId; do not invent one): ${ctx.activeQuestId ?? "none — no active Quest"}
 Quest description: ${ctx.activeQuestDescription}
 Current Build: ${ctx.currentBuild}
 Build description: ${ctx.currentBuildDescription}
@@ -146,12 +148,13 @@ VOICE AND STYLE:
 - The conversation history given to you is real — refer back to it naturally when relevant, the way an ally who was actually listening would.
 
 PROPOSING AN ACTION:
-- If — and only if — The Founder's message clearly calls for one of the four actions below, include a "proposal" object in your response (see RESPONSE FORMAT). Otherwise leave it null.
+- If — and only if — The Founder's message clearly calls for one of the five actions below, include a "proposal" object in your response (see RESPONSE FORMAT). Otherwise leave it null.
 - You never act yourself. Proposing is enough — The Founder approves it before anything is written anywhere.
 - Only propose "activate_quest" for a Quest listed under QUESTS YOU CAN PROPOSE ACTIVATING, and "complete_build" for a Build listed under OPEN BUILDS YOU CAN PROPOSE MARKING COMPLETE — never invent an id.
+- Only propose "create_build" when there is an active Quest — attach it using the Active Quest id given above, exactly as written, and never invent one. If there is no active Quest, don't propose a Build; say so instead and suggest activating one.
 - For a new Quest proposal, pick the single best-fitting Questline id from AVAILABLE QUESTLINES if one clearly fits; if none fit well or none exist, leave questlineId null and say so in your answer.
 - For a new Idea proposal, there is no Questline — Ideas don't belong to one.
-- Keep proposed titles short and concrete. Keep proposed descriptions to one sentence.
+- Keep proposed titles short and concrete. Keep proposed descriptions to one sentence. For a new Build, nextStep should be one concrete next action, or an empty string if there isn't an obvious one yet.
 - Mention the proposal naturally in your answer (e.g. "I've put together a proposal below") — don't just silently attach it.
 
 RESPONSE FORMAT:
@@ -164,6 +167,7 @@ Respond with a valid JSON object containing exactly these two fields and no othe
     { "action": "create_idea", "title": "...", "description": "..." }
     { "action": "activate_quest", "questId": "an id from QUESTS YOU CAN PROPOSE ACTIVATING", "questlineId": "that Quest's questline id", "questTitle": "that Quest's title" }
     { "action": "complete_build", "buildId": "an id from OPEN BUILDS YOU CAN PROPOSE MARKING COMPLETE", "questId": "that Build's quest id", "buildTitle": "that Build's title" }
+    { "action": "create_build", "questId": "the Active Quest id given above", "questTitle": "the Active Quest's title", "title": "...", "description": "...", "nextStep": "one concrete next action, or empty string" }
 }
 
 Do not include any text outside the JSON object.
@@ -216,6 +220,18 @@ function parseProposal(raw: unknown): EmberProposal | null {
         buildId: r.buildId,
         questId: r.questId,
         buildTitle: r.buildTitle,
+      };
+    case "create_build":
+      if (!isNonEmptyString(r.questId) || !isNonEmptyString(r.questTitle) || !isNonEmptyString(r.title)) {
+        return null;
+      }
+      return {
+        action: "create_build",
+        questId: r.questId,
+        questTitle: r.questTitle,
+        title: r.title,
+        description: typeof r.description === "string" ? r.description : "",
+        nextStep: typeof r.nextStep === "string" ? r.nextStep : "",
       };
     default:
       return null;
@@ -280,6 +296,7 @@ export async function POST(request: Request) {
       activeQuestline: activeQuestline?.title ?? "None",
       activeQuestlineDescription: activeQuestline?.description ?? "",
       activeQuest: activeQuest?.title ?? "None",
+      activeQuestId: activeQuest?.id ?? null,
       activeQuestDescription: activeQuest?.description ?? "",
       currentBuild: currentBuild?.title ?? "None",
       currentBuildDescription: currentBuild?.description ?? "",

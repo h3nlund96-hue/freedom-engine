@@ -5,6 +5,7 @@ import type { EmberProposal } from "../lib/emberConversation";
 import { createIdea } from "../lib/ideaService";
 import {
   createQuest,
+  createBuild,
   getQuestlineOptions,
   updateQuest,
   updateBuild,
@@ -26,6 +27,8 @@ function proposalHeading(proposal: EmberProposal): string {
       return "Proposed: Activate Quest";
     case "complete_build":
       return "Proposed: Complete Build";
+    case "create_build":
+      return "Proposed Build";
   }
 }
 
@@ -33,6 +36,7 @@ function proposalTitle(proposal: EmberProposal): string {
   switch (proposal.action) {
     case "create_quest":
     case "create_idea":
+    case "create_build":
       return proposal.title;
     case "activate_quest":
       return proposal.questTitle;
@@ -45,6 +49,7 @@ function approveLabel(proposal: EmberProposal): string {
   switch (proposal.action) {
     case "create_quest":
     case "create_idea":
+    case "create_build":
       return "Approve & Create";
     case "activate_quest":
       return "Approve & Activate";
@@ -63,6 +68,8 @@ export function successLabel(proposal: EmberProposal): string {
       return `✓ Activated Quest — "${proposal.questTitle}"`;
     case "complete_build":
       return `✓ Completed Build — "${proposal.buildTitle}"`;
+    case "create_build":
+      return `✓ Created Build — "${proposal.title}"`;
   }
 }
 
@@ -105,6 +112,8 @@ export function ProposalCard({
         await updateQuest(proposal.questId, proposal.questlineId, { status: "active" });
       } else if (proposal.action === "complete_build") {
         await updateBuild(proposal.buildId, proposal.questId, { status: "completed" });
+      } else if (proposal.action === "create_build") {
+        await createBuild(proposal.questId, proposal.title, proposal.description, proposal.nextStep);
       }
       onResolve("created");
     } catch (err) {
@@ -113,7 +122,10 @@ export function ProposalCard({
     }
   }
 
-  const description = proposal.action === "create_quest" || proposal.action === "create_idea" ? proposal.description : "";
+  const description =
+    proposal.action === "create_quest" || proposal.action === "create_idea" || proposal.action === "create_build"
+      ? proposal.description
+      : "";
 
   return (
     <div className="relative space-y-3 overflow-hidden rounded-md border border-accent-glow/20 bg-accent-glow/[0.04] p-4">
@@ -122,8 +134,14 @@ export function ProposalCard({
         {proposalHeading(proposal)}
       </p>
       <div>
+        {proposal.action === "create_build" && (
+          <p className="mb-1 text-[0.65rem] uppercase tracking-wide text-muted/40">For {proposal.questTitle}</p>
+        )}
         <p className="text-sm font-medium text-foreground/90">{proposalTitle(proposal)}</p>
         {description && <p className="mt-1 text-xs leading-relaxed text-muted/60">{description}</p>}
+        {proposal.action === "create_build" && proposal.nextStep && (
+          <p className="mt-1 text-xs leading-relaxed text-accent-glow/60">→ {proposal.nextStep}</p>
+        )}
       </div>
 
       {proposal.action === "create_quest" &&
