@@ -7,10 +7,26 @@
  * direct browser↔OpenAI connection, not routed through our server).
  */
 
-import type { EmberProposal } from "./emberConversation";
+import type { EmberDeletableEntityType, EmberEntityType, EmberProposal } from "./emberConversation";
 
 function isNonEmptyString(value: unknown): value is string {
   return typeof value === "string" && value.trim().length > 0;
+}
+
+function isEntityType(value: unknown): value is EmberEntityType {
+  return value === "questline" || value === "quest" || value === "build" || value === "side_quest";
+}
+
+function isDeletableEntityType(value: unknown): value is EmberDeletableEntityType {
+  return isEntityType(value) || value === "idea";
+}
+
+function isStatusValue(value: unknown): value is "available" | "active" | "completed" {
+  return value === "available" || value === "active" || value === "completed";
+}
+
+function nonEmptyOrNull(value: unknown): string | null {
+  return typeof value === "string" && value.length > 0 ? value : null;
 }
 
 export function parseProposal(raw: unknown): EmberProposal | null {
@@ -64,6 +80,30 @@ export function parseProposal(raw: unknown): EmberProposal | null {
         title: r.title,
         description: typeof r.description === "string" ? r.description : "",
         nextStep: typeof r.nextStep === "string" ? r.nextStep : "",
+      };
+    case "update_status":
+      if (!isEntityType(r.entityType) || !isStatusValue(r.status) || !isNonEmptyString(r.entityId) || !isNonEmptyString(r.entityTitle)) {
+        return null;
+      }
+      return {
+        action: "update_status",
+        entityType: r.entityType,
+        entityId: r.entityId,
+        entityTitle: r.entityTitle,
+        questlineId: nonEmptyOrNull(r.questlineId),
+        questId: nonEmptyOrNull(r.questId),
+        status: r.status,
+      };
+    case "delete_item":
+      if (!isDeletableEntityType(r.entityType) || !isNonEmptyString(r.entityId) || !isNonEmptyString(r.entityTitle)) {
+        return null;
+      }
+      return {
+        action: "delete_item",
+        entityType: r.entityType,
+        entityId: r.entityId,
+        entityTitle: r.entityTitle,
+        questId: nonEmptyOrNull(r.questId),
       };
     default:
       return null;
@@ -149,6 +189,47 @@ export const EMBER_FUNCTION_TOOLS = [
         nextStep: { type: "string", description: "One concrete next action, or an empty string." },
       },
       required: ["questId", "questTitle", "title", "description", "nextStep"],
+    },
+  },
+  {
+    type: "function",
+    name: "propose_update_status",
+    description: `Propose changing the status of a Questline, Quest, Build, or Side Quest — reopening something completed back to "available", marking one "completed", or similar. A Questline only ever uses "available" or "completed", never "active". Only use an id already given to you in context — never invent one. ${PROPOSAL_NOTE}`,
+    parameters: {
+      type: "object",
+      properties: {
+        entityType: { type: "string", enum: ["questline", "quest", "build", "side_quest"] },
+        entityId: { type: "string", description: "The exact id of the Questline, Quest, Build, or Side Quest." },
+        entityTitle: { type: "string", description: "Its title." },
+        questlineId: {
+          type: "string",
+          description: 'Required only when entityType is "quest" — that Quest\'s Questline id. Empty string otherwise.',
+        },
+        questId: {
+          type: "string",
+          description: 'Required only when entityType is "build" — that Build\'s Quest id. Empty string otherwise.',
+        },
+        status: { type: "string", enum: ["available", "active", "completed"] },
+      },
+      required: ["entityType", "entityId", "entityTitle", "questlineId", "questId", "status"],
+    },
+  },
+  {
+    type: "function",
+    name: "propose_delete_item",
+    description: `Propose permanently deleting a Questline, Quest, Build, Side Quest, or Idea. This is destructive and cannot be undone once approved — deleting a Questline or Quest also removes everything nested inside it. Only use an id already given to you in context — never invent one. ${PROPOSAL_NOTE}`,
+    parameters: {
+      type: "object",
+      properties: {
+        entityType: { type: "string", enum: ["questline", "quest", "build", "side_quest", "idea"] },
+        entityId: { type: "string", description: "The exact id of the item to delete." },
+        entityTitle: { type: "string", description: "Its title." },
+        questId: {
+          type: "string",
+          description: 'Required only when entityType is "build" — that Build\'s Quest id. Empty string otherwise.',
+        },
+      },
+      required: ["entityType", "entityId", "entityTitle", "questId"],
     },
   },
 ] as const;

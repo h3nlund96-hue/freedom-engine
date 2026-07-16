@@ -9,10 +9,10 @@ import { EMBER_FUNCTION_TOOLS } from "../../../lib/emberProposalParsing";
  * this server. This is Presence mode's live conversation: talking to Ember
  * and hearing her, both at once, not a one-shot text-to-speech call.
  *
- * She can propose the same five actions as text chat (create/activate
- * things) via Realtime function-calling — calling one only proposes it.
- * The Founder still approves an on-screen card before anything is written;
- * nothing in voice mode writes to Supabase on its own.
+ * She can propose the same actions as text chat (create/activate/update
+ * status/delete) via Realtime function-calling — calling one only proposes
+ * it. The Founder still approves an on-screen card before anything is
+ * written; nothing in voice mode writes to Supabase on its own.
  */
 
 function getClient() {
@@ -41,6 +41,33 @@ function buildVoicePrompt(ctx: EmberContext): string {
           .map((b) => `- ${b.title} (id: ${b.id}, quest id: ${b.questId}, from Quest: ${b.questTitle})`)
           .join("\n")
       : "None open right now.";
+
+  const allQuestlinesList =
+    ctx.allQuestlines.length > 0
+      ? ctx.allQuestlines.map((ql) => `- ${ql.title} [${ql.status}] (id: ${ql.id})`).join("\n")
+      : "None yet.";
+
+  const allQuestsList =
+    ctx.allQuests.length > 0
+      ? ctx.allQuests.map((q) => `- ${q.title} [${q.status}] (id: ${q.id}, questline id: ${q.questlineId})`).join("\n")
+      : "None yet.";
+
+  const allBuildsList =
+    ctx.allBuilds.length > 0
+      ? ctx.allBuilds
+          .map((b) => `- ${b.title} [${b.status}] (id: ${b.id}, quest id: ${b.questId}, from Quest: ${b.questTitle})`)
+          .join("\n")
+      : "None yet.";
+
+  const allSideQuestsList =
+    ctx.allSideQuests.length > 0
+      ? ctx.allSideQuests.map((sq) => `- ${sq.title} [${sq.status}] (id: ${sq.id})`).join("\n")
+      : "None yet.";
+
+  const allIdeasList =
+    ctx.allIdeas.length > 0
+      ? ctx.allIdeas.map((i) => `- ${i.title} [${i.status}] (id: ${i.id})`).join("\n")
+      : "None yet.";
 
   return `You are Ember — a Companion inside Freedom Engine, a personal AI operating system for The Founder. You are talking live, out loud, in real time — not reading a prepared answer aloud, and not a narrator or a customer-service voice.
 
@@ -75,6 +102,21 @@ ${availableQuestsList}
 OPEN BUILDS YOU CAN PROPOSE MARKING COMPLETE:
 ${openBuildsList}
 
+EVERY QUESTLINE, WITH STATUS (for reopening or completing one):
+${allQuestlinesList}
+
+EVERY QUEST, WITH STATUS (for reopening or completing one):
+${allQuestsList}
+
+EVERY BUILD, WITH STATUS (for reopening or completing one):
+${allBuildsList}
+
+EVERY SIDE QUEST, WITH STATUS (for activating, completing, reopening, or deleting one):
+${allSideQuestsList}
+
+EVERY IDEA, WITH STATUS (for deleting one):
+${allIdeasList}
+
 FREEDOM ENGINE LANGUAGE (always use these terms — never generic alternatives):
 "Build" not "task". "Quest" not "project". "Questline" not "roadmap". "Main Quest" not "vision". "Idea Vault" not "backlog". "The Founder" — never a generic "you" as a stand-in for the person's role.
 
@@ -85,10 +127,12 @@ HOW YOU TALK:
 - Let The Founder jump in. Don't over-explain or stack multiple points in one turn — say the one useful thing, then stop.
 
 USING YOUR TOOLS:
-- If — and only if — The Founder's message clearly calls for one of your five tools, call it. Otherwise just talk.
+- If — and only if — The Founder's message clearly calls for one of your seven tools, call it. Otherwise just talk.
 - Calling a tool only proposes the action — you never act yourself, and nothing happens until The Founder approves the card that appears on screen. Say so naturally out loud right when you call it (e.g. "I've put a proposal on screen for that") — never say or imply it's already done.
 - Only propose activating a Quest or completing a Build using an id listed above — never invent one. Only propose a new Build when there's an active Quest, using its exact id above.
 - For a new Quest, pick the best-fitting Questline id if one clearly fits, or leave it empty and say so.
+- For update_status, use an id from one of the EVERY [ENTITY], WITH STATUS lists — a Questline only ever uses "available" or "completed", never "active".
+- delete_item is destructive and permanent — deleting a Questline or Quest also removes everything nested inside it. Only propose it when clearly asked.
 - Once you get the result back after The Founder approves or dismisses it, react naturally and briefly — you don't need to repeat the details back.`;
 }
 

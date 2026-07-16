@@ -22,6 +22,14 @@ export interface EmberContext {
   recentIdeas: { title: string; status: string }[];
   availableQuests: { id: string; title: string; questlineId: string }[];
   openBuilds: { id: string; title: string; questId: string; questTitle: string }[];
+  /** Full inventories (every status, not just the curated subsets above) —
+   * needed so status-change/delete proposals can reference a real id for
+   * anything, not just what's already active-adjacent. */
+  allQuestlines: { id: string; title: string; status: string }[];
+  allQuests: { id: string; title: string; status: string; questlineId: string }[];
+  allBuilds: { id: string; title: string; status: string; questId: string; questTitle: string }[];
+  allSideQuests: { id: string; title: string; status: string }[];
+  allIdeas: { id: string; title: string; status: string }[];
 }
 
 export async function getEmberContext(): Promise<EmberContext> {
@@ -33,9 +41,9 @@ export async function getEmberContext(): Promise<EmberContext> {
 
   const { data: ideaRows } = await supabase
     .from("ideas")
-    .select("title, status")
+    .select("id, title, status")
     .order("created_at", { ascending: false })
-    .limit(15);
+    .limit(30);
 
   const availableQuests = progress.questlines
     .flatMap((ql) =>
@@ -55,6 +63,24 @@ export async function getEmberContext(): Promise<EmberContext> {
     )
     .slice(0, 20);
 
+  const allQuestlines = progress.questlines.map((ql) => ({ id: ql.id, title: ql.title, status: ql.status }));
+
+  const allQuests = progress.questlines
+    .flatMap((ql) => (ql.quests ?? []).map((q) => ({ id: q.id, title: q.title, status: q.status, questlineId: ql.id })))
+    .slice(0, 40);
+
+  const allBuilds = progress.questlines
+    .flatMap((ql) =>
+      (ql.quests ?? []).flatMap((q) =>
+        (q.builds ?? []).map((b) => ({ id: b.id, title: b.title, status: b.status, questId: q.id, questTitle: q.title }))
+      )
+    )
+    .slice(0, 60);
+
+  const allSideQuests = progress.sideQuests.map((sq) => ({ id: sq.id, title: sq.title, status: sq.status }));
+
+  const allIdeas = ((ideaRows ?? []) as { id: string; title: string; status: string }[]).slice(0, 30);
+
   return {
     mainQuest: progress.mainQuest,
     activeQuestline: activeQuestline?.title ?? "None",
@@ -66,8 +92,13 @@ export async function getEmberContext(): Promise<EmberContext> {
     currentBuildDescription: currentBuild?.description ?? "",
     nextStep: currentBuild?.nextStep ?? "",
     questlines: progress.questlines.map((ql) => ({ id: ql.id, title: ql.title })),
-    recentIdeas: (ideaRows ?? []) as { title: string; status: string }[],
+    recentIdeas: allIdeas.map(({ title, status }) => ({ title, status })),
     availableQuests,
     openBuilds,
+    allQuestlines,
+    allQuests,
+    allBuilds,
+    allSideQuests,
+    allIdeas,
   };
 }
