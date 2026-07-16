@@ -295,7 +295,7 @@ function BuildRow({ build, questId, onChanged }: { build: Build; questId: string
             {build.status !== "completed" && (
               <button
                 type="button"
-                onClick={() => updateBuild(build.id, questId, { status: "completed" }).then(onChanged)}
+                onClick={() => updateBuild(build.id, questId, { status: "completed" }).then(onChanged).catch(() => {})}
                 className={`${smallBtn} text-accent/60 hover:text-accent/85`}
               >
                 Complete
@@ -395,7 +395,7 @@ function QuestCard({
           {quest.status !== "active" && quest.status !== "completed" && (
             <button
               type="button"
-              onClick={() => updateQuest(quest.id, questlineId, { status: "active" }).then(onChanged)}
+              onClick={() => updateQuest(quest.id, questlineId, { status: "active" }).then(onChanged).catch(() => {})}
               className={`${smallBtn} text-accent-glow/70 hover:text-accent-glow`}
             >
               Activate
@@ -404,7 +404,7 @@ function QuestCard({
           {quest.status !== "completed" && (
             <button
               type="button"
-              onClick={() => updateQuest(quest.id, questlineId, { status: "completed" }).then(onChanged)}
+              onClick={() => updateQuest(quest.id, questlineId, { status: "completed" }).then(onChanged).catch(() => {})}
               className={`${smallBtn} text-accent/60 hover:text-accent/85`}
             >
               Complete
@@ -549,7 +549,7 @@ function QuestlineCard({ questline, onChanged }: { questline: Questline; onChang
         {questline.status !== "completed" && (
           <button
             type="button"
-            onClick={() => updateQuestline(questline.id, { status: "completed" }).then(onChanged)}
+            onClick={() => updateQuestline(questline.id, { status: "completed" }).then(onChanged).catch(() => {})}
             className={`${smallBtn} text-accent/60 hover:text-accent/85`}
           >
             Complete
@@ -634,7 +634,7 @@ function SideQuestCard({
         {sideQuest.status !== "active" && sideQuest.status !== "completed" && (
           <button
             type="button"
-            onClick={() => updateSideQuest(sideQuest.id, { status: "active" }).then(onChanged)}
+            onClick={() => updateSideQuest(sideQuest.id, { status: "active" }).then(onChanged).catch(() => {})}
             className={`${smallBtn} text-accent-glow/70 hover:text-accent-glow`}
           >
             Activate
@@ -643,7 +643,7 @@ function SideQuestCard({
         {sideQuest.status !== "completed" && (
           <button
             type="button"
-            onClick={() => updateSideQuest(sideQuest.id, { status: "completed" }).then(onChanged)}
+            onClick={() => updateSideQuest(sideQuest.id, { status: "completed" }).then(onChanged).catch(() => {})}
             className={`${smallBtn} text-accent/60 hover:text-accent/85`}
           >
             Complete

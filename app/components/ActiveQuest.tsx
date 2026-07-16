@@ -7,8 +7,8 @@ import {
 } from "../data/freedomEngineProgress";
 
 /** The active Quest, front and center on HQ — title, its Questline, and the
- * next step from the active Build. The whole card is a link into Quest
- * Board. Falls back to a "Choose a Quest" prompt when nothing is active. */
+ * current Build. The whole card is a link into Quest Board. Falls back to
+ * a "Choose a Quest" prompt when nothing is active. */
 export function ActiveQuest({ progress }: { progress: FreedomEngineProgress }) {
   const activeQuest = getActiveQuest(progress);
   const activeQuestline = activeQuest ? getActiveQuestline(progress, activeQuest) : undefined;

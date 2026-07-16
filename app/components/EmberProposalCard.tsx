@@ -248,7 +248,7 @@ export function ProposalCard({
           style={
             isDestructive
               ? { background: "rgba(255,92,92,0.12)", color: "var(--critical)", border: "1px solid rgba(255,92,92,0.25)" }
-              : { background: "rgba(77,216,255,0.12)", color: "rgba(77,216,255,0.85)", border: "1px solid rgba(77,216,255,0.25)" }
+              : { background: "rgba(77,216,255,0.12)", color: "var(--accent-glow)", border: "1px solid rgba(77,216,255,0.25)" }
           }
         >
           {working ? "Working..." : approveLabel(proposal)}

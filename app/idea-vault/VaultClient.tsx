@@ -90,17 +90,17 @@ export function VaultClient() {
     description: string
   ) {
     if (!selectedIdea) return;
-    if (type === "quest" && questlineId) {
-      await convertIdeaToQuest(selectedIdea, questlineId, title, description);
-    } else {
-      await convertIdeaToSideQuest(selectedIdea, title, description);
-    }
+    const result =
+      type === "quest" && questlineId
+        ? await convertIdeaToQuest(selectedIdea, questlineId, title, description)
+        : await convertIdeaToSideQuest(selectedIdea, title, description);
     const updated: Idea = {
       ...selectedIdea,
       title,
       description,
       convertedAt: new Date().toISOString(),
       convertedToType: type,
+      convertedToId: result.id,
     };
     setIdeas((prev) => prev.map((i) => (i.id === updated.id ? updated : i)));
     setSelectedIdea(updated);

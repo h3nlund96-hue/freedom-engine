@@ -43,11 +43,11 @@ export async function getProgressClient(): Promise<FreedomEngineProgress> {
   const supabase = createClient();
 
   const [
-    { data: founderState },
-    { data: questlineRows },
-    { data: questRows },
-    { data: buildRows },
-    { data: sideQuestRows },
+    { data: founderState, error: founderStateError },
+    { data: questlineRows, error: questlineRowsError },
+    { data: questRows, error: questRowsError },
+    { data: buildRows, error: buildRowsError },
+    { data: sideQuestRows, error: sideQuestRowsError },
   ] = await Promise.all([
     supabase.from("founder_state").select("main_quest").maybeSingle(),
     supabase.from("questlines").select("*").order("sort_order"),
@@ -55,6 +55,10 @@ export async function getProgressClient(): Promise<FreedomEngineProgress> {
     supabase.from("builds").select("*").order("sort_order"),
     supabase.from("side_quests").select("*").order("sort_order"),
   ]);
+
+  const firstError =
+    founderStateError ?? questlineRowsError ?? questRowsError ?? buildRowsError ?? sideQuestRowsError;
+  if (firstError) throw new Error(firstError.message);
 
   return mapProgressRows(
     founderState as FounderStateRow | null,
@@ -107,7 +111,8 @@ async function nextSortOrder(
   const supabase = createClient();
   let query = supabase.from(table).select("id", { count: "exact", head: true });
   if (scopeColumn && scopeId) query = query.eq(scopeColumn, scopeId);
-  const { count } = await query;
+  const { count, error } = await query;
+  if (error) throw new Error(error.message);
   return (count ?? 0) + 1;
 }
 
@@ -116,13 +121,14 @@ async function nextSortOrder(
  * keeps climbing even after a Build in that Quest has been deleted. */
 async function nextBuildNumber(questId: string): Promise<number> {
   const supabase = createClient();
-  const { data } = await supabase
+  const { data, error } = await supabase
     .from("builds")
     .select("build_number")
     .eq("quest_id", questId)
     .order("build_number", { ascending: false })
     .limit(1)
     .maybeSingle();
+  if (error) throw new Error(error.message);
   return (data?.build_number ?? 0) + 1;
 }
 
@@ -132,15 +138,16 @@ async function nextBuildNumber(questId: string): Promise<number> {
  * completing or deleting a Build. */
 async function promoteNextBuild(questId: string): Promise<void> {
   const supabase = createClient();
-  const { data: existingActive } = await supabase
+  const { data: existingActive, error: existingActiveError } = await supabase
     .from("builds")
     .select("id")
     .eq("quest_id", questId)
     .eq("status", "active")
     .maybeSingle();
+  if (existingActiveError) throw new Error(existingActiveError.message);
   if (existingActive) return;
 
-  const { data: next } = await supabase
+  const { data: next, error: nextError } = await supabase
     .from("builds")
     .select("id")
     .eq("quest_id", questId)
@@ -148,6 +155,7 @@ async function promoteNextBuild(questId: string): Promise<void> {
     .order("sort_order", { ascending: true })
     .limit(1)
     .maybeSingle();
+  if (nextError) throw new Error(nextError.message);
   if (!next) return;
 
   const { error } = await supabase.from("builds").update({ status: "active" }).eq("id", next.id);
@@ -170,8 +178,10 @@ export async function getQuestlineOptions(): Promise<QuestlineSummary[]> {
 
 export async function createQuestline(title: string, description: string): Promise<{ id: string }> {
   const supabase = createClient();
-  const userId = await currentUserId();
-  const sortOrder = await nextSortOrder("questlines", null, null);
+  const [userId, sortOrder] = await Promise.all([
+    currentUserId(),
+    nextSortOrder("questlines", null, null),
+  ]);
 
   const { data, error } = await supabase
     .from("questlines")
@@ -212,8 +222,10 @@ export async function createQuest(
   description: string
 ): Promise<{ id: string }> {
   const supabase = createClient();
-  const userId = await currentUserId();
-  const sortOrder = await nextSortOrder("quests", "questline_id", questlineId);
+  const [userId, sortOrder] = await Promise.all([
+    currentUserId(),
+    nextSortOrder("quests", "questline_id", questlineId),
+  ]);
 
   const { data, error } = await supabase
     .from("quests")
@@ -279,9 +291,11 @@ export async function createBuild(
   description: string
 ): Promise<{ id: string }> {
   const supabase = createClient();
-  const userId = await currentUserId();
-  const sortOrder = await nextSortOrder("builds", "quest_id", questId);
-  const buildNumber = await nextBuildNumber(questId);
+  const [userId, sortOrder, buildNumber] = await Promise.all([
+    currentUserId(),
+    nextSortOrder("builds", "quest_id", questId),
+    nextBuildNumber(questId),
+  ]);
 
   const { data, error } = await supabase
     .from("builds")
@@ -342,8 +356,10 @@ export async function deleteBuild(id: string, questId: string): Promise<void> {
 
 export async function createSideQuest(title: string, description: string): Promise<{ id: string }> {
   const supabase = createClient();
-  const userId = await currentUserId();
-  const sortOrder = await nextSortOrder("side_quests", null, null);
+  const [userId, sortOrder] = await Promise.all([
+    currentUserId(),
+    nextSortOrder("side_quests", null, null),
+  ]);
 
   const { data, error } = await supabase
     .from("side_quests")

@@ -53,7 +53,7 @@ export default async function Home() {
 
         <ActiveQuest progress={progress} />
 
-        {/* World navigation — three locations */}
+        {/* World navigation */}
         <section className="space-y-8">
           <div
             className="animate-fade-up space-y-2"
