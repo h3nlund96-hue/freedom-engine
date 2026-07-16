@@ -4,18 +4,15 @@ import { useEffect, useState } from "react";
 import { usePathname } from "next/navigation";
 import { EmberPanel } from "./EmberPanel";
 import { EmberGlyph } from "./EmberGlyph";
-import { getProgressClient } from "../lib/questMutationService";
-import { getActiveQuest, getCurrentBuild } from "../data/freedomEngineProgress";
-import { pickRandom, pickProactiveNote } from "../lib/emberProactiveMessage";
+import { pickRandom } from "../lib/emberProactiveMessage";
 import { onEmberEvent } from "../lib/emberEvents";
 
 /**
  * Ember's floating presence on HQ/Quest Board/Idea Vault — a quiet orb that
- * stretches into a message pill when there's something worth saying, then
- * closes itself again. Three sources feed the same pill, in priority order:
- * completing a Quest/Build (live, via emberEvents), something worth
- * flagging (no active Quest/Build, shared with EmberGreeting), or — on HQ
- * specifically, when neither of those applies — a plain "good to see you."
+ * stretches into a message pill when there's something to say, then closes
+ * itself again. Only two kinds of things trigger it: approval/praise for
+ * completing a Quest or Build (live, via emberEvents), and a greeting on
+ * landing at Headquarters. No prompting, no "what's next" nudging.
  */
 
 // Only shown on these routes — Hall of Embers already has Ember front and
@@ -46,12 +43,21 @@ export function EmberWidget() {
   const [bubbleText, setBubbleText] = useState<string | null>(null);
   const [expanded, setExpanded] = useState(false);
   const [lastBubbleText, setLastBubbleText] = useState<string | null>(null);
+  const [lastPathname, setLastPathname] = useState<string | null>(null);
 
   // A genuinely new message always starts collapsed, so the open animates
   // even if one bubble replaces another mid-cycle.
   if (bubbleText !== lastBubbleText) {
     setLastBubbleText(bubbleText);
     setExpanded(false);
+  }
+
+  // Landing at Headquarters gets a plain greeting — checked here (not an
+  // effect) so it fires on the very first render too, not just subsequent
+  // navigations.
+  if (pathname !== lastPathname) {
+    setLastPathname(pathname);
+    if (pathname === "/") setBubbleText(pickRandom(HQ_ENTRY_NOTES));
   }
 
   // Completing a Quest or Build anywhere in the app takes over the pill
@@ -65,33 +71,6 @@ export function EmberWidget() {
       }
     });
   }, []);
-
-  // On arriving at a widget page: something worth flagging, or — on HQ
-  // specifically, if nothing's off — a plain welcome.
-  useEffect(() => {
-    if (!WIDGET_PATHS.has(pathname)) return;
-    let cancelled = false;
-
-    getProgressClient()
-      .then((progress) => {
-        if (cancelled) return;
-        const quest = getActiveQuest(progress);
-        const build = quest ? getCurrentBuild(quest) : undefined;
-        const proactive = pickProactiveNote(quest?.title, build?.title);
-        if (proactive) {
-          setBubbleText(proactive);
-        } else if (pathname === "/") {
-          setBubbleText(pickRandom(HQ_ENTRY_NOTES));
-        }
-      })
-      .catch(() => {
-        // No note — the plain orb is enough.
-      });
-
-    return () => {
-      cancelled = true;
-    };
-  }, [pathname]);
 
   // The full open → hold → close lifecycle for whatever bubbleText currently is.
   useEffect(() => {
@@ -126,7 +105,7 @@ export function EmberWidget() {
   return (
     <>
       <div className="fixed bottom-6 right-6 z-40 flex justify-end">
-        <div className="flex min-h-12 items-center rounded-full border border-accent-glow/25 bg-[rgba(10,17,30,0.94)] shadow-[0_8px_28px_rgba(0,0,0,0.5)]">
+        <div className="flex h-12 items-center rounded-full border border-accent-glow/25 bg-[rgba(10,17,30,0.94)] shadow-[0_8px_28px_rgba(0,0,0,0.5)]">
           <button
             type="button"
             onClick={() => setOpen((v) => !v)}
@@ -142,8 +121,8 @@ export function EmberWidget() {
               <button
                 type="button"
                 onClick={handleOpenPanel}
-                className={`line-clamp-3 overflow-hidden text-left text-xs leading-relaxed text-foreground/85 transition-all duration-500 ease-out ${
-                  expanded ? "max-w-[min(280px,calc(100vw-7rem))] py-2.5 pr-2 opacity-100" : "max-w-0 py-0 pr-0 opacity-0"
+                className={`truncate text-left text-xs leading-relaxed text-foreground/85 transition-all duration-500 ease-out ${
+                  expanded ? "max-w-[min(300px,calc(100vw-7rem))] pr-2 opacity-100" : "max-w-0 pr-0 opacity-0"
                 }`}
               >
                 {bubbleText}
