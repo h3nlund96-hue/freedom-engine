@@ -1,7 +1,7 @@
 import OpenAI from "openai";
 import { createClient as createSupabaseClient } from "../../../lib/supabase/server";
 import { getEmberContext, type EmberContext } from "../../lib/emberContext";
-import type { EmberProposal } from "../../lib/emberConversation";
+import { parseProposal } from "../../lib/emberProposalParsing";
 
 /* ── CLIENT ───────────────────────────────────────────────────────────────── */
 
@@ -152,69 +152,6 @@ Respond with a valid JSON object containing exactly these two fields and no othe
 Do not include any text outside the JSON object.
 Do not use markdown inside any value.
 Do not add extra fields.`;
-}
-
-/* ── PROPOSAL VALIDATION ──────────────────────────────────────────────────── */
-
-function isNonEmptyString(value: unknown): value is string {
-  return typeof value === "string" && value.trim().length > 0;
-}
-
-function parseProposal(raw: unknown): EmberProposal | null {
-  if (!raw || typeof raw !== "object") return null;
-  const r = raw as Record<string, unknown>;
-
-  switch (r.action) {
-    case "create_quest":
-      if (!isNonEmptyString(r.title)) return null;
-      return {
-        action: "create_quest",
-        title: r.title,
-        description: typeof r.description === "string" ? r.description : "",
-        questlineId: typeof r.questlineId === "string" ? r.questlineId : null,
-      };
-    case "create_idea":
-      if (!isNonEmptyString(r.title)) return null;
-      return {
-        action: "create_idea",
-        title: r.title,
-        description: typeof r.description === "string" ? r.description : "",
-      };
-    case "activate_quest":
-      if (!isNonEmptyString(r.questId) || !isNonEmptyString(r.questlineId) || !isNonEmptyString(r.questTitle)) {
-        return null;
-      }
-      return {
-        action: "activate_quest",
-        questId: r.questId,
-        questlineId: r.questlineId,
-        questTitle: r.questTitle,
-      };
-    case "complete_build":
-      if (!isNonEmptyString(r.buildId) || !isNonEmptyString(r.questId) || !isNonEmptyString(r.buildTitle)) {
-        return null;
-      }
-      return {
-        action: "complete_build",
-        buildId: r.buildId,
-        questId: r.questId,
-        buildTitle: r.buildTitle,
-      };
-    case "create_build":
-      if (!isNonEmptyString(r.questId) || !isNonEmptyString(r.questTitle) || !isNonEmptyString(r.title)) {
-        return null;
-      }
-      return {
-        action: "create_build",
-        questId: r.questId,
-        questTitle: r.questTitle,
-        title: r.title,
-        description: typeof r.description === "string" ? r.description : "",
-        nextStep: typeof r.nextStep === "string" ? r.nextStep : "",
-      };
-    default:
-      return null;
-  }
 }
 
 /* ── ROUTE ────────────────────────────────────────────────────────────────── */

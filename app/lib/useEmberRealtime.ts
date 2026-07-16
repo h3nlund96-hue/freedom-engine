@@ -1,15 +1,25 @@
 "use client";
 
 import { useCallback, useRef, useState } from "react";
+import { parseToolCall } from "./emberProposalParsing";
+import type { EmberProposal } from "./emberConversation";
 
 export interface RealtimeExchange {
   role: "user" | "assistant";
   content: string;
 }
 
+export interface PendingToolCall {
+  callId: string;
+  proposal: EmberProposal;
+}
+
 interface RealtimeServerEvent {
   type?: string;
   transcript?: string;
+  call_id?: string;
+  name?: string;
+  arguments?: string;
 }
 
 const REALTIME_CALLS_URL = "https://api.openai.com/v1/realtime/calls";
@@ -34,6 +44,7 @@ export function useEmberRealtime() {
   const [talking, setTalking] = useState(false);
   const [listening, setListening] = useState(false);
   const [liveCaption, setLiveCaption] = useState("");
+  const [pendingToolCall, setPendingToolCall] = useState<PendingToolCall | null>(null);
 
   const teardown = useCallback(() => {
     dataChannelRef.current?.close();
@@ -51,6 +62,7 @@ export function useEmberRealtime() {
     setConnecting(false);
     setTalking(false);
     setListening(false);
+    setPendingToolCall(null);
   }, []);
 
   const connect = useCallback(async () => {
@@ -116,6 +128,12 @@ export function useEmberRealtime() {
               setLiveCaption(msg.transcript);
             }
             break;
+          case "response.function_call_arguments.done": {
+            if (!msg.call_id || !msg.name || !msg.arguments) break;
+            const proposal = parseToolCall(msg.name, msg.arguments);
+            if (proposal) setPendingToolCall({ callId: msg.call_id, proposal });
+            break;
+          }
           default:
             break;
         }
@@ -180,5 +198,39 @@ export function useEmberRealtime() {
     setLiveCaption(trimmed);
   }, []);
 
-  return { connected, connecting, error, talking, listening, liveCaption, connect, disconnect, sendText };
+  /** Reports the Founder's approve/dismiss decision back into the live
+   * conversation, so Ember reacts to it instead of being left hanging. By
+   * the time this fires the actual Supabase write (if approved) has already
+   * happened — same as the ProposalCard's own onResolve everywhere else. */
+  const resolveToolCall = useCallback((callId: string, status: "created" | "dismissed") => {
+    const dataChannel = dataChannelRef.current;
+    setPendingToolCall(null);
+    if (!dataChannel || dataChannel.readyState !== "open") return;
+
+    dataChannel.send(
+      JSON.stringify({
+        type: "conversation.item.create",
+        item: {
+          type: "function_call_output",
+          call_id: callId,
+          output: status === "created" ? "The Founder approved it. It's done." : "The Founder dismissed it.",
+        },
+      })
+    );
+    dataChannel.send(JSON.stringify({ type: "response.create" }));
+  }, []);
+
+  return {
+    connected,
+    connecting,
+    error,
+    talking,
+    listening,
+    liveCaption,
+    pendingToolCall,
+    connect,
+    disconnect,
+    sendText,
+    resolveToolCall,
+  };
 }
