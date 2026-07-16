@@ -9,16 +9,16 @@ import { getProgressClient } from "../lib/questMutationService";
 import { getActiveQuest, getCurrentBuild } from "../data/freedomEngineProgress";
 import { buildSuggestedQuestions, type ActiveInfo } from "../lib/emberSuggestions";
 import { useTypewriterReveal } from "../lib/useTypewriterReveal";
+import { useEmberSpeech } from "../lib/useEmberSpeech";
 
 /**
  * Ember's own room — not a console bolted onto a page. Only the most recent
  * exchange is ever on screen; everything before it lives behind the
  * collapsed "Earlier in this session" drawer. Her glyph reacts while she's
- * "speaking" (currently paced by a typed reveal of her answer — the exact
- * seam real voice output will drive later), and Presence mode grows that
- * glyph to fill the screen, foreshadowing what happens when voice chat
- * lands — asking Ember something still works while it's open, since real
- * voice input isn't built yet.
+ * "speaking" — the typed reveal of her answer, and (voice on) actually
+ * hearing her (useEmberSpeech). Presence mode grows that glyph to fill the
+ * screen. Talking back to her — the other half of voice chat — isn't built
+ * yet, so asking Ember something still means typing while it's open.
  */
 
 interface Exchange {
@@ -47,6 +47,7 @@ export function EmberRoom() {
   const [activeInfo, setActiveInfo] = useState<ActiveInfo | null>(null);
   const [historyOpen, setHistoryOpen] = useState(false);
   const [presenceMode, setPresenceMode] = useState(false);
+  const [voiceEnabled, setVoiceEnabled] = useState(true);
 
   useEffect(() => {
     getProgressClient()
@@ -79,7 +80,11 @@ export function EmberRoom() {
   const history = pairHistory(messages.slice(0, Math.max(earlierCount, 0)));
 
   const { revealed, speaking: revealing } = useTypewriterReveal(currentAnswerMsg?.content ?? "");
-  const speaking = loading || revealing;
+  const { speaking: talking, blocked: voiceBlocked, retry: retryVoice } = useEmberSpeech(
+    currentAnswerMsg?.content ?? "",
+    voiceEnabled
+  );
+  const speaking = loading || revealing || talking;
 
   const suggestedQuestions = buildSuggestedQuestions(activeInfo);
 
@@ -142,14 +147,24 @@ export function EmberRoom() {
             Awake
           </span>
           {!presenceMode && (
-            <button
-              type="button"
-              onClick={() => setPresenceMode(true)}
-              title="A calmer, focused view — voice will live here later"
-              className="mt-1 font-display text-[0.55rem] tracking-[0.16em] uppercase text-muted/30 transition-colors duration-300 hover:text-accent-glow/60"
-            >
-              Presence mode
-            </button>
+            <div className="mt-1 flex items-center gap-3">
+              <button
+                type="button"
+                onClick={() => setPresenceMode(true)}
+                title="A calmer, focused view — voice will live here later"
+                className="font-display text-[0.55rem] tracking-[0.16em] uppercase text-muted/30 transition-colors duration-300 hover:text-accent-glow/60"
+              >
+                Presence mode
+              </button>
+              <button
+                type="button"
+                onClick={() => setVoiceEnabled((v) => !v)}
+                title={voiceEnabled ? "Ember speaks her answers aloud" : "Ember's voice is muted"}
+                className="font-display text-[0.55rem] tracking-[0.16em] uppercase text-muted/30 transition-colors duration-300 hover:text-accent-glow/60"
+              >
+                {voiceEnabled ? "🔊 Voice on" : "🔈 Voice off"}
+              </button>
+            </div>
           )}
         </div>
       </div>
@@ -174,6 +189,16 @@ export function EmberRoom() {
         ) : loading ? (
           <p className="text-sm text-muted/50">Ember is listening…</p>
         ) : null}
+
+        {voiceEnabled && voiceBlocked && currentAnswerMsg && (
+          <button
+            type="button"
+            onClick={retryVoice}
+            className="font-display text-[0.6rem] tracking-[0.1em] uppercase text-muted/40 underline decoration-dotted underline-offset-4 transition-colors duration-300 hover:text-accent-glow/70"
+          >
+            🔊 Tap to hear this
+          </button>
+        )}
 
         {currentAnswerMsg?.proposal && currentAnswerMsg.proposalStatus === "pending" && !revealing && (
           <div className="w-full max-w-sm text-left">
