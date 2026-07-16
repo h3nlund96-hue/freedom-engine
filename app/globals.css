@@ -15,6 +15,11 @@
    * the theme the way a custom property can. */
   --card-border: rgba(255, 255, 255, 0.07);
   --surface-sunken: rgba(0, 0, 0, 0.22);
+  /* A subtle "raised chip" tint — stat tiles, toggle tracks — distinct from
+   * --surface-sunken because it lightens here instead of darkening; light
+   * mode has to darken instead, since there's no headroom to go brighter
+   * than an already near-white surface. */
+  --chip-tint: rgba(255, 255, 255, 0.04);
 }
 
 /* Light mode — set by ThemeToggle (Profile > Options) via a data-theme
@@ -40,8 +45,9 @@
   --surface: #fbf8f2;
   --surface-raised: #ffffff;
   --critical: #c1362b;
-  --card-border: rgba(32, 26, 18, 0.14);
+  --card-border: rgba(32, 26, 18, 0.16);
   --surface-sunken: rgba(32, 26, 18, 0.05);
+  --chip-tint: rgba(32, 26, 18, 0.035);
 }
 
 @theme inline {
@@ -55,6 +61,7 @@
   --color-critical: var(--critical);
   --color-card-border: var(--card-border);
   --color-surface-sunken: var(--surface-sunken);
+  --color-chip-tint: var(--chip-tint);
   --font-sans: var(--font-geist-sans);
   --font-display: var(--font-geist-mono);
   --font-mono: var(--font-geist-mono);
@@ -261,4 +268,17 @@ body {
   to {
     text-shadow: 0 1px 5px rgba(32, 26, 18, 0.3);
   }
+}
+
+/* Light mode: every card surface (border-card-border is the shared class
+ * every panel/tile wrapper across the app already carries) sits only a
+ * few shades off the page background — in dark mode that's fine because
+ * the gap in absolute brightness is still large, but in light mode two
+ * close-but-not-identical near-white tones read as one flat surface with
+ * no boundary at all. A real drop shadow, not just a fill-color
+ * difference, is what actually separates a light card from a light page —
+ * this is not affected by the element's own overflow-hidden, since
+ * box-shadow paints outside the border box regardless. */
+:root[data-theme="light"] .border-card-border {
+  box-shadow: 0 1px 2px rgba(32, 26, 18, 0.05), 0 4px 16px rgba(32, 26, 18, 0.08);
 }

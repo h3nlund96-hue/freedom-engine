@@ -129,7 +129,7 @@ function EntityEditForm({
           </option>
         ))}
       </select>
-      {saveError && <p className="text-[0.65rem] text-[rgba(255,120,120,0.9)]">{saveError}</p>}
+      {saveError && <p className="text-[0.65rem] text-critical/90">{saveError}</p>}
       <div className="mt-1 flex items-center justify-between gap-2">
         <div className="flex gap-2">
           <button
@@ -149,7 +149,7 @@ function EntityEditForm({
           <button
             type="button"
             onClick={onDelete}
-            className={`${smallBtn} text-muted/50 hover:text-[rgba(255,120,120,0.85)]`}
+            className={`${smallBtn} text-muted/50 hover:text-critical/85`}
           >
             Delete
           </button>
@@ -200,7 +200,7 @@ function AddEntityForm({
         rows={2}
         className={`${inputClass} resize-none`}
       />
-      {addError && <p className="text-[0.65rem] text-[rgba(255,120,120,0.9)]">{addError}</p>}
+      {addError && <p className="text-[0.65rem] text-critical/90">{addError}</p>}
       <div className="mt-1 flex gap-2">
         <button
           type="button"
@@ -777,7 +777,7 @@ function AddQuestForm({
         rows={2}
         className={`${inputClass} resize-none`}
       />
-      {addError && <p className="text-[0.65rem] text-[rgba(255,120,120,0.9)]">{addError}</p>}
+      {addError && <p className="text-[0.65rem] text-critical/90">{addError}</p>}
       <div className="mt-1 flex gap-2">
         <button
           type="button"

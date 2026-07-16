@@ -82,7 +82,7 @@ export default async function ProfilePage() {
                   <div className="flex items-center gap-2.5">
                     <span
                       className="rounded px-2 py-0.5 font-display text-[0.6rem] tracking-[0.18em] uppercase"
-                      style={{ background: "rgba(255,171,74,0.12)", color: "rgba(255,171,74,0.85)", border: "1px solid rgba(255,171,74,0.12)" }}
+                      style={{ background: "rgba(255,171,74,0.12)", color: "var(--accent)", border: "1px solid rgba(255,171,74,0.12)" }}
                     >
                       Level {xpData.level}
                     </span>
@@ -225,10 +225,7 @@ function StatBlock({
   className?: string;
 }) {
   return (
-    <div
-      className={`rounded-md px-4 py-3 ${className}`}
-      style={{ background: "rgba(255,255,255,0.02)", border: "1px solid rgba(255,171,74,0.05)" }}
-    >
+    <div className={`rounded-md border border-card-border bg-chip-tint px-4 py-3 ${className}`}>
       <p className="font-display text-[0.52rem] tracking-[0.18em] uppercase text-muted/35">{label}</p>
       <p className="mt-1.5 font-display text-2xl tracking-wide text-foreground/80">
         {value}

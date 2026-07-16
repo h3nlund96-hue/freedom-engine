@@ -176,7 +176,7 @@ export function IdeaDetailModal({
             </select>
           </div>
 
-          {saveError && <p className="text-xs text-[rgba(255,120,120,0.9)]">{saveError}</p>}
+          {saveError && <p className="text-xs text-critical/90">{saveError}</p>}
 
           {/* Save */}
           {!alreadyConverted && (
@@ -265,7 +265,7 @@ export function IdeaDetailModal({
                     </div>
                   )}
 
-                  {convertError && <p className="text-xs text-[rgba(255,120,120,0.9)]">{convertError}</p>}
+                  {convertError && <p className="text-xs text-critical/90">{convertError}</p>}
 
                   <button
                     type="button"
@@ -290,7 +290,7 @@ export function IdeaDetailModal({
           <button
             type="button"
             onClick={onDelete}
-            className="self-start font-display text-[0.6rem] tracking-[0.12em] uppercase text-muted/45 transition-colors duration-300 hover:text-[rgba(255,120,120,0.85)]"
+            className="self-start font-display text-[0.6rem] tracking-[0.12em] uppercase text-muted/45 transition-colors duration-300 hover:text-critical/85"
           >
             Delete this idea
           </button>

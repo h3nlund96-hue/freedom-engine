@@ -204,7 +204,7 @@ export function ProposalCard({
       <CornerMarks size={8} inset="6px" color={isDestructive ? "rgba(255,92,92,0.35)" : "rgba(77,216,255,0.3)"} />
       <p
         className={`font-display text-[0.55rem] tracking-[0.2em] uppercase ${
-          isDestructive ? "text-[rgba(255,120,120,0.85)]" : "text-accent-glow/70"
+          isDestructive ? "text-critical/85" : "text-accent-glow/70"
         }`}
       >
         {proposalHeading(proposal)}
@@ -214,7 +214,7 @@ export function ProposalCard({
         <p className="text-sm font-medium text-foreground/90">{proposalTitle(proposal)}</p>
         {description && <p className="mt-1 text-xs leading-relaxed text-muted/60">{description}</p>}
         {isDestructive && (
-          <p className="mt-1 text-xs leading-relaxed text-[rgba(255,120,120,0.75)]">
+          <p className="mt-1 text-xs leading-relaxed text-critical/75">
             This cannot be undone once approved.
           </p>
         )}
@@ -237,7 +237,7 @@ export function ProposalCard({
           <p className="text-xs text-muted/50">No Questlines exist yet — create one on Quest Board first.</p>
         ))}
 
-      {actionError && <p className="text-xs text-[rgba(255,120,120,0.9)]">{actionError}</p>}
+      {actionError && <p className="text-xs text-critical/90">{actionError}</p>}
 
       <div className="flex gap-2">
         <button
@@ -247,7 +247,7 @@ export function ProposalCard({
           className="rounded-sm px-3.5 py-1.5 font-display text-[0.6rem] tracking-[0.12em] uppercase transition-colors duration-300 disabled:cursor-not-allowed disabled:opacity-40"
           style={
             isDestructive
-              ? { background: "rgba(255,92,92,0.12)", color: "rgba(255,120,120,0.95)", border: "1px solid rgba(255,92,92,0.25)" }
+              ? { background: "rgba(255,92,92,0.12)", color: "var(--critical)", border: "1px solid rgba(255,92,92,0.25)" }
               : { background: "rgba(77,216,255,0.12)", color: "rgba(77,216,255,0.85)", border: "1px solid rgba(77,216,255,0.25)" }
           }
         >
