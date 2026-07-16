@@ -25,13 +25,22 @@ It is:
 
 ## Current State
 
-The first module is **AI Mastery HQ** — the starting headquarters where The Founder begins building the first real version of Freedom Engine.
+Freedom Engine is no longer a concept — it's a real, working system. The Founder signs in, and everything below is live, persisted state (not seed data or a mockup): Questlines, Quests, Builds, Side Quests and Ideas are created, activated, completed and deleted through the app itself, with the "single active thing" rules (one active Quest globally, one active Build per Quest, a Quest and a Side Quest can't both hold the Active Path) enforced underneath, not just described here.
 
-| Layer | Current |
+The first module is **AI Mastery HQ** — the starting headquarters where The Founder begins building the first real version of Freedom Engine. What's actually active right now — the Main Quest, the active Questline, the active Quest, and the current Build — is always visible live on the Quest Board; this document describes the system, not a snapshot of any one moment inside it.
+
+## What's Built
+
+| Location | What it does |
 |---|---|
-| Main Quest | Build the Freedom Engine. |
-| Questline | AI Mastery HQ |
-| Active Quest | Quest 2 — Build Freedom Engine Alpha |
+| **AI Mastery HQ** (`/`) | The headquarters. Greets The Founder, shows the active Quest at a glance, and is where a session starts. |
+| **Quest Board** (`/quest-board`) | The full picture: Main Quest, active Questline, active Quest and its Builds, a Side Quests tab, and a Completed tab. Where Questlines, Quests, Builds and Side Quests get created, edited, activated, completed and deleted. |
+| **Idea Vault** (`/idea-vault`) | Capture first, organize later. Ideas are sealed with a title, a description and a status, then later converted into a Quest or a Side Quest — or left alone. |
+| **Constitution Hall** (`/constitution`) | The Founder Constitution, on display — the moral compass, not a settings page. |
+| **Hall of Embers** (`/hall-of-embers`) | Ember's own room. A real conversation — typed or spoken — not a form. |
+| **Tend the Fire** | Embedded in HQ, not its own location — the daily reminder that one ember is enough. |
+
+Ember also has a floating presence on HQ, Quest Board and Idea Vault — an orb that opens her full console without leaving the page, and speaks up on its own in short, specific moments (never a nag): praise when a Quest or Build is completed or an Idea is captured, and a greeting the first time The Founder lands on HQ each session.
 
 ## Product Philosophy
 
@@ -65,6 +74,8 @@ Freedom Engine ships with one Companion for now — more will wake up in future 
 |---|---|---|
 | Ember | Direction, decisions, prioritization, protection of the vision — a single confident ally across all of Freedom Engine | Awake |
 
+Ember talks two ways — typed, or live and out loud in Presence mode (a real spoken back-and-forth, not text-to-speech bolted onto chat) — and either way it's the same ongoing conversation and the same ally. She can see the real state of the Quest System and propose seven kinds of action: creating a Quest, capturing an Idea, activating a Quest, completing a Build, creating a Build, changing an item's status, or deleting one. Calling one of those only ever proposes it — nothing is written until The Founder approves the card on screen. Ember never acts on her own, in either channel.
+
 ### Companion Design Rules
 
 - Companions serve The Founder. They do not command The Founder.
@@ -74,6 +85,7 @@ Freedom Engine ships with one Companion for now — more will wake up in future 
 - Ember has personality — confident, warm, a little witty, familiar rather than clinical (closer to a trusted right-hand than a neutral advisor) — but never rambles, never performs the humor at the expense of clarity.
 - Responses should feel like calm counsel from an ally with a personality — not like ChatGPT output, not like a framework explanation, not like an audit.
 - The Founder should feel guided, not analyzed.
+- A Companion may act only by proposing — never by writing to the Quest System directly. The Founder approves every action, in text chat and in Presence mode alike.
 
 ## Locations (Current)
 
