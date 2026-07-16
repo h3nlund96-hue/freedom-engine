@@ -4,6 +4,7 @@ export type QuestStatus = "available" | "active" | "completed";
 
 export interface Build {
   id: string;
+  buildNumber: number;
   title: string;
   status: QuestStatus;
   description?: string;

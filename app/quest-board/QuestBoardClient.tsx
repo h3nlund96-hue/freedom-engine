@@ -272,7 +272,7 @@ function BuildRow({ build, questId, onChanged }: { build: Build; questId: string
   async function handleDelete() {
     setDeleting(true);
     try {
-      await deleteBuild(build.id);
+      await deleteBuild(build.id, questId);
       onChanged();
     } catch {
       setDeleting(false);
@@ -311,6 +311,9 @@ function BuildRow({ build, questId, onChanged }: { build: Build; questId: string
           />
           <div className="min-w-0 flex-1">
             <div className="flex items-center gap-2">
+              <span className="shrink-0 font-display text-[0.65rem] tabular-nums text-muted/40">
+                #{build.buildNumber}
+              </span>
               <p
                 className={`text-xs leading-relaxed ${
                   build.status === "completed" ? "text-foreground/45 line-through" : "text-foreground/80"
@@ -1044,7 +1047,9 @@ function ActiveFocusPanel({
             <div className="mt-6">
               {build ? (
                 <>
-                  <p className="mb-2 font-display text-[0.6rem] tracking-[0.3em] uppercase text-accent/55">Current Build</p>
+                  <p className="mb-2 font-display text-[0.6rem] tracking-[0.3em] uppercase text-accent/55">
+                    Current Build <span className="tabular-nums text-accent/40">#{build.buildNumber}</span>
+                  </p>
                   <h2 className="font-display text-2xl tracking-wide text-foreground sm:text-3xl">{build.title}</h2>
                   {build.description && (
                     <p className="mt-3 max-w-lg text-sm leading-relaxed text-foreground/65 sm:text-base">{build.description}</p>

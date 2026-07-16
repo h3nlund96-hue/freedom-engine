@@ -37,6 +37,7 @@ export interface BuildRow {
   next_step: string | null;
   status: string;
   sort_order: number;
+  build_number: number;
 }
 
 export interface SideQuestRow {
@@ -72,6 +73,7 @@ export function mapProgressRows(
             .filter((b) => b.quest_id === q.id)
             .map((b) => ({
               id: b.id,
+              buildNumber: b.build_number,
               title: b.title,
               status: b.status as QuestStatus,
               description: b.description ?? undefined,
