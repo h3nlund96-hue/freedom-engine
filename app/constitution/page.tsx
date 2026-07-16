@@ -1,5 +1,4 @@
 import type { Metadata } from "next";
-import { AtmosphericBackground } from "../components/AtmosphericBackground";
 import { LocationHeader } from "../components/LocationHeader";
 
 export const metadata: Metadata = {
@@ -33,8 +32,6 @@ const principles = [
 export default function ConstitutionPage() {
   return (
     <div className="relative flex min-h-full flex-1 flex-col overflow-hidden">
-      <AtmosphericBackground variant="constitution" />
-
       <main className="relative mx-auto flex w-full max-w-2xl flex-1 flex-col gap-16 px-6 py-20 sm:px-8 sm:py-28 lg:max-w-3xl">
 
         <LocationHeader

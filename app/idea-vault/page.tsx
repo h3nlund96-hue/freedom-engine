@@ -1,5 +1,4 @@
 import type { Metadata } from "next";
-import { AtmosphericBackground } from "../components/AtmosphericBackground";
 import { LocationHeader } from "../components/LocationHeader";
 import { VaultClient } from "./VaultClient";
 
@@ -11,8 +10,6 @@ export const metadata: Metadata = {
 export default function IdeaVaultPage() {
   return (
     <div className="relative flex min-h-full flex-1 flex-col overflow-hidden">
-      <AtmosphericBackground variant="idea-vault" />
-
       <main className="relative mx-auto flex w-full max-w-2xl flex-1 flex-col gap-14 px-6 py-20 sm:px-8 sm:py-28 lg:max-w-3xl">
 
         <LocationHeader

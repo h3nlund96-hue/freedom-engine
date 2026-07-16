@@ -1,5 +1,4 @@
 import type { Metadata } from "next";
-import { AtmosphericBackground } from "../components/AtmosphericBackground";
 import { LoginForm } from "./LoginForm";
 
 export const metadata: Metadata = {
@@ -10,8 +9,6 @@ export const metadata: Metadata = {
 export default function LoginPage() {
   return (
     <div className="relative flex min-h-full flex-1 flex-col overflow-hidden">
-      <AtmosphericBackground variant="login" />
-
       <main className="relative flex min-h-full flex-1 flex-col items-center justify-center px-6 py-20">
         <div className="w-full max-w-sm">
 

@@ -1,5 +1,4 @@
 import { ActiveQuest } from "./components/ActiveQuest";
-import { AtmosphericBackground } from "./components/AtmosphericBackground";
 import { BuildPrompt } from "./components/BuildPrompt";
 import { EmberGreeting } from "./components/EmberGreeting";
 import { FounderStatusBar } from "./components/FounderStatusBar";
@@ -46,8 +45,6 @@ export default async function Home() {
 
   return (
     <div className="relative flex min-h-full flex-1 flex-col overflow-hidden">
-      <AtmosphericBackground />
-
       <FounderStatusBar progress={progress} />
 
       <main className="relative mx-auto flex w-full max-w-2xl flex-1 flex-col gap-14 px-6 py-14 sm:px-8 sm:py-20 lg:max-w-3xl">
