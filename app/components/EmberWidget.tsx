@@ -135,7 +135,7 @@ export function EmberWidget() {
             aria-expanded={open}
             className="flex size-16 shrink-0 items-center justify-center rounded-full"
           >
-            {open ? <span className="font-display text-base text-muted/70">✕</span> : <EmberGlyph className="h-12 w-12" />}
+            {open ? <span className="font-display text-base text-muted/70">✕</span> : <EmberGlyph className="h-14 w-14" />}
           </button>
 
           {showBubble && (

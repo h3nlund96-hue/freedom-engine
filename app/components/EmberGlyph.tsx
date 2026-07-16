@@ -88,7 +88,7 @@ export function EmberGlyph({ className, speaking = false }: EmberGlyphProps) {
       }
 
       // breathing core
-      const coreR = (7 + Math.sin(t * (speakingRef.current ? 3 : 1.1)) * (speakingRef.current ? 1.2 : 0.6)) * scale;
+      const coreR = (9 + Math.sin(t * (speakingRef.current ? 3 : 1.1)) * (speakingRef.current ? 1.5 : 0.8)) * scale;
       const coreGrad = ctx!.createRadialGradient(cx, cy, 0, cx, cy, coreR * 1.8);
       coreGrad.addColorStop(0, "rgba(255,235,210,0.95)");
       coreGrad.addColorStop(0.4, `rgba(255,171,74,${speakingRef.current ? 0.85 : 0.7})`);
@@ -99,8 +99,8 @@ export function EmberGlyph({ className, speaking = false }: EmberGlyphProps) {
       ctx!.fill();
 
       // tick ring
-      const innerR = 16 * scale;
-      const maxLen = 9 * scale;
+      const innerR = 17 * scale;
+      const maxLen = 10 * scale;
       ticks.forEach((tick, i) => {
         tick.current += (tick.target - tick.current) * 0.22;
         const len = maxLen * tick.current;
