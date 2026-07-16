@@ -17,6 +17,7 @@ const ACTIVE_QUEST_TEMPLATES: ((quest: string) => string)[] = [
   (quest) => `Founder. ${quest} is still on the table.`,
   (quest) => `Let's pick it up from here. ${quest} is still active.`,
   (quest) => `Back at the forge. ${quest} stands unfinished.`,
+  () => "What is one small Build you can do today?",
 ];
 
 interface EmberGreetingProps {
