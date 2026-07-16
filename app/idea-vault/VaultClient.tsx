@@ -145,7 +145,7 @@ export function VaultClient() {
 
         {/* Error */}
         {error && !loading && (
-          <div className="rounded-md border border-accent/[0.06] bg-black/20 px-5 py-4">
+          <div className="rounded-md border border-accent/[0.06] bg-surface-sunken px-5 py-4">
             <p className="text-xs leading-relaxed text-foreground/80">{error}</p>
           </div>
         )}
@@ -243,9 +243,9 @@ function CaptureConsole({
     <section className="space-y-3">
       <SectionLabel>Capture an Idea</SectionLabel>
 
-      <div className="group relative overflow-hidden rounded-md border border-white/[0.07] transition-all duration-700">
+      <div className="group relative overflow-hidden rounded-md border border-card-border transition-all duration-700">
         {/* Panel base */}
-        <div className="absolute inset-0 bg-[rgba(4,6,11,0.82)]" />
+        <div className="absolute inset-0 bg-surface" />
 
         {/* Focus glow */}
         <div
@@ -402,8 +402,8 @@ function VaultCompartment({
   const hasItems = count > 0;
 
   return (
-    <div className="relative overflow-hidden rounded-md border border-white/[0.07]">
-      <div className="absolute inset-0 bg-linear-to-br from-[rgba(9,15,24,0.90)] to-[rgba(6,8,14,0.88)]" />
+    <div className="relative overflow-hidden rounded-md border border-card-border">
+      <div className="absolute inset-0 bg-linear-to-br from-surface-raised/90 to-surface/88" />
       <div className="absolute inset-x-0 top-0 h-px bg-linear-to-r from-transparent via-accent/15 to-transparent" />
       <div
         className="pointer-events-none absolute inset-0 rounded-md"

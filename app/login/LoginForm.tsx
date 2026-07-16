@@ -41,7 +41,7 @@ export function LoginForm() {
           Email
         </label>
         <div className="relative overflow-hidden rounded-sm">
-          <div className="absolute inset-0 bg-black/30" />
+          <div className="absolute inset-0 bg-surface-sunken" />
           <div
             className="pointer-events-none absolute inset-0 rounded-sm"
             style={{ boxShadow: "inset 0 1px 0 rgba(255,171,74,0.06), inset 0 0 0 1px rgba(255,171,74,0.08)" }}
@@ -67,7 +67,7 @@ export function LoginForm() {
           Password
         </label>
         <div className="relative overflow-hidden rounded-sm">
-          <div className="absolute inset-0 bg-black/30" />
+          <div className="absolute inset-0 bg-surface-sunken" />
           <div
             className="pointer-events-none absolute inset-0 rounded-sm"
             style={{ boxShadow: "inset 0 1px 0 rgba(255,171,74,0.06), inset 0 0 0 1px rgba(255,171,74,0.08)" }}
@@ -89,7 +89,7 @@ export function LoginForm() {
 
       {/* Error */}
       {error && (
-        <p className="rounded-sm border border-accent/[0.07] bg-black/20 px-4 py-2.5 text-xs leading-relaxed text-muted/55">
+        <p className="rounded-sm border border-accent/[0.07] bg-surface-sunken px-4 py-2.5 text-xs leading-relaxed text-muted/55">
           {error}
         </p>
       )}

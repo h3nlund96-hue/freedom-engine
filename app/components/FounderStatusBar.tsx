@@ -16,7 +16,7 @@ export function FounderStatusBar({ progress }: { progress: FreedomEngineProgress
 
   return (
     <div className="relative z-10 w-full">
-      <div className="absolute inset-0 bg-[rgba(4,7,14,0.80)] backdrop-blur-sm" />
+      <div className="absolute inset-0 bg-surface/80 backdrop-blur-sm" />
       <div
         className="absolute inset-x-0 bottom-0 h-px"
         style={{

@@ -42,7 +42,7 @@ export function WorldCard({
   return (
     <Link
       href={href}
-      className={`group animate-fade-up relative w-full overflow-hidden rounded-md border border-white/[0.07] bg-linear-to-br from-[rgba(14,19,30,0.7)] to-[rgba(8,9,14,0.85)] p-6 text-left shadow-[0_8px_32px_rgba(0,0,0,0.35),inset_0_1px_0_rgba(255,171,74,0.04)] backdrop-blur-sm transition-all duration-700 ease-out hover:-translate-y-1.5 hover:scale-[1.01] focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-accent/30 ${style.hover}`}
+      className={`group animate-fade-up relative w-full overflow-hidden rounded-md border border-card-border bg-linear-to-br from-surface-raised/70 to-surface/85 p-6 text-left shadow-[0_8px_32px_rgba(0,0,0,0.35),inset_0_1px_0_rgba(255,171,74,0.04)] backdrop-blur-sm transition-all duration-700 ease-out hover:-translate-y-1.5 hover:scale-[1.01] focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-accent/30 ${style.hover}`}
       style={{ animationDelay: `${delay}s` }}
     >
       {/* Hover wash */}

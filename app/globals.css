@@ -9,6 +9,31 @@
   --surface: #0e131c;
   --surface-raised: #161d29;
   --critical: #ff5c5c;
+  /* Card border and recessed-surface (inputs, sunken panels) tones — kept
+   * as their own tokens rather than Tailwind's white/black opacity
+   * modifiers, since those bake in a literal color that can't flip with
+   * the theme the way a custom property can. */
+  --card-border: rgba(255, 255, 255, 0.07);
+  --surface-sunken: rgba(0, 0, 0, 0.22);
+}
+
+/* Light mode — set by ThemeToggle (Profile > Options) via a data-theme
+ * attribute on <html>, not prefers-color-scheme; dark stays the default
+ * until the Founder switches. Backgrounds are being redesigned per mode
+ * separately — these are just the base tokens every surface reads from.
+ * surface-raised stays the brighter of the pair in both modes (more
+ * elevated = lighter), matching dark mode's relationship. */
+:root[data-theme="light"] {
+  --background: #f4efe6;
+  --foreground: #201a12;
+  --muted: #6f6656;
+  --accent: #b35e14;
+  --accent-glow: #0e7f96;
+  --surface: #fbf8f2;
+  --surface-raised: #ffffff;
+  --critical: #c1362b;
+  --card-border: rgba(32, 26, 18, 0.1);
+  --surface-sunken: rgba(32, 26, 18, 0.045);
 }
 
 @theme inline {
@@ -20,6 +45,8 @@
   --color-surface: var(--surface);
   --color-surface-raised: var(--surface-raised);
   --color-critical: var(--critical);
+  --color-card-border: var(--card-border);
+  --color-surface-sunken: var(--surface-sunken);
   --font-sans: var(--font-geist-sans);
   --font-display: var(--font-geist-mono);
   --font-mono: var(--font-geist-mono);
@@ -45,54 +72,6 @@
   50% {
     opacity: 1;
     transform: scale(1.15);
-  }
-}
-
-@keyframes ember-drift {
-  0%,
-  100% {
-    transform: translate(0, 0) scale(1);
-  }
-  33% {
-    transform: translate(16px, -10px) scale(1.04);
-  }
-  66% {
-    transform: translate(-10px, 8px) scale(0.97);
-  }
-}
-
-/* Fog / mist layers — horizontal ground-mist drifts (ground fog barely rises) */
-@keyframes fog-drift-1 {
-  0%, 100% { transform: translateX(0)     scaleX(1); }
-  30%       { transform: translateX(-3%)  scaleX(1.02); }
-  65%       { transform: translateX(2.5%) scaleX(0.98); }
-}
-
-@keyframes fog-drift-2 {
-  0%, 100% { transform: translateX(0)    scaleX(1); }
-  35%       { transform: translateX(4%)  scaleX(1.03); }
-  70%       { transform: translateX(-2%) scaleX(0.97); }
-}
-
-@keyframes fog-drift-3 {
-  0%, 100% { transform: translateX(0)      scaleX(1); }
-  50%       { transform: translateX(-3.5%) scaleX(1.04); }
-}
-
-@keyframes particle-float {
-  0%,
-  100% {
-    transform: translate(0, 0);
-    opacity: 0;
-  }
-  10% {
-    opacity: 1;
-  }
-  90% {
-    opacity: 1;
-  }
-  50% {
-    transform: translate(12px, -24px);
   }
 }
 
@@ -184,26 +163,6 @@
   animation: glow-pulse 3s ease-in-out infinite;
 }
 
-.animate-ember-drift {
-  animation: ember-drift 14s ease-in-out infinite;
-}
-
-.animate-particle-float {
-  animation: particle-float ease-in-out infinite;
-}
-
-.animate-fog-1 {
-  animation: fog-drift-1 70s ease-in-out infinite;
-}
-
-.animate-fog-2 {
-  animation: fog-drift-2 55s ease-in-out infinite;
-}
-
-.animate-fog-3 {
-  animation: fog-drift-3 45s ease-in-out infinite;
-}
-
 .hq-glyph-spin {
   display: inline-block;
   animation: glyph-rotate 70s linear infinite;
@@ -228,11 +187,6 @@
 
 /* Respect reduced motion — freeze all atmospheric movement */
 @media (prefers-reduced-motion: reduce) {
-  .animate-fog-1,
-  .animate-fog-2,
-  .animate-fog-3,
-  .animate-ember-drift,
-  .animate-particle-float,
   .animate-glow-pulse,
   .hq-glyph-spin,
   .hq-glyph-char,
@@ -247,12 +201,6 @@
     opacity: 1;
     transform: none;
   }
-}
-
-.noise-overlay {
-  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
-  background-repeat: repeat;
-  background-size: 128px 128px;
 }
 
 /* Finer grain for card surfaces — tighter frequency, softer blend */

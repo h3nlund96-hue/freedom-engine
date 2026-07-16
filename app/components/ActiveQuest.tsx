@@ -39,10 +39,10 @@ export function ActiveQuest({ progress }: { progress: FreedomEngineProgress }) {
     <section className="animate-fade-up" style={{ animationDelay: "0.22s" }} aria-label="Active Quest">
       <Link
         href="/quest-board"
-        className="group relative block overflow-hidden rounded-md border border-white/[0.07] transition-colors duration-300 hover:border-accent-glow/25 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-accent-glow/30"
+        className="group relative block overflow-hidden rounded-md border border-card-border transition-colors duration-300 hover:border-accent-glow/25 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-accent-glow/30"
       >
         {/* Base */}
-        <div className="absolute inset-0 bg-linear-to-b from-[rgba(12,20,35,0.94)] to-[rgba(6,8,14,0.97)]" />
+        <div className="absolute inset-0 bg-linear-to-b from-surface-raised to-surface" />
         <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_left,rgba(77,216,255,0.07)_0%,transparent_55%)]" />
         <div
           className="pointer-events-none absolute inset-0 rounded-md"

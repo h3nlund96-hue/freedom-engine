@@ -100,10 +100,10 @@ export function IdeaDetailModal({
       onClick={onClose}
     >
       <div
-        className="relative max-h-full w-full max-w-lg overflow-y-auto rounded-md border border-white/[0.08]"
+        className="relative max-h-full w-full max-w-lg overflow-y-auto rounded-md border border-card-border"
         onClick={(e) => e.stopPropagation()}
       >
-        <div className="absolute inset-0 bg-linear-to-br from-[rgba(14,19,30,0.98)] to-[rgba(6,8,14,0.99)]" />
+        <div className="absolute inset-0 bg-linear-to-br from-surface-raised to-surface" />
         <div
           className="pointer-events-none absolute inset-0 rounded-md"
           style={{ boxShadow: "inset 0 1px 0 rgba(255,171,74,0.09), inset 0 0 0 1px rgba(255,171,74,0.04)" }}
@@ -136,7 +136,7 @@ export function IdeaDetailModal({
               value={title}
               onChange={(e) => setTitle(e.target.value)}
               disabled={alreadyConverted}
-              className="rounded-sm border border-white/[0.07] bg-black/25 px-3.5 py-2.5 text-sm text-foreground/90 focus:outline-none focus:ring-1 focus:ring-accent/30 disabled:opacity-60"
+              className="rounded-sm border border-card-border bg-surface-sunken px-3.5 py-2.5 text-sm text-foreground/90 focus:outline-none focus:ring-1 focus:ring-accent/30 disabled:opacity-60"
             />
           </div>
 
@@ -152,7 +152,7 @@ export function IdeaDetailModal({
               onChange={(e) => setDescription(e.target.value)}
               disabled={alreadyConverted}
               placeholder="Add more detail (optional)..."
-              className="resize-none rounded-sm border border-white/[0.07] bg-black/25 px-3.5 py-2.5 text-sm leading-relaxed text-foreground/85 placeholder:text-muted/30 focus:outline-none focus:ring-1 focus:ring-accent/30 disabled:opacity-60"
+              className="resize-none rounded-sm border border-card-border bg-surface-sunken px-3.5 py-2.5 text-sm leading-relaxed text-foreground/85 placeholder:text-muted/30 focus:outline-none focus:ring-1 focus:ring-accent/30 disabled:opacity-60"
             />
           </div>
 
@@ -166,7 +166,7 @@ export function IdeaDetailModal({
               value={status}
               onChange={(e) => setStatus(e.target.value as IdeaStatus)}
               disabled={alreadyConverted}
-              className="cursor-pointer rounded-sm border border-white/[0.07] bg-black/25 px-3.5 py-2.5 font-display text-xs uppercase tracking-wide text-accent/80 focus:outline-none focus:ring-1 focus:ring-accent/30 disabled:opacity-60"
+              className="cursor-pointer rounded-sm border border-card-border bg-surface-sunken px-3.5 py-2.5 font-display text-xs uppercase tracking-wide text-accent/80 focus:outline-none focus:ring-1 focus:ring-accent/30 disabled:opacity-60"
             >
               {STATUS_ORDER.map((s) => (
                 <option key={s} value={s}>
@@ -223,7 +223,7 @@ export function IdeaDetailModal({
                       className={`flex-1 rounded-sm px-3 py-1.5 font-display text-[0.62rem] tracking-wide uppercase transition-all duration-300 ${
                         convertType === "quest"
                           ? "bg-accent-glow/15 text-accent-glow/90 border border-accent-glow/30"
-                          : "bg-white/[0.03] text-muted/55 border border-white/[0.06] hover:text-foreground/70"
+                          : "bg-surface-sunken text-muted/55 border border-card-border hover:text-foreground/70"
                       }`}
                     >
                       Quest
@@ -234,7 +234,7 @@ export function IdeaDetailModal({
                       className={`flex-1 rounded-sm px-3 py-1.5 font-display text-[0.62rem] tracking-wide uppercase transition-all duration-300 ${
                         convertType === "side_quest"
                           ? "bg-accent-glow/15 text-accent-glow/90 border border-accent-glow/30"
-                          : "bg-white/[0.03] text-muted/55 border border-white/[0.06] hover:text-foreground/70"
+                          : "bg-surface-sunken text-muted/55 border border-card-border hover:text-foreground/70"
                       }`}
                     >
                       Side Quest
@@ -251,7 +251,7 @@ export function IdeaDetailModal({
                           id="idea-questline"
                           value={convertQuestlineId}
                           onChange={(e) => setConvertQuestlineId(e.target.value)}
-                          className="cursor-pointer rounded-sm border border-white/[0.07] bg-black/25 px-3.5 py-2.5 font-display text-xs uppercase tracking-wide text-accent/80 focus:outline-none focus:ring-1 focus:ring-accent/30"
+                          className="cursor-pointer rounded-sm border border-card-border bg-surface-sunken px-3.5 py-2.5 font-display text-xs uppercase tracking-wide text-accent/80 focus:outline-none focus:ring-1 focus:ring-accent/30"
                         >
                           {questlineOptions.map((q) => (
                             <option key={q.id} value={q.id}>

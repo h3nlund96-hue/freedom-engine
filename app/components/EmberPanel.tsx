@@ -230,7 +230,7 @@ export function EmberPanel() {
                 className={`rounded-full border px-3 py-1.5 font-display text-[0.6rem] tracking-wide transition-all duration-300 ${
                   question === q
                     ? "border-accent-glow/30 bg-accent-glow/10 text-accent-glow/90"
-                    : "border-accent-glow/[0.1] bg-black/20 text-muted/50 hover:border-accent-glow/25 hover:text-muted/75"
+                    : "border-accent-glow/[0.1] bg-surface-sunken text-muted/50 hover:border-accent-glow/25 hover:text-muted/75"
                 }`}
               >
                 {q}
@@ -256,7 +256,7 @@ export function EmberPanel() {
               {historyOpen && (
                 <div className="flex w-full flex-col gap-3">
                   {history.map((h, i) => (
-                    <div key={i} className="border-b border-white/[0.05] pb-2.5 text-left text-xs leading-relaxed text-muted/55">
+                    <div key={i} className="border-b border-card-border pb-2.5 text-left text-xs leading-relaxed text-muted/55">
                       <p>
                         <span className="font-medium text-muted/80">You —</span> {h.question}
                       </p>

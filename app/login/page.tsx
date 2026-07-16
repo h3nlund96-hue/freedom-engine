@@ -1,5 +1,4 @@
 import type { Metadata } from "next";
-import { AtmosphericBackground } from "../components/AtmosphericBackground";
 import { LoginForm } from "./LoginForm";
 
 export const metadata: Metadata = {
@@ -10,8 +9,6 @@ export const metadata: Metadata = {
 export default function LoginPage() {
   return (
     <div className="relative flex min-h-full flex-1 flex-col overflow-hidden">
-      <AtmosphericBackground variant="login" />
-
       <main className="relative flex min-h-full flex-1 flex-col items-center justify-center px-6 py-20">
         <div className="w-full max-w-sm">
 
@@ -37,8 +34,8 @@ export default function LoginPage() {
           </div>
 
           {/* Panel */}
-          <div className="relative overflow-hidden rounded-md border border-white/[0.07]">
-            <div className="absolute inset-0 bg-linear-to-br from-[rgba(10,17,30,0.95)] to-[rgba(5,8,14,0.98)]" />
+          <div className="relative overflow-hidden rounded-md border border-card-border">
+            <div className="absolute inset-0 bg-linear-to-br from-surface-raised to-surface" />
             <div
               className="pointer-events-none absolute inset-0"
               style={{ background: "radial-gradient(ellipse at top, rgba(255,171,74,0.05) 0%, transparent 60%)" }}

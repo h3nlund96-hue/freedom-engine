@@ -1,8 +1,8 @@
 import type { Metadata } from "next";
-import { AtmosphericBackground } from "../components/AtmosphericBackground";
 import { LocationHeader } from "../components/LocationHeader";
 import { SignOutButton } from "../components/SignOutButton";
 import { EmberProactiveToggle } from "../components/EmberProactiveToggle";
+import { ThemeToggle } from "../components/ThemeToggle";
 import { getProgress } from "../lib/questService";
 import { createClient } from "../../lib/supabase/server";
 import {
@@ -36,8 +36,6 @@ export default async function ProfilePage() {
 
   return (
     <div className="relative flex min-h-full flex-1 flex-col overflow-hidden">
-      <AtmosphericBackground />
-
       <main className="relative mx-auto flex w-full max-w-2xl flex-1 flex-col gap-12 px-6 py-20 sm:px-8 sm:py-28 lg:max-w-3xl">
 
         <LocationHeader
@@ -52,8 +50,8 @@ export default async function ProfilePage() {
           style={{ animationDelay: "0.16s" }}
           aria-label="Founder identity"
         >
-          <div className="relative overflow-hidden rounded-md border border-white/[0.07]">
-            <div className="absolute inset-0 bg-linear-to-br from-[rgba(10,17,30,0.95)] to-[rgba(5,8,14,0.98)]" />
+          <div className="relative overflow-hidden rounded-md border border-card-border">
+            <div className="absolute inset-0 bg-linear-to-br from-surface-raised to-surface" />
             <div
               className="pointer-events-none absolute inset-0"
               style={{ background: "radial-gradient(ellipse at top left, rgba(77,216,255,0.07) 0%, transparent 55%)" }}
@@ -148,8 +146,8 @@ export default async function ProfilePage() {
 
         {/* Account & Session */}
         <section className="animate-fade-up" style={{ animationDelay: "0.2s" }} aria-label="Account and session">
-          <div className="relative overflow-hidden rounded-md border border-white/[0.07]">
-            <div className="absolute inset-0 bg-linear-to-br from-[rgba(10,17,30,0.95)] to-[rgba(5,8,14,0.98)]" />
+          <div className="relative overflow-hidden rounded-md border border-card-border">
+            <div className="absolute inset-0 bg-linear-to-br from-surface-raised to-surface" />
             <div
               className="pointer-events-none absolute inset-0 rounded-md"
               style={{ boxShadow: "inset 0 1px 0 rgba(255,171,74,0.10), inset 0 0 0 1px rgba(255,171,74,0.04)" }}
@@ -172,8 +170,8 @@ export default async function ProfilePage() {
 
         {/* Options */}
         <section className="animate-fade-up" style={{ animationDelay: "0.26s" }} aria-label="Options">
-          <div className="relative overflow-hidden rounded-md border border-white/[0.07]">
-            <div className="absolute inset-0 bg-linear-to-br from-[rgba(10,17,30,0.95)] to-[rgba(5,8,14,0.98)]" />
+          <div className="relative overflow-hidden rounded-md border border-card-border">
+            <div className="absolute inset-0 bg-linear-to-br from-surface-raised to-surface" />
             <div
               className="pointer-events-none absolute inset-0 rounded-md"
               style={{ boxShadow: "inset 0 1px 0 rgba(255,171,74,0.10), inset 0 0 0 1px rgba(255,171,74,0.04)" }}
@@ -181,6 +179,8 @@ export default async function ProfilePage() {
             />
             <div className="relative flex flex-col gap-5 px-6 py-6 sm:px-8">
               <p className="font-display text-[0.6rem] tracking-[0.2em] uppercase text-muted/40">Options</p>
+              <ThemeToggle />
+              <div className="h-px bg-linear-to-r from-accent/10 to-transparent" aria-hidden />
               <EmberProactiveToggle />
             </div>
           </div>
