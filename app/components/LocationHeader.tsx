@@ -1,7 +1,7 @@
 import Link from "next/link";
 
 type LocationHeaderProps = {
-  icon: string;
+  icon?: string;
   eyebrow: string;
   title: string;
   description: string;
@@ -31,9 +31,11 @@ export function LocationHeader({ icon, eyebrow, title, description, lore }: Loca
 
       {/* Location header */}
       <header className="animate-fade-up flex items-start gap-3.5" style={{ animationDelay: "0.06s" }}>
-        <span className="icon-pulse-glow mt-1 inline-block w-fit shrink-0 font-display text-3xl leading-none text-accent">
-          {icon}
-        </span>
+        {icon && (
+          <span className="icon-pulse-glow mt-1 inline-block w-fit shrink-0 font-display text-3xl leading-none text-accent">
+            {icon}
+          </span>
+        )}
 
         <div className="min-w-0 space-y-1">
           <h1 className="flex flex-wrap items-baseline gap-x-2.5 gap-y-1">

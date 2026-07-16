@@ -41,7 +41,6 @@ export default async function ProfilePage() {
       <main className="relative mx-auto flex w-full max-w-2xl flex-1 flex-col gap-12 px-6 py-20 sm:px-8 sm:py-28 lg:max-w-3xl">
 
         <LocationHeader
-          icon="🪪"
           eyebrow="Identity"
           title="Founder Profile"
           description="Progression inside Freedom Engine."
