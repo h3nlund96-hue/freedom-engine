@@ -134,14 +134,6 @@ export async function updateIdea(
   return rowToIdea(data as DbRow);
 }
 
-/** Move an idea to a different vault compartment. */
-export async function updateIdeaStatus(
-  id: string,
-  status: IdeaStatus
-): Promise<void> {
-  await updateIdea(id, { status });
-}
-
 /** Permanently remove an idea from the Vault. */
 export async function deleteIdea(id: string): Promise<void> {
   const supabase = createClient();
@@ -159,15 +151,17 @@ export async function convertIdeaToQuest(
 ): Promise<{ id: string }> {
   const supabase = createClient();
 
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  const [
+    {
+      data: { user },
+    },
+    { count, error: countError },
+  ] = await Promise.all([
+    supabase.auth.getUser(),
+    supabase.from("quests").select("id", { count: "exact", head: true }).eq("questline_id", questlineId),
+  ]);
   if (!user) throw new Error("Not authenticated.");
-
-  const { count } = await supabase
-    .from("quests")
-    .select("id", { count: "exact", head: true })
-    .eq("questline_id", questlineId);
+  if (countError) throw new Error(countError.message);
 
   const { data: quest, error: questError } = await supabase
     .from("quests")
@@ -211,10 +205,11 @@ export async function convertIdeaToSideQuest(
   } = await supabase.auth.getUser();
   if (!user) throw new Error("Not authenticated.");
 
-  const { count } = await supabase
+  const { count, error: countError } = await supabase
     .from("side_quests")
     .select("id", { count: "exact", head: true })
     .eq("user_id", user.id);
+  if (countError) throw new Error(countError.message);
 
   const { data: sideQuest, error: sideQuestError } = await supabase
     .from("side_quests")

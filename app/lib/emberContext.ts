@@ -38,11 +38,12 @@ export async function getEmberContext(): Promise<EmberContext> {
   const activeQuestline = activeQuest ? getActiveQuestline(progress, activeQuest) : undefined;
   const currentBuild = activeQuest ? getCurrentBuild(activeQuest) : undefined;
 
-  const { data: ideaRows } = await supabase
+  const { data: ideaRows, error: ideaRowsError } = await supabase
     .from("ideas")
     .select("id, title, status")
     .order("created_at", { ascending: false })
     .limit(30);
+  if (ideaRowsError) throw new Error(ideaRowsError.message);
 
   const availableQuests = progress.questlines
     .flatMap((ql) =>

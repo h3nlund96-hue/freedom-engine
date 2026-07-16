@@ -22,11 +22,11 @@ export async function getProgress(): Promise<FreedomEngineProgress> {
   const supabase = await createClient();
 
   const [
-    { data: founderState },
-    { data: questlineRows },
-    { data: questRows },
-    { data: buildRows },
-    { data: sideQuestRows },
+    { data: founderState, error: founderStateError },
+    { data: questlineRows, error: questlineRowsError },
+    { data: questRows, error: questRowsError },
+    { data: buildRows, error: buildRowsError },
+    { data: sideQuestRows, error: sideQuestRowsError },
   ] = await Promise.all([
     supabase.from("founder_state").select("main_quest").maybeSingle(),
     supabase.from("questlines").select("*").order("sort_order"),
@@ -34,6 +34,10 @@ export async function getProgress(): Promise<FreedomEngineProgress> {
     supabase.from("builds").select("*").order("sort_order"),
     supabase.from("side_quests").select("*").order("sort_order"),
   ]);
+
+  const firstError =
+    founderStateError ?? questlineRowsError ?? questRowsError ?? buildRowsError ?? sideQuestRowsError;
+  if (firstError) throw new Error(firstError.message);
 
   return mapProgressRows(
     founderState as FounderStateRow | null,

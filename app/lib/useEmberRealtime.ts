@@ -37,6 +37,7 @@ export function useEmberRealtime() {
   const micStreamRef = useRef<MediaStream | null>(null);
   const remoteAudioRef = useRef<HTMLAudioElement | null>(null);
   const transcriptRef = useRef<RealtimeExchange[]>([]);
+  const connectingRef = useRef(false);
 
   const [connected, setConnected] = useState(false);
   const [connecting, setConnecting] = useState(false);
@@ -66,7 +67,8 @@ export function useEmberRealtime() {
   }, []);
 
   const connect = useCallback(async () => {
-    if (pcRef.current) return;
+    if (pcRef.current || connectingRef.current) return;
+    connectingRef.current = true;
     setConnecting(true);
     setError(null);
 
@@ -160,6 +162,8 @@ export function useEmberRealtime() {
     } catch (err) {
       teardown();
       setError(err instanceof Error ? err.message : "Could not start a voice session.");
+    } finally {
+      connectingRef.current = false;
     }
   }, [teardown]);
 
