@@ -1,11 +1,6 @@
 import OpenAI from "openai";
 import { createClient as createSupabaseClient } from "../../../lib/supabase/server";
-import {
-  getActiveQuestline,
-  getActiveQuest,
-  getCurrentBuild,
-} from "../../data/freedomEngineProgress";
-import { getProgress } from "../../lib/questService";
+import { getEmberContext, type EmberContext } from "../../lib/emberContext";
 import type { EmberProposal } from "../../lib/emberConversation";
 
 /* ── CLIENT ───────────────────────────────────────────────────────────────── */
@@ -42,22 +37,6 @@ function parseHistory(value: unknown): HistoryMessage[] {
 }
 
 /* ── SYSTEM PROMPT ────────────────────────────────────────────────────────── */
-
-interface EmberContext {
-  mainQuest: string;
-  activeQuestline: string;
-  activeQuestlineDescription: string;
-  activeQuest: string;
-  activeQuestId: string | null;
-  activeQuestDescription: string;
-  currentBuild: string;
-  currentBuildDescription: string;
-  nextStep: string;
-  questlines: { id: string; title: string }[];
-  recentIdeas: { title: string; status: string }[];
-  availableQuests: { id: string; title: string; questlineId: string }[];
-  openBuilds: { id: string; title: string; questId: string; questTitle: string }[];
-}
 
 function buildSystemPrompt(ctx: EmberContext): string {
   const questlineList =
@@ -262,50 +241,7 @@ export async function POST(request: Request) {
     }
 
     // Build live context from the shared progress data source.
-    const progress = await getProgress();
-    const activeQuest = getActiveQuest(progress);
-    const activeQuestline = activeQuest ? getActiveQuestline(progress, activeQuest) : undefined;
-    const currentBuild = activeQuest ? getCurrentBuild(activeQuest) : undefined;
-
-    const { data: ideaRows } = await supabase
-      .from("ideas")
-      .select("title, status")
-      .order("created_at", { ascending: false })
-      .limit(15);
-
-    const availableQuests = progress.questlines
-      .flatMap((ql) =>
-        (ql.quests ?? [])
-          .filter((q) => q.status !== "active" && q.status !== "completed")
-          .map((q) => ({ id: q.id, title: q.title, questlineId: ql.id }))
-      )
-      .slice(0, 20);
-
-    const openBuilds = progress.questlines
-      .flatMap((ql) =>
-        (ql.quests ?? []).flatMap((q) =>
-          (q.builds ?? [])
-            .filter((b) => b.status !== "completed")
-            .map((b) => ({ id: b.id, title: b.title, questId: q.id, questTitle: q.title }))
-        )
-      )
-      .slice(0, 20);
-
-    const ctx: EmberContext = {
-      mainQuest: progress.mainQuest,
-      activeQuestline: activeQuestline?.title ?? "None",
-      activeQuestlineDescription: activeQuestline?.description ?? "",
-      activeQuest: activeQuest?.title ?? "None",
-      activeQuestId: activeQuest?.id ?? null,
-      activeQuestDescription: activeQuest?.description ?? "",
-      currentBuild: currentBuild?.title ?? "None",
-      currentBuildDescription: currentBuild?.description ?? "",
-      nextStep: currentBuild?.nextStep ?? "",
-      questlines: progress.questlines.map((ql) => ({ id: ql.id, title: ql.title })),
-      recentIdeas: (ideaRows ?? []) as { title: string; status: string }[],
-      availableQuests,
-      openBuilds,
-    };
+    const ctx = await getEmberContext();
 
     const model = process.env.OPENAI_MODEL ?? "gpt-4o";
     const client = getClient();

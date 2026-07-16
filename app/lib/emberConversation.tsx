@@ -36,6 +36,7 @@ interface EmberConversationValue {
   ask: (question: string) => Promise<void>;
   resolveProposal: (index: number, status: "created" | "dismissed") => void;
   clearConversation: () => void;
+  appendExchanges: (exchanges: { role: "user" | "assistant"; content: string }[]) => void;
 }
 
 const EmberConversationContext = createContext<EmberConversationValue | null>(null);
@@ -128,9 +129,16 @@ export function EmberProvider({ children }: { children: React.ReactNode }) {
     setError(null);
   }
 
+  /** Folds a finished Presence mode transcript into the shared conversation,
+   * so voice and text read as one continuous history afterward. */
+  function appendExchanges(exchanges: { role: "user" | "assistant"; content: string }[]) {
+    if (exchanges.length === 0) return;
+    setMessages((prev) => [...prev, ...exchanges]);
+  }
+
   return (
     <EmberConversationContext.Provider
-      value={{ messages, loading, error, ask, resolveProposal, clearConversation }}
+      value={{ messages, loading, error, ask, resolveProposal, clearConversation, appendExchanges }}
     >
       {children}
     </EmberConversationContext.Provider>
