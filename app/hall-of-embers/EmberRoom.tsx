@@ -20,8 +20,9 @@ import { useEmberRealtime } from "../lib/useEmberRealtime";
  * WebRTC) — talking and hearing her at once, not typed chat with audio
  * bolted on. Entering it opens a mic session automatically (continuous
  * listening, no push-to-talk); exiting it folds the transcript into the
- * same shared history typed conversations use. No tools/proposals inside a
- * voice session yet — that stays text-chat-only for now.
+ * same shared history typed conversations use. She can propose the same
+ * five actions as text chat there too (see useEmberRealtime) — the same
+ * ProposalCard and approval gate, nothing skipped just because it's voice.
  */
 
 interface Exchange {
@@ -59,9 +60,11 @@ export function EmberRoom() {
     talking,
     listening,
     liveCaption,
+    pendingToolCall,
     connect,
     disconnect,
     sendText,
+    resolveToolCall,
   } = useEmberRealtime();
 
   const appendExchangesRef = useRef(appendExchanges);
@@ -212,6 +215,15 @@ export function EmberRoom() {
             ) : liveCaption ? (
               <p className="text-lg leading-relaxed text-foreground/92 sm:text-xl">{liveCaption}</p>
             ) : null}
+
+            {pendingToolCall && (
+              <div className="w-full max-w-sm text-left">
+                <ProposalCard
+                  proposal={pendingToolCall.proposal}
+                  onResolve={(status) => resolveToolCall(pendingToolCall.callId, status)}
+                />
+              </div>
+            )}
           </div>
 
           {/* type into the same live conversation instead of speaking */}

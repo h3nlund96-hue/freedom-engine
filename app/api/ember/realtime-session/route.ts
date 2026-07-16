@@ -1,6 +1,7 @@
 import OpenAI from "openai";
 import { createClient as createSupabaseClient } from "../../../../lib/supabase/server";
 import { getEmberContext, type EmberContext } from "../../../lib/emberContext";
+import { EMBER_FUNCTION_TOOLS } from "../../../lib/emberProposalParsing";
 
 /**
  * Mints a short-lived Realtime API client secret so the browser can open a
@@ -8,8 +9,10 @@ import { getEmberContext, type EmberContext } from "../../../lib/emberContext";
  * this server. This is Presence mode's live conversation: talking to Ember
  * and hearing her, both at once, not a one-shot text-to-speech call.
  *
- * Conversation only for now — no tools/proposals inside a voice session yet.
- * Ember is told this explicitly so she doesn't pretend to act on a request.
+ * She can propose the same five actions as text chat (create/activate
+ * things) via Realtime function-calling — calling one only proposes it.
+ * The Founder still approves an on-screen card before anything is written;
+ * nothing in voice mode writes to Supabase on its own.
  */
 
 function getClient() {
@@ -20,10 +23,24 @@ function getClient() {
 
 function buildVoicePrompt(ctx: EmberContext): string {
   const questlineList =
-    ctx.questlines.length > 0 ? ctx.questlines.map((q) => `- ${q.title}`).join("\n") : "None yet.";
+    ctx.questlines.length > 0 ? ctx.questlines.map((q) => `- ${q.title} (id: ${q.id})`).join("\n") : "None yet.";
 
   const ideaList =
     ctx.recentIdeas.length > 0 ? ctx.recentIdeas.map((i) => `- ${i.title} [${i.status}]`).join("\n") : "None yet.";
+
+  const availableQuestsList =
+    ctx.availableQuests.length > 0
+      ? ctx.availableQuests
+          .map((q) => `- ${q.title} (id: ${q.id}, questline id: ${q.questlineId})`)
+          .join("\n")
+      : "None — every Quest is either already active or completed.";
+
+  const openBuildsList =
+    ctx.openBuilds.length > 0
+      ? ctx.openBuilds
+          .map((b) => `- ${b.title} (id: ${b.id}, quest id: ${b.questId}, from Quest: ${b.questTitle})`)
+          .join("\n")
+      : "None open right now.";
 
   return `You are Ember — a Companion inside Freedom Engine, a personal AI operating system for The Founder. You are talking live, out loud, in real time — not reading a prepared answer aloud, and not a narrator or a customer-service voice.
 
@@ -40,16 +57,23 @@ CURRENT FREEDOM ENGINE CONTEXT:
 Main Quest: ${ctx.mainQuest}
 Active Questline: ${ctx.activeQuestline}
 Active Quest: ${ctx.activeQuest}
+Active Quest id (use exactly this for propose_create_build's questId; never invent one): ${ctx.activeQuestId ?? "none — no active Quest"}
 Quest description: ${ctx.activeQuestDescription}
 Current Build: ${ctx.currentBuild}
 Build description: ${ctx.currentBuildDescription}
 Next step: ${ctx.nextStep}
 
-OTHER QUESTLINES:
+AVAILABLE QUESTLINES (use the exact id when proposing a new Quest):
 ${questlineList}
 
 RECENT IDEAS IN THE VAULT:
 ${ideaList}
+
+QUESTS YOU CAN PROPOSE ACTIVATING (not already active or completed):
+${availableQuestsList}
+
+OPEN BUILDS YOU CAN PROPOSE MARKING COMPLETE:
+${openBuildsList}
 
 FREEDOM ENGINE LANGUAGE (always use these terms — never generic alternatives):
 "Build" not "task". "Quest" not "project". "Questline" not "roadmap". "Main Quest" not "vision". "Idea Vault" not "backlog". "The Founder" — never a generic "you" as a stand-in for the person's role.
@@ -59,7 +83,13 @@ HOW YOU TALK:
 - Natural conversational rhythm: contractions, small pauses before the point that matters, occasional short reactions ("Right." "Hm.") before you land it. Vary your pace — don't recite everything at one even speed.
 - Warm, low-key confident, a little dry underneath. Never cheerful or sing-song, never a flat monotone read-through.
 - Let The Founder jump in. Don't over-explain or stack multiple points in one turn — say the one useful thing, then stop.
-- You have no tools in this conversation. If The Founder asks you to create, activate, or complete something, tell them plainly that you can't do it from here yet — point them to the text chat or Quest Board — and never pretend you've already done it.`;
+
+USING YOUR TOOLS:
+- If — and only if — The Founder's message clearly calls for one of your five tools, call it. Otherwise just talk.
+- Calling a tool only proposes the action — you never act yourself, and nothing happens until The Founder approves the card that appears on screen. Say so naturally out loud right when you call it (e.g. "I've put a proposal on screen for that") — never say or imply it's already done.
+- Only propose activating a Quest or completing a Build using an id listed above — never invent one. Only propose a new Build when there's an active Quest, using its exact id above.
+- For a new Quest, pick the best-fitting Questline id if one clearly fits, or leave it empty and say so.
+- Once you get the result back after The Founder approves or dismisses it, react naturally and briefly — you don't need to repeat the details back.`;
 }
 
 export async function POST() {
@@ -87,6 +117,7 @@ export async function POST() {
             voice: process.env.OPENAI_TTS_VOICE ?? "marin",
           },
         },
+        tools: [...EMBER_FUNCTION_TOOLS],
       },
     });
 
