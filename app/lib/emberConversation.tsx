@@ -15,12 +15,31 @@ import { createContext, useContext, useEffect, useRef, useState } from "react";
 
 /** What Ember can propose doing — she never acts on any of these herself;
  * The Founder approves before anything is written (see ProposalCard). */
+export type EmberEntityType = "questline" | "quest" | "build" | "side_quest";
+export type EmberDeletableEntityType = EmberEntityType | "idea";
+
 export type EmberProposal =
   | { action: "create_quest"; title: string; description: string; questlineId: string | null }
   | { action: "create_idea"; title: string; description: string }
   | { action: "activate_quest"; questId: string; questlineId: string; questTitle: string }
   | { action: "complete_build"; buildId: string; questId: string; buildTitle: string }
-  | { action: "create_build"; questId: string; questTitle: string; title: string; description: string; nextStep: string };
+  | { action: "create_build"; questId: string; questTitle: string; title: string; description: string; nextStep: string }
+  | {
+      action: "update_status";
+      entityType: EmberEntityType;
+      entityId: string;
+      entityTitle: string;
+      questlineId: string | null;
+      questId: string | null;
+      status: "available" | "active" | "completed";
+    }
+  | {
+      action: "delete_item";
+      entityType: EmberDeletableEntityType;
+      entityId: string;
+      entityTitle: string;
+      questId: string | null;
+    };
 
 export interface EmberMessage {
   role: "user" | "assistant";
