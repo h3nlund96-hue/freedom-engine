@@ -6,29 +6,83 @@ import { EmberPanel } from "./EmberPanel";
 import { EmberGlyph } from "./EmberGlyph";
 import { getProgressClient } from "../lib/questMutationService";
 import { getActiveQuest, getCurrentBuild } from "../data/freedomEngineProgress";
-import { pickProactiveNote } from "../lib/emberProactiveMessage";
+import { pickRandom, pickProactiveNote } from "../lib/emberProactiveMessage";
+import { onEmberEvent } from "../lib/emberEvents";
+
+/**
+ * Ember's floating presence on HQ/Quest Board/Idea Vault — a quiet orb that
+ * stretches into a message pill when there's something worth saying, then
+ * closes itself again. Three sources feed the same pill, in priority order:
+ * completing a Quest/Build (live, via emberEvents), something worth
+ * flagging (no active Quest/Build, shared with EmberGreeting), or — on HQ
+ * specifically, when neither of those applies — a plain "good to see you."
+ */
 
 // Only shown on these routes — Hall of Embers already has Ember front and
 // center, and the widget would be noise on Constitution/Profile/Login.
 const WIDGET_PATHS = new Set(["/", "/quest-board", "/idea-vault"]);
 
+const QUEST_COMPLETE_NOTES: ((quest: string) => string)[] = [
+  (quest) => `${quest} — done. Nicely closed out.`,
+  (quest) => `That's ${quest} complete. Good work, Founder.`,
+  (quest) => `${quest} is closed. On to the next one.`,
+];
+
+const BUILD_COMPLETE_NOTES: ((build: string) => string)[] = [
+  (build) => `${build} — shipped.`,
+  (build) => `That's ${build} done. Keep the momentum.`,
+  (build) => `${build} complete. One ember closer.`,
+];
+
+const HQ_ENTRY_NOTES = ["Good to have you back.", "Welcome back to the forge.", "Here whenever you need me."];
+
+const OPEN_DELAY_MS = 300;
+const AUTO_CLOSE_MS = 7000;
+const COLLAPSE_DURATION_MS = 450;
+
 export function EmberWidget() {
   const pathname = usePathname();
   const [open, setOpen] = useState(false);
-  const [note, setNote] = useState<string | null>(null);
+  const [bubbleText, setBubbleText] = useState<string | null>(null);
   const [expanded, setExpanded] = useState(false);
+  const [lastBubbleText, setLastBubbleText] = useState<string | null>(null);
 
+  // A genuinely new message always starts collapsed, so the open animates
+  // even if one bubble replaces another mid-cycle.
+  if (bubbleText !== lastBubbleText) {
+    setLastBubbleText(bubbleText);
+    setExpanded(false);
+  }
+
+  // Completing a Quest or Build anywhere in the app takes over the pill
+  // immediately — the most timely thing Ember could say.
+  useEffect(() => {
+    return onEmberEvent((detail) => {
+      if (detail.kind === "quest_completed") {
+        setBubbleText(pickRandom(QUEST_COMPLETE_NOTES)(detail.title));
+      } else if (detail.kind === "build_completed") {
+        setBubbleText(pickRandom(BUILD_COMPLETE_NOTES)(detail.title));
+      }
+    });
+  }, []);
+
+  // On arriving at a widget page: something worth flagging, or — on HQ
+  // specifically, if nothing's off — a plain welcome.
   useEffect(() => {
     if (!WIDGET_PATHS.has(pathname)) return;
-
     let cancelled = false;
+
     getProgressClient()
       .then((progress) => {
         if (cancelled) return;
         const quest = getActiveQuest(progress);
         const build = quest ? getCurrentBuild(quest) : undefined;
         const proactive = pickProactiveNote(quest?.title, build?.title);
-        if (proactive) setNote(proactive);
+        if (proactive) {
+          setBubbleText(proactive);
+        } else if (pathname === "/") {
+          setBubbleText(pickRandom(HQ_ENTRY_NOTES));
+        }
       })
       .catch(() => {
         // No note — the plain orb is enough.
@@ -39,33 +93,40 @@ export function EmberWidget() {
     };
   }, [pathname]);
 
-  // Let the orb render first, then unfurl a beat later — reads as a
-  // stretch, not a jump-cut.
+  // The full open → hold → close lifecycle for whatever bubbleText currently is.
   useEffect(() => {
-    if (!note) return;
-    const timer = setTimeout(() => setExpanded(true), 350);
-    return () => clearTimeout(timer);
-  }, [note]);
+    if (!bubbleText) return;
+    const openTimer = setTimeout(() => setExpanded(true), OPEN_DELAY_MS);
+    const closeTimer = setTimeout(() => setExpanded(false), OPEN_DELAY_MS + AUTO_CLOSE_MS);
+    const clearTimer = setTimeout(
+      () => setBubbleText(null),
+      OPEN_DELAY_MS + AUTO_CLOSE_MS + COLLAPSE_DURATION_MS
+    );
+    return () => {
+      clearTimeout(openTimer);
+      clearTimeout(closeTimer);
+      clearTimeout(clearTimer);
+    };
+  }, [bubbleText]);
 
   if (!WIDGET_PATHS.has(pathname)) return null;
 
-  const showBubble = note !== null && !open;
+  const showBubble = bubbleText !== null && !open;
 
-  function handleOpen() {
-    setOpen(true);
-    setNote(null);
+  function collapseThenClear() {
     setExpanded(false);
+    setTimeout(() => setBubbleText(null), COLLAPSE_DURATION_MS);
   }
 
-  function handleDismiss() {
-    setNote(null);
-    setExpanded(false);
+  function handleOpenPanel() {
+    setOpen(true);
+    collapseThenClear();
   }
 
   return (
     <>
-      <div className="fixed bottom-6 right-6 z-40">
-        <div className="flex h-12 items-center rounded-full border border-accent-glow/25 bg-[rgba(10,17,30,0.94)] shadow-[0_8px_28px_rgba(0,0,0,0.5)]">
+      <div className="fixed bottom-6 right-6 z-40 flex justify-end">
+        <div className="flex min-h-12 items-center rounded-full border border-accent-glow/25 bg-[rgba(10,17,30,0.94)] shadow-[0_8px_28px_rgba(0,0,0,0.5)]">
           <button
             type="button"
             onClick={() => setOpen((v) => !v)}
@@ -80,18 +141,20 @@ export function EmberWidget() {
             <>
               <button
                 type="button"
-                onClick={handleOpen}
-                className={`overflow-hidden text-ellipsis whitespace-nowrap pr-1 text-left text-xs leading-relaxed text-foreground/85 transition-all duration-500 ease-out ${
-                  expanded ? "max-w-[min(260px,calc(100vw-6rem))] opacity-100" : "max-w-0 opacity-0"
+                onClick={handleOpenPanel}
+                className={`line-clamp-3 overflow-hidden text-left text-xs leading-relaxed text-foreground/85 transition-all duration-500 ease-out ${
+                  expanded ? "max-w-[min(280px,calc(100vw-7rem))] py-2.5 pr-2 opacity-100" : "max-w-0 py-0 pr-0 opacity-0"
                 }`}
               >
-                {note}
+                {bubbleText}
               </button>
               <button
                 type="button"
-                onClick={handleDismiss}
+                onClick={collapseThenClear}
                 aria-label="Dismiss"
-                className="mr-3.5 shrink-0 font-display text-[0.65rem] text-muted/40 transition-colors duration-300 hover:text-foreground/70"
+                className={`shrink-0 overflow-hidden font-display text-[0.65rem] text-muted/40 transition-all duration-500 ease-out hover:text-foreground/70 ${
+                  expanded ? "mr-3.5 max-w-4 opacity-100" : "mr-0 max-w-0 opacity-0"
+                }`}
               >
                 ✕
               </button>

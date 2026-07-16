@@ -27,6 +27,7 @@ import {
   type BuildRow,
   type SideQuestRow,
 } from "./questRows";
+import { emitEmberEvent } from "./emberEvents";
 
 /* ── TYPES ────────────────────────────────────────────────────────────────── */
 
@@ -254,8 +255,12 @@ export async function updateQuest(
   const patch = toPatch(fields);
   if (fields.newQuestlineId !== undefined) patch.questline_id = fields.newQuestlineId;
 
-  const { error } = await supabase.from("quests").update(patch).eq("id", id);
+  const { data, error } = await supabase.from("quests").update(patch).eq("id", id).select("title").single();
   if (error) throw new Error(error.message);
+
+  if (fields.status === "completed" && data) {
+    emitEmberEvent({ kind: "quest_completed", title: data.title });
+  }
 }
 
 /** Permanently remove a Quest — its Builds cascade-delete with it (see the
@@ -323,10 +328,11 @@ export async function updateBuild(
   const patch = toPatch(fields);
   if (fields.nextStep !== undefined) patch.next_step = fields.nextStep.trim() || null;
 
-  const { error } = await supabase.from("builds").update(patch).eq("id", id);
+  const { data, error } = await supabase.from("builds").update(patch).eq("id", id).select("title").single();
   if (error) throw new Error(error.message);
 
   if (fields.status === "completed") {
+    if (data) emitEmberEvent({ kind: "build_completed", title: data.title });
     await promoteNextBuild(questId);
   }
 }
