@@ -68,7 +68,7 @@ export function FounderStatusBar({ progress }: { progress: FreedomEngineProgress
             className="rounded px-2 py-0.5 font-display text-[0.52rem] font-semibold tracking-[0.16em] uppercase"
             style={{
               background: "rgba(255,171,74,0.10)",
-              color: "rgba(255,171,74,0.80)",
+              color: "var(--accent)",
               border: "1px solid rgba(255,171,74,0.10)",
             }}
           >
@@ -130,7 +130,7 @@ export function FounderStatusBar({ progress }: { progress: FreedomEngineProgress
             className="ml-auto shrink-0 rounded px-1.5 py-px font-display text-[0.48rem] font-semibold tracking-[0.14em] uppercase"
             style={{
               background: "rgba(255,171,74,0.10)",
-              color: "rgba(255,171,74,0.78)",
+              color: "var(--accent)",
               border: "1px solid rgba(255,171,74,0.09)",
             }}
           >

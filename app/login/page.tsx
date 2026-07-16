@@ -21,7 +21,7 @@ export default function LoginPage() {
             </div>
 
             <div className="space-y-2 text-center">
-              <p className="font-display text-[0.6rem] tracking-[0.28em] uppercase text-accent/55">
+              <p className="font-display text-[0.6rem] tracking-[0.28em] uppercase text-accent/75">
                 Freedom Engine
               </p>
               <h1 className="font-display text-3xl font-medium tracking-wide text-foreground sm:text-4xl">

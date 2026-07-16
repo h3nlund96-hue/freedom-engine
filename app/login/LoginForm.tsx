@@ -102,7 +102,7 @@ export function LoginForm() {
         style={{
           background: "linear-gradient(135deg, rgba(255,171,74,0.16) 0%, rgba(77,216,255,0.10) 100%)",
           boxShadow: "inset 0 1px 0 rgba(255,171,74,0.14), 0 4px 24px rgba(0,0,0,0.35)",
-          color: "rgba(255,171,74,0.90)",
+          color: "var(--accent)",
           border: "1px solid rgba(255,171,74,0.12)",
         }}
       >

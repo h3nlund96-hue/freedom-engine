@@ -66,12 +66,12 @@ export function ConfirmDialog({
                 destructive
                   ? {
                       background: "rgba(255,92,92,0.12)",
-                      color: "rgba(255,120,120,0.95)",
+                      color: "var(--critical)",
                       border: "1px solid rgba(255,92,92,0.25)",
                     }
                   : {
                       background: "rgba(255,171,74,0.12)",
-                      color: "rgba(255,171,74,0.9)",
+                      color: "var(--accent)",
                       border: "1px solid rgba(255,171,74,0.25)",
                     }
               }

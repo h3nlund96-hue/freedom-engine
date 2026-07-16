@@ -30,15 +30,15 @@ export function ThemeToggle() {
         onClick={toggle}
         className="relative h-6 w-11 shrink-0 rounded-full transition-colors duration-300"
         style={{
-          background: isLight ? "rgba(255,171,74,0.35)" : "rgba(255,255,255,0.08)",
-          border: `1px solid ${isLight ? "rgba(255,171,74,0.4)" : "rgba(255,255,255,0.1)"}`,
+          background: isLight ? "rgba(255,171,74,0.35)" : "var(--chip-tint)",
+          border: `1px solid ${isLight ? "rgba(255,171,74,0.4)" : "var(--card-border)"}`,
         }}
       >
         <span
-          className="absolute top-1/2 size-4 -translate-y-1/2 rounded-full bg-white transition-all duration-300"
+          className="absolute top-1/2 size-4 -translate-y-1/2 rounded-full bg-white shadow-[0_1px_3px_rgba(0,0,0,0.3)] transition-all duration-300"
           style={{
             left: isLight ? "calc(100% - 1.25rem)" : "0.25rem",
-            boxShadow: isLight ? "0 0 8px rgba(255,171,74,0.6)" : "none",
+            boxShadow: isLight ? "0 0 8px rgba(255,171,74,0.6)" : undefined,
           }}
         />
       </button>

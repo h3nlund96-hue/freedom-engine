@@ -27,7 +27,7 @@ export default function IdeaVaultPage() {
             <div className="pointer-events-none absolute inset-0 rounded-md shadow-[inset_0_1px_0_rgba(255,171,74,0.07)]" aria-hidden />
             <div className="relative flex flex-col gap-1.5 px-6 py-5 sm:flex-row sm:items-center sm:gap-8 sm:px-7">
               <div className="shrink-0">
-                <p className="font-display text-[0.6rem] tracking-[0.25em] uppercase text-accent/50">Core Rule</p>
+                <p className="font-display text-[0.6rem] tracking-[0.25em] uppercase text-accent/70">Core Rule</p>
                 <p className="mt-1 font-display text-base tracking-wide text-foreground/90">
                   Capture first. Organize later.
                 </p>
