@@ -3,6 +3,7 @@ import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import { EmberProvider } from "./lib/emberConversation";
 import { EmberWidget } from "./components/EmberWidget";
+import { AmbientBackground } from "./components/AmbientBackground";
 import { THEME_INIT_SCRIPT } from "./lib/theme";
 
 const geistSans = Geist({
@@ -37,6 +38,7 @@ export default function RootLayout({
         <script dangerouslySetInnerHTML={{ __html: THEME_INIT_SCRIPT }} />
       </head>
       <body className="min-h-full flex flex-col bg-background text-foreground">
+        <AmbientBackground />
         <EmberProvider>
           {children}
           <EmberWidget />

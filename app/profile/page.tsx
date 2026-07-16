@@ -3,6 +3,7 @@ import { LocationHeader } from "../components/LocationHeader";
 import { SignOutButton } from "../components/SignOutButton";
 import { EmberProactiveToggle } from "../components/EmberProactiveToggle";
 import { ThemeToggle } from "../components/ThemeToggle";
+import { AmbientToggle } from "../components/AmbientToggle";
 import { getProgress } from "../lib/questService";
 import { createClient } from "../../lib/supabase/server";
 import {
@@ -182,6 +183,8 @@ export default async function ProfilePage() {
               <ThemeToggle />
               <div className="h-px bg-linear-to-r from-accent/10 to-transparent" aria-hidden />
               <EmberProactiveToggle />
+              <div className="h-px bg-linear-to-r from-accent/10 to-transparent" aria-hidden />
+              <AmbientToggle />
             </div>
           </div>
         </section>

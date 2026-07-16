@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { LocationHeader } from "../components/LocationHeader";
+import { PanelAtmosphere } from "../components/PanelAtmosphere";
 import { QuestBoardClient } from "./QuestBoardClient";
 import { getProgress } from "../lib/questService";
 
@@ -13,6 +14,7 @@ export default async function QuestBoardPage() {
 
   return (
     <div className="relative flex min-h-full flex-1 flex-col overflow-hidden">
+      <PanelAtmosphere bias="amber-cyan" />
       <main className="relative mx-auto flex w-full max-w-2xl flex-1 flex-col gap-12 px-6 py-20 sm:px-8 sm:py-28 lg:max-w-3xl xl:max-w-4xl">
 
         <LocationHeader
