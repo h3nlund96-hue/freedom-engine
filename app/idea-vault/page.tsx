@@ -21,8 +21,8 @@ export default function IdeaVaultPage() {
 
         {/* Core rule */}
         <div className="animate-fade-up" style={{ animationDelay: "0.16s" }}>
-          <div className="relative overflow-hidden rounded-md border border-white/[0.07]">
-            <div className="absolute inset-0 bg-linear-to-r from-[rgba(10,17,30,0.90)] to-[rgba(6,9,16,0.85)]" />
+          <div className="relative overflow-hidden rounded-md border border-card-border">
+            <div className="absolute inset-0 bg-linear-to-r from-surface-raised/90 to-surface/85" />
             <div className="absolute inset-y-0 left-0 w-1 bg-linear-to-b from-accent/50 via-accent/25 to-transparent" />
             <div className="pointer-events-none absolute inset-0 rounded-md shadow-[inset_0_1px_0_rgba(255,171,74,0.07)]" aria-hidden />
             <div className="relative flex flex-col gap-1.5 px-6 py-5 sm:flex-row sm:items-center sm:gap-8 sm:px-7">

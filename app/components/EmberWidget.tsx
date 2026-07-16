@@ -127,7 +127,7 @@ export function EmberWidget() {
   return (
     <>
       <div className="fixed bottom-6 right-6 z-40 flex justify-end">
-        <div className="flex h-12 items-center rounded-full border border-accent-glow/25 bg-[rgba(10,17,30,0.94)] shadow-[0_8px_28px_rgba(0,0,0,0.5)]">
+        <div className="flex h-12 items-center rounded-full border border-accent-glow/25 bg-surface shadow-[0_8px_28px_rgba(0,0,0,0.5)]">
           <button
             type="button"
             onClick={() => setOpen((v) => !v)}
@@ -165,15 +165,15 @@ export function EmberWidget() {
       </div>
 
       {open && (
-        <div className="fixed bottom-24 right-6 z-40 w-[min(420px,calc(100vw-3rem))] max-h-[70vh] overflow-hidden rounded-md border border-white/[0.08]">
+        <div className="fixed bottom-24 right-6 z-40 w-[min(420px,calc(100vw-3rem))] max-h-[70vh] overflow-hidden rounded-md border border-card-border">
           <div className="relative flex max-h-[70vh] flex-col overflow-hidden">
-            <div className="absolute inset-0 bg-linear-to-br from-[rgba(11,20,35,0.97)] to-[rgba(6,9,16,0.99)]" />
+            <div className="absolute inset-0 bg-linear-to-br from-surface-raised to-surface" />
             <div
               className="pointer-events-none absolute inset-0 rounded-md"
               style={{ boxShadow: "inset 0 1px 0 rgba(255,171,74,0.1), inset 0 0 0 1px rgba(255,171,74,0.04)" }}
               aria-hidden
             />
-            <div className="relative flex items-center gap-2.5 border-b border-white/[0.06] px-5 py-4">
+            <div className="relative flex items-center gap-2.5 border-b border-card-border px-5 py-4">
               <EmberGlyph className="h-5 w-5" />
               <span className="font-display text-sm tracking-wide text-foreground/90">Ember</span>
             </div>

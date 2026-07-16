@@ -30,7 +30,7 @@ import { ConfirmDialog } from "../components/ConfirmDialog";
 /* ── SHARED BITS ──────────────────────────────────────────────────────────── */
 
 const inputClass =
-  "w-full rounded-sm border border-white/[0.07] bg-black/25 px-3 py-2 text-xs text-foreground/90 placeholder:text-muted/35 focus:outline-none focus:ring-1 focus:ring-accent/30";
+  "w-full rounded-sm border border-card-border bg-surface-sunken px-3 py-2 text-xs text-foreground/90 placeholder:text-muted/35 focus:outline-none focus:ring-1 focus:ring-accent/30";
 const smallBtn =
   "rounded-sm px-2.5 py-1 font-display text-[0.58rem] tracking-[0.1em] uppercase transition-colors duration-300 disabled:cursor-not-allowed disabled:opacity-40";
 
@@ -96,7 +96,7 @@ function EntityEditForm({
   }
 
   return (
-    <div className="flex flex-col gap-2 rounded-sm border border-accent/[0.12] bg-black/25 p-3">
+    <div className="flex flex-col gap-2 rounded-sm border border-accent/[0.12] bg-surface-sunken p-3">
       {questlinePicker && (
         <select
           value={questlineId}
@@ -185,7 +185,7 @@ function AddEntityForm({
   }
 
   return (
-    <div className="flex flex-col gap-2 rounded-sm border border-dashed border-accent/[0.15] bg-black/15 p-3">
+    <div className="flex flex-col gap-2 rounded-sm border border-dashed border-accent/[0.15] bg-surface-sunken p-3">
       <input
         value={title}
         onChange={(e) => setTitle(e.target.value)}
@@ -496,8 +496,8 @@ function QuestCard({
  * instead, since they already sit on top of this opaque surface. */
 function ElevatedCard({ children }: { children: React.ReactNode }) {
   return (
-    <div className="relative overflow-hidden rounded-md border border-white/[0.07]">
-      <div className="absolute inset-0 bg-linear-to-br from-[rgba(11,19,32,0.9)] to-[rgba(6,9,16,0.93)]" />
+    <div className="relative overflow-hidden rounded-md border border-card-border">
+      <div className="absolute inset-0 bg-linear-to-br from-surface-raised to-surface" />
       <div className="pointer-events-none absolute inset-0 rounded-md shadow-[inset_0_1px_0_rgba(255,171,74,0.06)]" aria-hidden />
       <div className="relative flex flex-col gap-3 p-5">{children}</div>
     </div>
@@ -751,7 +751,7 @@ function AddQuestForm({
   }
 
   return (
-    <div className="flex flex-col gap-2 rounded-sm border border-dashed border-accent/[0.15] bg-black/15 p-3">
+    <div className="flex flex-col gap-2 rounded-sm border border-dashed border-accent/[0.15] bg-surface-sunken p-3">
       <select
         value={questlineId}
         onChange={(e) => setQuestlineId(e.target.value)}
@@ -861,7 +861,7 @@ function QuestsTab({ questlines, onChanged }: { questlines: Questline[]; onChang
           <select
             value={filterQuestlineId}
             onChange={(e) => setFilterQuestlineId(e.target.value)}
-            className="cursor-pointer rounded-sm border border-white/[0.07] bg-black/20 px-2.5 py-1 font-display text-[0.58rem] uppercase tracking-wide text-muted/60 focus:outline-none focus:ring-1 focus:ring-accent/30"
+            className="cursor-pointer rounded-sm border border-card-border bg-surface-sunken px-2.5 py-1 font-display text-[0.58rem] uppercase tracking-wide text-muted/60 focus:outline-none focus:ring-1 focus:ring-accent/30"
           >
             <option value="all">All Questlines</option>
             {questlineOptions.map((ql) => (
@@ -972,8 +972,8 @@ function ActiveFocusPanel({
   onChanged: () => void;
 }) {
   return (
-    <div className="relative overflow-hidden rounded-md border border-white/[0.07]">
-      <div className="absolute inset-0 bg-linear-to-b from-[rgba(13,22,38,0.95)] to-[rgba(6,9,16,0.98)]" />
+    <div className="relative overflow-hidden rounded-md border border-card-border">
+      <div className="absolute inset-0 bg-linear-to-b from-surface-raised to-surface" />
       <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_left,rgba(77,216,255,0.08)_0%,transparent_55%)]" />
       <div
         className="pointer-events-none absolute inset-0 rounded-md"
@@ -1063,8 +1063,8 @@ function ActiveFocusPanel({
 
 function MainQuestTile({ quest }: { quest: string }) {
   return (
-    <div className="relative overflow-hidden rounded-md border border-white/[0.07]">
-      <div className="absolute inset-0 bg-linear-to-r from-[rgba(11,20,35,0.92)] to-[rgba(7,12,19,0.88)]" />
+    <div className="relative overflow-hidden rounded-md border border-card-border">
+      <div className="absolute inset-0 bg-linear-to-r from-surface-raised to-surface" />
       <div className="absolute inset-y-0 left-0 w-1 bg-linear-to-b from-accent/50 via-accent/25 to-transparent" />
       <div className="pointer-events-none absolute inset-0 rounded-md shadow-[inset_0_1px_0_rgba(255,171,74,0.07)]" aria-hidden />
       <div className="relative flex flex-col gap-1.5 px-6 py-5 sm:flex-row sm:items-center sm:gap-8 sm:px-7">
@@ -1110,7 +1110,7 @@ function MainTabBar({
   ];
 
   return (
-    <div className="flex flex-wrap gap-1 border-b border-white/[0.07]">
+    <div className="flex flex-wrap gap-1 border-b border-card-border">
       {tabs.map((t) => (
         <button
           key={t.id}

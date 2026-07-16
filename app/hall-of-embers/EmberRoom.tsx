@@ -136,7 +136,7 @@ export function EmberRoom() {
         <button
           type="button"
           onClick={() => setPresenceMode(false)}
-          className="fixed right-5 top-5 z-40 rounded-full border border-white/10 bg-black/50 px-3.5 py-2 font-display text-[0.6rem] tracking-[0.14em] uppercase text-muted/70 backdrop-blur-sm transition-colors duration-300 hover:text-foreground/90"
+          className="fixed right-5 top-5 z-40 rounded-full border border-card-border bg-surface px-3.5 py-2 font-display text-[0.6rem] tracking-[0.14em] uppercase text-muted/70 backdrop-blur-sm transition-colors duration-300 hover:text-foreground/90"
         >
           ✕ Exit presence mode
         </button>
@@ -277,7 +277,7 @@ export function EmberRoom() {
                   className={`rounded-full border px-3 py-1.5 font-display text-[0.65rem] tracking-wide transition-all duration-300 ${
                     question === q
                       ? "border-accent-glow/30 bg-accent-glow/10 text-accent-glow/90"
-                      : "border-accent-glow/[0.1] bg-black/20 text-muted/50 hover:border-accent-glow/25 hover:text-muted/75"
+                      : "border-accent-glow/[0.1] bg-surface-sunken text-muted/50 hover:border-accent-glow/25 hover:text-muted/75"
                   }`}
                 >
                   {q}
@@ -303,7 +303,7 @@ export function EmberRoom() {
             {historyOpen && (
               <div className="flex w-full max-w-lg flex-col gap-3">
                 {history.map((h, i) => (
-                  <div key={i} className="border-b border-white/[0.05] pb-2.5 text-left text-xs leading-relaxed text-muted/55">
+                  <div key={i} className="border-b border-card-border pb-2.5 text-left text-xs leading-relaxed text-muted/55">
                     <p>
                       <span className="font-medium text-muted/80">You —</span> {h.question}
                     </p>

@@ -32,10 +32,10 @@ export function ConfirmDialog({
       onClick={onCancel}
     >
       <div
-        className="relative w-full max-w-sm overflow-hidden rounded-md border border-white/[0.08]"
+        className="relative w-full max-w-sm overflow-hidden rounded-md border border-card-border"
         onClick={(e) => e.stopPropagation()}
       >
-        <div className="absolute inset-0 bg-linear-to-br from-[rgba(18,25,38,0.97)] to-[rgba(8,10,16,0.99)]" />
+        <div className="absolute inset-0 bg-linear-to-br from-surface-raised to-surface" />
         <div
           className="pointer-events-none absolute inset-0 rounded-md"
           style={{ boxShadow: "inset 0 1px 0 rgba(255,171,74,0.1), inset 0 0 0 1px rgba(255,171,74,0.04)" }}

@@ -9,21 +9,31 @@
   --surface: #0e131c;
   --surface-raised: #161d29;
   --critical: #ff5c5c;
+  /* Card border and recessed-surface (inputs, sunken panels) tones — kept
+   * as their own tokens rather than Tailwind's white/black opacity
+   * modifiers, since those bake in a literal color that can't flip with
+   * the theme the way a custom property can. */
+  --card-border: rgba(255, 255, 255, 0.07);
+  --surface-sunken: rgba(0, 0, 0, 0.22);
 }
 
 /* Light mode — set by ThemeToggle (Profile > Options) via a data-theme
  * attribute on <html>, not prefers-color-scheme; dark stays the default
  * until the Founder switches. Backgrounds are being redesigned per mode
- * separately — these are just the base tokens every surface reads from. */
+ * separately — these are just the base tokens every surface reads from.
+ * surface-raised stays the brighter of the pair in both modes (more
+ * elevated = lighter), matching dark mode's relationship. */
 :root[data-theme="light"] {
   --background: #f4efe6;
   --foreground: #201a12;
   --muted: #6f6656;
   --accent: #b35e14;
   --accent-glow: #0e7f96;
-  --surface: #ffffff;
-  --surface-raised: #fbf8f2;
+  --surface: #fbf8f2;
+  --surface-raised: #ffffff;
   --critical: #c1362b;
+  --card-border: rgba(32, 26, 18, 0.1);
+  --surface-sunken: rgba(32, 26, 18, 0.045);
 }
 
 @theme inline {
@@ -35,6 +45,8 @@
   --color-surface: var(--surface);
   --color-surface-raised: var(--surface-raised);
   --color-critical: var(--critical);
+  --color-card-border: var(--card-border);
+  --color-surface-sunken: var(--surface-sunken);
   --font-sans: var(--font-geist-sans);
   --font-display: var(--font-geist-mono);
   --font-mono: var(--font-geist-mono);
