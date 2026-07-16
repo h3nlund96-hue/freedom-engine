@@ -54,11 +54,7 @@ export default async function Home() {
       <main className="relative mx-auto flex w-full max-w-2xl flex-1 flex-col gap-14 px-6 py-14 sm:px-8 sm:py-20 lg:max-w-3xl">
         <HQHeader title="AI Mastery HQ" />
 
-        <EmberGreeting
-          activeQuestTitle={activeQuest?.title}
-          activeBuildTitle={currentBuild?.title}
-          activeBuildNextStep={currentBuild?.nextStep}
-        />
+        <EmberGreeting activeQuestTitle={activeQuest?.title} activeBuildTitle={currentBuild?.title} />
 
         <ActiveQuest progress={progress} />
 
