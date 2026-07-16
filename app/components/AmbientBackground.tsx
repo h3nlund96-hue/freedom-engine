@@ -1,5 +1,8 @@
 "use client";
 
+import { useEffect, useState } from "react";
+import { getAmbientPreference, onAmbientChange, DEFAULT_AMBIENT_INTENSITY } from "../lib/ambientPreferences";
+
 /**
  * HQ's living backdrop — Direction B ("Volumetric Depth & Grain"): parallax
  * fog banks, a full-viewport grain texture, and sparse ember blooms drifting
@@ -8,16 +11,11 @@
  * app/globals.css for the keyframes and .ambient-* / .noise-overlay-ambient
  * classes this assembles.
  *
- * `intensity` is a single 0–1 dial multiplying every layer's opacity via the
- * --ambient-intensity custom property — turn it up or down without touching
- * the layer definitions below. `enabled` unmounts the whole system.
+ * Mounted once at the root layout. Reads its on/off + intensity from
+ * ambientPreferences.ts (Profile > Options is the real control for both) and
+ * stays in sync live if that changes while already mounted, same pattern as
+ * EmberWidget's proactive-messages toggle.
  */
-
-interface AmbientBackgroundProps {
-  /** 0–1. Defaults to a balanced level — noticeable without competing with content. */
-  intensity?: number;
-  enabled?: boolean;
-}
 
 const FOG_BANKS: {
   top: string;
@@ -43,10 +41,18 @@ const EMBER_BLOOMS: { left: string; size: number; duration: string; delay: strin
   { left: "85%", size: 38, duration: "31s", delay: "-24s" },
 ];
 
-export function AmbientBackground({ intensity = 0.6, enabled = true }: AmbientBackgroundProps) {
-  if (!enabled) return null;
+export function AmbientBackground() {
+  const [pref, setPref] = useState({ enabled: true, intensity: DEFAULT_AMBIENT_INTENSITY });
 
-  const rootStyle = { "--ambient-intensity": intensity } as React.CSSProperties;
+  useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect -- hydrating from a client-only store, not syncing derived state
+    setPref(getAmbientPreference());
+    return onAmbientChange(setPref);
+  }, []);
+
+  if (!pref.enabled) return null;
+
+  const rootStyle = { "--ambient-intensity": pref.intensity } as React.CSSProperties;
 
   return (
     <div className="pointer-events-none fixed inset-0 z-0 overflow-hidden" style={rootStyle} aria-hidden>
