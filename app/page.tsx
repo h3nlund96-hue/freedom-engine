@@ -1,5 +1,4 @@
 import { ActiveQuest } from "./components/ActiveQuest";
-import { BuildPrompt } from "./components/BuildPrompt";
 import { EmberGreeting } from "./components/EmberGreeting";
 import { FounderStatusBar } from "./components/FounderStatusBar";
 import { HQHeader } from "./components/HQHeader";
@@ -82,8 +81,6 @@ export default async function Home() {
             ))}
           </nav>
         </section>
-
-        <BuildPrompt />
       </main>
     </div>
   );
