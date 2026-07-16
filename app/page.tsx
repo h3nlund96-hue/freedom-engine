@@ -4,7 +4,6 @@ import { BuildPrompt } from "./components/BuildPrompt";
 import { EmberGreeting } from "./components/EmberGreeting";
 import { FounderStatusBar } from "./components/FounderStatusBar";
 import { HQHeader } from "./components/HQHeader";
-import { SignOutButton } from "./components/SignOutButton";
 import { WorldCard } from "./components/WorldCard";
 import { getActiveQuest, getCurrentBuild } from "./data/freedomEngineProgress";
 import { getProgress } from "./lib/questService";
@@ -91,11 +90,6 @@ export default async function Home() {
         <TendTheFire />
 
         <BuildPrompt />
-
-        {/* Sign out — subtle, at the bottom of HQ */}
-        <div className="flex justify-center pb-2">
-          <SignOutButton />
-        </div>
       </main>
     </div>
   );
