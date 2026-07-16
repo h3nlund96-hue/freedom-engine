@@ -61,6 +61,7 @@ export function EmberRoom() {
     liveCaption,
     connect,
     disconnect,
+    sendText,
   } = useEmberRealtime();
 
   const appendExchangesRef = useRef(appendExchanges);
@@ -120,6 +121,12 @@ export function EmberRoom() {
     const q = question;
     setQuestion("");
     await ask(q);
+  }
+
+  function handleSendPresenceText() {
+    if (!question.trim() || !connected) return;
+    sendText(question);
+    setQuestion("");
   }
 
   const presenceStatus = connecting
@@ -197,14 +204,37 @@ export function EmberRoom() {
       </div>
 
       {presenceMode ? (
-        /* live voice conversation — captions instead of typed Q/A */
-        <div className="flex w-full max-w-lg flex-col items-center gap-4 text-center">
-          {voiceError ? (
-            <p className="text-sm text-muted/50">{voiceError}</p>
-          ) : liveCaption ? (
-            <p className="text-lg leading-relaxed text-foreground/92 sm:text-xl">{liveCaption}</p>
-          ) : null}
-        </div>
+        <>
+          {/* live voice conversation — captions instead of typed Q/A */}
+          <div className="flex w-full max-w-lg flex-col items-center gap-4 text-center">
+            {voiceError ? (
+              <p className="text-sm text-muted/50">{voiceError}</p>
+            ) : liveCaption ? (
+              <p className="text-lg leading-relaxed text-foreground/92 sm:text-xl">{liveCaption}</p>
+            ) : null}
+          </div>
+
+          {/* type into the same live conversation instead of speaking */}
+          <div className="mt-auto flex w-full max-w-lg items-center gap-2.5 border-b border-accent-glow/15 pb-2.5">
+            <span className="font-display text-accent-glow/50" aria-hidden>
+              ›
+            </span>
+            <input
+              type="text"
+              value={question}
+              onChange={(e) => setQuestion(e.target.value)}
+              onKeyDown={(e) => {
+                if (e.key === "Enter") {
+                  e.preventDefault();
+                  handleSendPresenceText();
+                }
+              }}
+              disabled={!connected}
+              placeholder={connected ? "Or type instead of talking…" : "Connecting…"}
+              className="flex-1 bg-transparent text-sm text-foreground/85 placeholder:text-muted/35 focus:outline-none disabled:opacity-50"
+            />
+          </div>
+        </>
       ) : (
         <>
           {/* the current exchange — flowing text, not a chat log */}

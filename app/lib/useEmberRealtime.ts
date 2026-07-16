@@ -23,6 +23,7 @@ const REALTIME_CALLS_URL = "https://api.openai.com/v1/realtime/calls";
  */
 export function useEmberRealtime() {
   const pcRef = useRef<RTCPeerConnection | null>(null);
+  const dataChannelRef = useRef<RTCDataChannel | null>(null);
   const micStreamRef = useRef<MediaStream | null>(null);
   const remoteAudioRef = useRef<HTMLAudioElement | null>(null);
   const transcriptRef = useRef<RealtimeExchange[]>([]);
@@ -35,6 +36,8 @@ export function useEmberRealtime() {
   const [liveCaption, setLiveCaption] = useState("");
 
   const teardown = useCallback(() => {
+    dataChannelRef.current?.close();
+    dataChannelRef.current = null;
     pcRef.current?.getSenders().forEach((sender) => sender.track?.stop());
     pcRef.current?.close();
     pcRef.current = null;
@@ -78,6 +81,7 @@ export function useEmberRealtime() {
       mic.getTracks().forEach((track) => pc.addTrack(track, mic));
 
       const dataChannel = pc.createDataChannel("oai-events");
+      dataChannelRef.current = dataChannel;
       dataChannel.addEventListener("message", (event) => {
         let msg: RealtimeServerEvent;
         try {
@@ -152,5 +156,29 @@ export function useEmberRealtime() {
     return transcript;
   }, [teardown]);
 
-  return { connected, connecting, error, talking, listening, liveCaption, connect, disconnect };
+  /** Types into the same live conversation instead of speaking — she still
+   * answers by voice. Works alongside the mic; either one adds to the same
+   * conversation. */
+  const sendText = useCallback((text: string) => {
+    const trimmed = text.trim();
+    const dataChannel = dataChannelRef.current;
+    if (!trimmed || !dataChannel || dataChannel.readyState !== "open") return;
+
+    dataChannel.send(
+      JSON.stringify({
+        type: "conversation.item.create",
+        item: {
+          type: "message",
+          role: "user",
+          content: [{ type: "input_text", text: trimmed }],
+        },
+      })
+    );
+    dataChannel.send(JSON.stringify({ type: "response.create" }));
+
+    transcriptRef.current.push({ role: "user", content: trimmed });
+    setLiveCaption(trimmed);
+  }, []);
+
+  return { connected, connecting, error, talking, listening, liveCaption, connect, disconnect, sendText };
 }
