@@ -17,7 +17,6 @@ export interface EmberContext {
   activeQuestDescription: string;
   currentBuild: string;
   currentBuildDescription: string;
-  nextStep: string;
   questlines: { id: string; title: string }[];
   recentIdeas: { title: string; status: string }[];
   availableQuests: { id: string; title: string; questlineId: string }[];
@@ -90,7 +89,6 @@ export async function getEmberContext(): Promise<EmberContext> {
     activeQuestDescription: activeQuest?.description ?? "",
     currentBuild: currentBuild?.title ?? "None",
     currentBuildDescription: currentBuild?.description ?? "",
-    nextStep: currentBuild?.nextStep ?? "",
     questlines: progress.questlines.map((ql) => ({ id: ql.id, title: ql.title })),
     recentIdeas: allIdeas.map(({ title, status }) => ({ title, status })),
     availableQuests,

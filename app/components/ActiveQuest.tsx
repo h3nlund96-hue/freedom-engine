@@ -80,12 +80,17 @@ export function ActiveQuest({ progress }: { progress: FreedomEngineProgress }) {
             {activeQuest.title}
           </h3>
 
-          {currentBuild?.nextStep && (
+          {currentBuild && (
             <div className="mt-6 border-t border-accent/[0.07] pt-5">
               <p className="mb-2 font-display text-[0.6rem] tracking-[0.28em] uppercase text-accent-glow/65">
-                Next Step
+                Current Build
               </p>
-              <p className="text-sm leading-relaxed text-foreground/80 sm:text-base">{currentBuild.nextStep}</p>
+              <p className="text-sm font-medium leading-relaxed text-foreground/90 sm:text-base">
+                {currentBuild.title}
+              </p>
+              {currentBuild.description && (
+                <p className="mt-1.5 text-sm leading-relaxed text-foreground/65">{currentBuild.description}</p>
+              )}
             </div>
           )}
         </div>

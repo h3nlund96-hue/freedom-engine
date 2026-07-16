@@ -111,15 +111,15 @@ async function nextSortOrder(
   return (count ?? 0) + 1;
 }
 
-/** The running Build log number — global per Founder, not scoped to a Quest.
- * Uses the highest existing number rather than a row count so it keeps
- * climbing even after a Build has been deleted. */
-async function nextBuildNumber(userId: string): Promise<number> {
+/** The running Build log number — counts up from one per Quest. Uses the
+ * highest existing number within the Quest rather than a row count so it
+ * keeps climbing even after a Build in that Quest has been deleted. */
+async function nextBuildNumber(questId: string): Promise<number> {
   const supabase = createClient();
   const { data } = await supabase
     .from("builds")
     .select("build_number")
-    .eq("user_id", userId)
+    .eq("quest_id", questId)
     .order("build_number", { ascending: false })
     .limit(1)
     .maybeSingle();
@@ -276,13 +276,12 @@ export async function deleteQuest(id: string): Promise<void> {
 export async function createBuild(
   questId: string,
   title: string,
-  description: string,
-  nextStep: string
+  description: string
 ): Promise<{ id: string }> {
   const supabase = createClient();
   const userId = await currentUserId();
   const sortOrder = await nextSortOrder("builds", "quest_id", questId);
-  const buildNumber = await nextBuildNumber(userId);
+  const buildNumber = await nextBuildNumber(questId);
 
   const { data, error } = await supabase
     .from("builds")
@@ -291,7 +290,6 @@ export async function createBuild(
       quest_id: questId,
       title: title.trim(),
       description: description.trim() || null,
-      next_step: nextStep.trim() || null,
       status: "available",
       sort_order: sortOrder,
       build_number: buildNumber,
@@ -308,11 +306,7 @@ export async function createBuild(
   return data;
 }
 
-export async function updateBuild(
-  id: string,
-  questId: string,
-  fields: EditableFields & { nextStep?: string }
-): Promise<void> {
+export async function updateBuild(id: string, questId: string, fields: EditableFields): Promise<void> {
   const supabase = createClient();
 
   if (fields.status === "active") {
@@ -326,7 +320,6 @@ export async function updateBuild(
   }
 
   const patch = toPatch(fields);
-  if (fields.nextStep !== undefined) patch.next_step = fields.nextStep.trim() || null;
 
   const { data, error } = await supabase.from("builds").update(patch).eq("id", id).select("title").single();
   if (error) throw new Error(error.message);
