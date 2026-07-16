@@ -10,28 +10,26 @@ import { onEmberEvent } from "../lib/emberEvents";
 /**
  * Ember's floating presence on HQ/Quest Board/Idea Vault — a quiet orb that
  * stretches into a message pill when there's something to say, then closes
- * itself again. Only two kinds of things trigger it: approval/praise for
- * completing a Quest or Build (live, via emberEvents), and a greeting on
- * landing at Headquarters. No prompting, no "what's next" nudging.
+ * itself again. Triggers: praise for completing a Quest or Build, a nod for
+ * capturing a new Idea (all live, via emberEvents), and a greeting on
+ * landing at Headquarters (once per session). No prompting, no "what's
+ * next" nudging.
  */
 
 // Only shown on these routes — Hall of Embers already has Ember front and
 // center, and the widget would be noise on Constitution/Profile/Login.
 const WIDGET_PATHS = new Set(["/", "/quest-board", "/idea-vault"]);
 
-const QUEST_COMPLETE_NOTES: ((quest: string) => string)[] = [
-  (quest) => `${quest} — done. Nicely closed out.`,
-  (quest) => `That's ${quest} complete. Good work, Founder.`,
-  (quest) => `${quest} is closed. On to the next one.`,
-];
+// Short, punchy — praise, not a paragraph.
+const QUEST_COMPLETE_NOTES = ["Quest complete.", "Well done, Founder.", "Nice work.", "Quest closed. On to the next."];
 
-const BUILD_COMPLETE_NOTES: ((build: string) => string)[] = [
-  (build) => `${build} — shipped.`,
-  (build) => `That's ${build} done. Keep the momentum.`,
-  (build) => `${build} complete. One ember closer.`,
-];
+const BUILD_COMPLETE_NOTES = ["Build shipped.", "Nice work.", "Well done.", "One ember closer."];
+
+const IDEA_CREATED_NOTES = ["Idea captured.", "Nice catch.", "Into the Vault it goes.", "Good one — logged."];
 
 const HQ_ENTRY_NOTES = ["Good to have you back.", "Welcome back to the forge.", "Here whenever you need me."];
+
+const HQ_GREETING_SESSION_KEY = "ember:hq-greeted";
 
 const OPEN_DELAY_MS = 300;
 const AUTO_CLOSE_MS = 7000;
@@ -54,20 +52,26 @@ export function EmberWidget() {
 
   // Landing at Headquarters gets a plain greeting — checked here (not an
   // effect) so it fires on the very first render too, not just subsequent
-  // navigations.
+  // navigations. Only once per session: sessionStorage survives navigating
+  // away and back, unlike this component's own state.
   if (pathname !== lastPathname) {
     setLastPathname(pathname);
-    if (pathname === "/") setBubbleText(pickRandom(HQ_ENTRY_NOTES));
+    if (pathname === "/" && typeof window !== "undefined" && !window.sessionStorage.getItem(HQ_GREETING_SESSION_KEY)) {
+      window.sessionStorage.setItem(HQ_GREETING_SESSION_KEY, "1");
+      setBubbleText(pickRandom(HQ_ENTRY_NOTES));
+    }
   }
 
-  // Completing a Quest or Build anywhere in the app takes over the pill
-  // immediately — the most timely thing Ember could say.
+  // Completing a Quest or Build, or capturing an Idea, anywhere in the app
+  // takes over the pill immediately — the most timely thing Ember could say.
   useEffect(() => {
     return onEmberEvent((detail) => {
       if (detail.kind === "quest_completed") {
-        setBubbleText(pickRandom(QUEST_COMPLETE_NOTES)(detail.title));
+        setBubbleText(pickRandom(QUEST_COMPLETE_NOTES));
       } else if (detail.kind === "build_completed") {
-        setBubbleText(pickRandom(BUILD_COMPLETE_NOTES)(detail.title));
+        setBubbleText(pickRandom(BUILD_COMPLETE_NOTES));
+      } else if (detail.kind === "idea_created") {
+        setBubbleText(pickRandom(IDEA_CREATED_NOTES));
       }
     });
   }, []);
