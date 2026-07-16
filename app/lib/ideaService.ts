@@ -11,6 +11,7 @@
  */
 
 import { createClient } from "../../lib/supabase/client";
+import { emitEmberEvent } from "./emberEvents";
 
 /* ── TYPES ────────────────────────────────────────────────────────────────── */
 
@@ -106,7 +107,9 @@ export async function createIdea(
     .single();
 
   if (error) throw new Error(error.message);
-  return rowToIdea(data as DbRow);
+  const idea = rowToIdea(data as DbRow);
+  emitEmberEvent({ kind: "idea_created", title: idea.title });
+  return idea;
 }
 
 /** Update an idea's title, description and/or status. */

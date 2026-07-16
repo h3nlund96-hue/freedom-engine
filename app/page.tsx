@@ -6,7 +6,7 @@ import { FounderStatusBar } from "./components/FounderStatusBar";
 import { HQHeader } from "./components/HQHeader";
 import { SignOutButton } from "./components/SignOutButton";
 import { WorldCard } from "./components/WorldCard";
-import { getActiveQuest } from "./data/freedomEngineProgress";
+import { getActiveQuest, getCurrentBuild } from "./data/freedomEngineProgress";
 import { getProgress } from "./lib/questService";
 
 const worldPlaces = [
@@ -43,6 +43,7 @@ const worldPlaces = [
 export default async function Home() {
   const progress = await getProgress();
   const activeQuest = getActiveQuest(progress);
+  const currentBuild = activeQuest ? getCurrentBuild(activeQuest) : undefined;
 
   return (
     <div className="relative flex min-h-full flex-1 flex-col overflow-hidden">
@@ -53,7 +54,7 @@ export default async function Home() {
       <main className="relative mx-auto flex w-full max-w-2xl flex-1 flex-col gap-14 px-6 py-14 sm:px-8 sm:py-20 lg:max-w-3xl">
         <HQHeader title="AI Mastery HQ" />
 
-        <EmberGreeting activeQuestTitle={activeQuest?.title} />
+        <EmberGreeting activeQuestTitle={activeQuest?.title} activeBuildTitle={currentBuild?.title} />
 
         <ActiveQuest progress={progress} />
 

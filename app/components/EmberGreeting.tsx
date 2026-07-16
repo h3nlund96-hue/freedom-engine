@@ -1,11 +1,13 @@
 import { EmberGlyph } from "./EmberGlyph";
+import { pickRandom, pickProactiveNote } from "../lib/emberProactiveMessage";
 
 /**
  * Ember's front-page greeting. Pure pre-written copy — no API call, no LLM,
  * no loading state. A random variant is picked fresh on every render, which
- * on this server-rendered page means every load. Deliberately never
- * mentions time away, streaks, or counts — see the rules this Build shipped
- * under (no guilt, no nagging).
+ * on this server-rendered page means every load. The "something's worth
+ * flagging" cases (no active Quest, or an active Quest with no active
+ * Build) come from emberProactiveMessage — shared with the floating
+ * widget's bubble so both say the same things.
  */
 
 const ACTIVE_QUEST_TEMPLATES: ((quest: string) => string)[] = [
@@ -17,21 +19,14 @@ const ACTIVE_QUEST_TEMPLATES: ((quest: string) => string)[] = [
   (quest) => `Back at the forge. ${quest} stands unfinished.`,
 ];
 
-const NO_QUEST_VARIANTS = [
-  "Welcome back, Founder. Nothing's active right now — what do you want to build?",
-  "The table's clear. What's the next Build?",
-  "The fire's lit, but no Quest is chosen. What sounds good?",
-  "Blank slate, Founder. Where do we point it?",
-];
-
-function pickRandom<T>(items: T[]): T {
-  return items[Math.floor(Math.random() * items.length)];
+interface EmberGreetingProps {
+  activeQuestTitle?: string;
+  activeBuildTitle?: string;
 }
 
-export function EmberGreeting({ activeQuestTitle }: { activeQuestTitle?: string }) {
-  const message = activeQuestTitle
-    ? pickRandom(ACTIVE_QUEST_TEMPLATES)(activeQuestTitle)
-    : pickRandom(NO_QUEST_VARIANTS);
+export function EmberGreeting({ activeQuestTitle, activeBuildTitle }: EmberGreetingProps) {
+  const proactiveNote = pickProactiveNote(activeQuestTitle, activeBuildTitle);
+  const message = proactiveNote ?? pickRandom(ACTIVE_QUEST_TEMPLATES)(activeQuestTitle ?? "");
 
   return (
     <section className="animate-fade-up" style={{ animationDelay: "0.14s" }} aria-label="Ember">
