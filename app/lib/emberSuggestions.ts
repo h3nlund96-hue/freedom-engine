@@ -14,7 +14,6 @@ export interface ActiveInfo {
 export function buildSuggestedQuestions(info: ActiveInfo | null): string[] {
   if (info?.questTitle && info?.buildTitle) {
     return [
-      `What's blocking "${info.buildTitle}"?`,
       `Mark "${info.buildTitle}" as complete`,
       `Generate the next Build for "${info.questTitle}"`,
       "Capture this as an idea",
