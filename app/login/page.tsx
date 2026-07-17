@@ -1,5 +1,8 @@
 import type { Metadata } from "next";
 import { LoginForm } from "./LoginForm";
+import { EmberGlyph } from "../components/EmberGlyph";
+import { CornerMarks } from "../components/CornerMarks";
+import { PanelAtmosphere } from "../components/PanelAtmosphere";
 
 export const metadata: Metadata = {
   title: "Enter the Headquarters — Freedom Engine",
@@ -9,16 +12,13 @@ export const metadata: Metadata = {
 export default function LoginPage() {
   return (
     <div className="relative flex min-h-full flex-1 flex-col overflow-hidden">
+      <PanelAtmosphere bias="amber" />
       <main className="relative flex min-h-full flex-1 flex-col items-center justify-center px-6 py-20">
         <div className="w-full max-w-sm">
 
           {/* Gate mark */}
           <div className="mb-12 flex flex-col items-center gap-4">
-            <div className="flex items-center gap-3" aria-hidden>
-              <span className="h-px w-10 bg-linear-to-r from-transparent to-accent/25" />
-              <span className="size-1 rounded-full bg-accent/35 shadow-[0_0_8px_rgba(255,171,74,0.3)]" />
-              <span className="h-px w-10 bg-linear-to-l from-transparent to-accent/25" />
-            </div>
+            <EmberGlyph className="h-16 w-16" />
 
             <div className="space-y-2 text-center">
               <p className="font-display text-[0.6rem] tracking-[0.28em] uppercase text-accent/75">
@@ -35,6 +35,7 @@ export default function LoginPage() {
 
           {/* Panel */}
           <div className="relative overflow-hidden rounded-md border border-card-border">
+            <CornerMarks size={8} inset="6px" />
             <div className="absolute inset-0 bg-linear-to-br from-surface-raised to-surface" />
             <div
               className="pointer-events-none absolute inset-0"
