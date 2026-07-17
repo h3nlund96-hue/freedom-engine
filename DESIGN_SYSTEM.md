@@ -103,16 +103,18 @@ Standard panel structure:
 - **Entrance:** `fade-up` with staggered `animationDelay` per section
 - **Hover:** lift (`-translate-y-1`), scale (`scale-[1.01]`), amber or cyan glow depending on state
 - **Active indicators:** `animate-glow-pulse` on status dots
-- **Background:** faint drifting grid / starfield in place of ember orbs
-- **Particles:** slow-moving points of light in place of dust motes
+- **Background:** parallax fog banks and a full-viewport grain texture, drifting continuously at low opacity (see Environment Art below)
+- **Particles:** sparse ember blooms drifting upward, amber fading to cyan
 
 Keep animations calm and purposeful. No excessive game effects. No distracting movement.
 
 ## Environment Art
 
-Real background graphics, HUD framing elements (grid lines, corner brackets, scanlines), and world art should be added later as a dedicated **Environment Art Pass**.
+HQ's ambient backdrop shipped as **Direction B — Volumetric Depth & Grain**: parallax fog banks, a full-viewport grain texture, and sparse ember blooms drifting upward (`AmbientBackground.tsx`), plus a `PanelAtmosphere` accent tinting Quest Board (amber+cyan) and Idea Vault (cyan) to their location bias. Pure CSS — no canvas, no new dependency. On by default at a balanced intensity; toggle and intensity dial live in Profile > Options.
 
-Do not force complex CSS-only fake architecture prematurely. Atmosphere through gradients and lighting is sufficient until real art assets are ready.
+Every color in this system reads from `--accent`/`--accent-glow` via `color-mix()`, not literal RGB values — light mode's deliberately dark, desaturated accent colors need substantially more pigment to read at all, so several tokens (`--ambient-fog-mix`, `--ambient-ember-mix-1/2`, `--panel-atmosphere-mix`, `--ambient-ember-blur`, `--ambient-ember-opacity`) carry separate light/dark values. Any new decorative glow or gradient in this app should follow the same rule — a literal `rgba(255,171,74,X)` looks identical in both themes, which is itself the bug (see `FounderStatusBar`'s light-mode fix).
+
+Real photographic/illustrated background art and HUD framing elements beyond the existing `CornerMarks` (grid lines, scanlines) are still future work, not yet started.
 
 ## Location Atmosphere Reference
 
