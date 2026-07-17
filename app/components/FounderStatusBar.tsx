@@ -15,7 +15,7 @@ export function FounderStatusBar({ progress }: { progress: FreedomEngineProgress
   const barPercent = Math.round(xpData.fraction * 100);
 
   return (
-    <div className="relative z-10 w-full pt-[env(safe-area-inset-top)]">
+    <div className="relative z-10 w-full pt-[max(env(safe-area-inset-top),44px)] sm:pt-0">
       <div className="absolute inset-0 bg-surface/80 backdrop-blur-sm" />
       <div
         className="absolute inset-x-0 bottom-0 h-px"

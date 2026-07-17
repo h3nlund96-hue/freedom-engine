@@ -29,9 +29,9 @@ export const metadata: Metadata = {
 // users to be able to zoom) accepted knowingly for this personal app.
 // viewportFit: "cover" lets the page's own background extend under the
 // notch/status bar instead of Safari reserving that strip with its own
-// chrome color — paired with the safe-area padding on <body> below so
-// visible content still lands exactly where it did before, just with the
-// ambient background now filling in behind it.
+// chrome color. env(safe-area-inset-top) is what individual components
+// (FounderStatusBar, each page's outer wrapper) use to keep content clear
+// of that area.
 export const viewport: Viewport = {
   width: "device-width",
   initialScale: 1,
