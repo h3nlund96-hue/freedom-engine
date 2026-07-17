@@ -55,7 +55,7 @@ export default function RootLayout({
             avoids a flash of the wrong theme while React hydrates. */}
         <script dangerouslySetInnerHTML={{ __html: THEME_INIT_SCRIPT }} />
       </head>
-      <body className="min-h-full flex flex-col bg-background pt-[env(safe-area-inset-top)] text-foreground">
+      <body className="min-h-full flex flex-col bg-background text-foreground">
         <AmbientBackground />
         <EmberProvider>
           {children}

@@ -10,7 +10,7 @@ export const metadata: Metadata = {
 
 export default function HallOfEmbersPage() {
   return (
-    <main className="relative flex min-h-full flex-1 flex-col overflow-hidden">
+    <main className="relative flex min-h-full flex-1 flex-col overflow-hidden pt-[env(safe-area-inset-top)]">
       <EmberRoom />
     </main>
   );

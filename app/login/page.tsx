@@ -11,7 +11,7 @@ export const metadata: Metadata = {
 
 export default function LoginPage() {
   return (
-    <div className="relative flex min-h-full flex-1 flex-col overflow-hidden">
+    <div className="relative flex min-h-full flex-1 flex-col overflow-hidden pt-[env(safe-area-inset-top)]">
       <PanelAtmosphere bias="amber" />
       <main className="relative flex min-h-full flex-1 flex-col items-center justify-center px-6 py-20">
         <div className="w-full max-w-sm">
