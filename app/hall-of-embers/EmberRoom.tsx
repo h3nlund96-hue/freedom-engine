@@ -277,7 +277,7 @@ export function EmberRoom() {
                   className={`rounded-full border px-3 py-1.5 font-display text-[0.65rem] tracking-wide transition-all duration-300 ${
                     question === q
                       ? "border-accent-glow/30 bg-accent-glow/10 text-accent-glow/90"
-                      : "border-accent-glow/[0.1] bg-surface-sunken text-muted/75 hover:border-accent-glow/25 hover:text-foreground/85"
+                      : "border-accent-glow/[0.1] bg-surface-sunken text-foreground/75 hover:border-accent-glow/25 hover:text-foreground"
                   }`}
                 >
                   {q}
