@@ -46,7 +46,7 @@ export function FounderStatusBar({ progress }: { progress: FreedomEngineProgress
               F
             </span>
           </div>
-          <span className="font-display text-[0.46rem] tracking-[0.18em] uppercase text-muted/35 transition-colors duration-300 group-hover:text-muted/55">
+          <span className="font-display text-[0.56rem] tracking-[0.18em] uppercase text-muted/45 transition-colors duration-300 group-hover:text-muted/65">
             Profile
           </span>
         </Link>
@@ -57,7 +57,7 @@ export function FounderStatusBar({ progress }: { progress: FreedomEngineProgress
         {/* Identity */}
         <div className="flex items-center gap-3 shrink-0">
           <div>
-            <p className="font-display text-[0.50rem] tracking-[0.20em] uppercase text-muted/38">
+            <p className="font-display text-[0.58rem] tracking-[0.20em] uppercase text-muted/48">
               Founder Status
             </p>
             <p className="font-display text-[0.72rem] font-medium tracking-wide text-foreground/78">
@@ -65,7 +65,7 @@ export function FounderStatusBar({ progress }: { progress: FreedomEngineProgress
             </p>
           </div>
           <span
-            className="rounded px-2 py-0.5 font-display text-[0.52rem] font-semibold tracking-[0.16em] uppercase"
+            className="rounded px-2 py-0.5 font-display text-[0.6rem] font-semibold tracking-[0.16em] uppercase"
             style={{
               background: "rgba(255,171,74,0.10)",
               color: "var(--accent)",
@@ -98,7 +98,7 @@ export function FounderStatusBar({ progress }: { progress: FreedomEngineProgress
               }}
             />
           </div>
-          <p className="font-display text-[0.50rem] font-medium tracking-[0.12em] uppercase text-muted/42">
+          <p className="font-display text-[0.58rem] font-medium tracking-[0.12em] uppercase text-muted/50">
             {xpData.isMaxLevel
               ? "Maximum level"
               : `${xpData.xpInLevel.toLocaleString()} / ${xpData.xpNeeded.toLocaleString()} XP to Lv. ${xpData.level + 1}`}
@@ -127,7 +127,7 @@ export function FounderStatusBar({ progress }: { progress: FreedomEngineProgress
             {title}
           </p>
           <span
-            className="ml-auto shrink-0 rounded px-1.5 py-px font-display text-[0.48rem] font-semibold tracking-[0.14em] uppercase"
+            className="ml-auto shrink-0 rounded px-1.5 py-px font-display text-[0.56rem] font-semibold tracking-[0.14em] uppercase"
             style={{
               background: "rgba(255,171,74,0.10)",
               color: "var(--accent)",
@@ -156,7 +156,7 @@ export function FounderStatusBar({ progress }: { progress: FreedomEngineProgress
               }}
             />
           </div>
-          <p className="shrink-0 font-display text-[0.46rem] font-medium tracking-[0.10em] uppercase text-muted/38">
+          <p className="shrink-0 font-display text-[0.54rem] font-medium tracking-[0.10em] uppercase text-muted/48">
             {xpData.isMaxLevel
               ? "Max level"
               : `${xpData.xpInLevel.toLocaleString()} / ${xpData.xpNeeded.toLocaleString()} XP`}

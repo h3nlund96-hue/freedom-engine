@@ -229,7 +229,7 @@ function StatBlock({
 }) {
   return (
     <div className={`rounded-md border border-card-border bg-chip-tint px-4 py-3 ${className}`}>
-      <p className="font-display text-[0.52rem] tracking-[0.18em] uppercase text-muted/35">{label}</p>
+      <p className="font-display text-[0.6rem] tracking-[0.18em] uppercase text-muted/50">{label}</p>
       <p className="mt-1.5 font-display text-2xl tracking-wide text-foreground/80">
         {value}
         {suffix && <span className="ml-1 text-base text-muted/40">{suffix}</span>}

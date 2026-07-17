@@ -435,7 +435,7 @@ function VaultCompartment({
           </div>
           <span
             className={`mt-0.5 shrink-0 rounded-sm px-2 py-0.5 font-display text-[0.58rem] tracking-wider ${
-              hasItems ? "bg-accent/12 text-accent/70" : "bg-muted/5 text-muted/45"
+              hasItems ? "bg-accent/12 text-accent/70" : "bg-muted/10 text-foreground/65"
             }`}
           >
             {count}

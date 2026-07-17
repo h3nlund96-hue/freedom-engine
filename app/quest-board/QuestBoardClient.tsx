@@ -37,11 +37,11 @@ const smallBtn =
 function StatusPill({ status }: { status: QuestStatus }) {
   const styles: Record<QuestStatus, string> = {
     active: "bg-accent-glow/12 text-accent-glow/80",
-    available: "bg-muted/8 text-muted/50",
-    completed: "bg-accent/10 text-accent/60",
+    available: "bg-muted/10 text-foreground/70",
+    completed: "bg-accent/12 text-accent/80",
   };
   return (
-    <span className={`shrink-0 rounded-sm px-2 py-0.5 font-display text-[0.55rem] tracking-[0.14em] uppercase ${styles[status]}`}>
+    <span className={`shrink-0 rounded-sm px-2 py-0.5 font-display text-[0.6rem] tracking-[0.14em] uppercase ${styles[status]}`}>
       {status}
     </span>
   );
