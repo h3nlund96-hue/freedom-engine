@@ -136,7 +136,7 @@ export function IdeaDetailModal({
               value={title}
               onChange={(e) => setTitle(e.target.value)}
               disabled={alreadyConverted}
-              className="rounded-sm border border-card-border bg-surface-sunken px-3.5 py-2.5 text-sm text-foreground/90 focus:outline-none focus:ring-1 focus:ring-accent/30 disabled:opacity-60"
+              className="rounded-sm border border-card-border bg-surface-sunken px-3.5 py-2.5 text-base sm:text-sm text-foreground/90 focus:outline-none focus:ring-1 focus:ring-accent/30 disabled:opacity-60"
             />
           </div>
 
@@ -152,7 +152,7 @@ export function IdeaDetailModal({
               onChange={(e) => setDescription(e.target.value)}
               disabled={alreadyConverted}
               placeholder="Add more detail (optional)..."
-              className="resize-none rounded-sm border border-card-border bg-surface-sunken px-3.5 py-2.5 text-sm leading-relaxed text-foreground/85 placeholder:text-muted/30 focus:outline-none focus:ring-1 focus:ring-accent/30 disabled:opacity-60"
+              className="resize-none rounded-sm border border-card-border bg-surface-sunken px-3.5 py-2.5 text-base sm:text-sm leading-relaxed text-foreground/85 placeholder:text-muted/30 focus:outline-none focus:ring-1 focus:ring-accent/30 disabled:opacity-60"
             />
           </div>
 
@@ -166,7 +166,7 @@ export function IdeaDetailModal({
               value={status}
               onChange={(e) => setStatus(e.target.value as IdeaStatus)}
               disabled={alreadyConverted}
-              className="cursor-pointer rounded-sm border border-card-border bg-surface-sunken px-3.5 py-2.5 font-display text-xs uppercase tracking-wide text-accent/80 focus:outline-none focus:ring-1 focus:ring-accent/30 disabled:opacity-60"
+              className="cursor-pointer rounded-sm border border-card-border bg-surface-sunken px-3.5 py-2.5 font-display text-base sm:text-xs uppercase tracking-wide text-accent/80 focus:outline-none focus:ring-1 focus:ring-accent/30 disabled:opacity-60"
             >
               {STATUS_ORDER.map((s) => (
                 <option key={s} value={s}>
@@ -251,7 +251,7 @@ export function IdeaDetailModal({
                           id="idea-questline"
                           value={convertQuestlineId}
                           onChange={(e) => setConvertQuestlineId(e.target.value)}
-                          className="cursor-pointer rounded-sm border border-card-border bg-surface-sunken px-3.5 py-2.5 font-display text-xs uppercase tracking-wide text-accent/80 focus:outline-none focus:ring-1 focus:ring-accent/30"
+                          className="cursor-pointer rounded-sm border border-card-border bg-surface-sunken px-3.5 py-2.5 font-display text-base sm:text-xs uppercase tracking-wide text-accent/80 focus:outline-none focus:ring-1 focus:ring-accent/30"
                         >
                           {questlineOptions.map((q) => (
                             <option key={q.id} value={q.id}>

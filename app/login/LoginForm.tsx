@@ -56,7 +56,7 @@ export function LoginForm() {
             onChange={(e) => setEmail(e.target.value)}
             disabled={loading}
             placeholder="founder@freedomengine.co"
-            className="relative w-full bg-transparent px-5 py-3.5 text-sm text-foreground/85 placeholder:text-muted/25 focus:outline-none disabled:opacity-50"
+            className="relative w-full bg-transparent px-5 py-3.5 text-base sm:text-sm text-foreground/85 placeholder:text-muted/25 focus:outline-none disabled:opacity-50"
           />
         </div>
       </div>
@@ -82,7 +82,7 @@ export function LoginForm() {
             onChange={(e) => setPassword(e.target.value)}
             disabled={loading}
             placeholder="••••••••"
-            className="relative w-full bg-transparent px-5 py-3.5 text-sm text-foreground/85 placeholder:text-muted/25 focus:outline-none disabled:opacity-50"
+            className="relative w-full bg-transparent px-5 py-3.5 text-base sm:text-sm text-foreground/85 placeholder:text-muted/25 focus:outline-none disabled:opacity-50"
           />
         </div>
       </div>

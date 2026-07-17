@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import { EmberProvider } from "./lib/emberConversation";
@@ -20,6 +20,18 @@ export const metadata: Metadata = {
   title: "AI Mastery HQ — Freedom Engine",
   description:
     "Your personal headquarters in the Freedom Engine world. Build, explore, return.",
+};
+
+// Pinch-zoom disabled by explicit choice, on top of the input font-size fix
+// (see the inputs across the app) that already stops the involuntary
+// iOS auto-zoom-on-focus — this additionally blocks intentional pinch
+// gestures, which is a real accessibility tradeoff (WCAG 1.4.4 expects
+// users to be able to zoom) accepted knowingly for this personal app.
+export const viewport: Viewport = {
+  width: "device-width",
+  initialScale: 1,
+  maximumScale: 1,
+  userScalable: false,
 };
 
 export default function RootLayout({
