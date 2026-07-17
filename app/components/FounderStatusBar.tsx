@@ -16,7 +16,12 @@ export function FounderStatusBar({ progress }: { progress: FreedomEngineProgress
 
   return (
     <div className="relative z-10 w-full pt-[max(env(safe-area-inset-top),44px)] sm:pt-0">
-      <div className="absolute inset-0 bg-surface/80 backdrop-blur-sm" />
+      {/* No blur on mobile: backdrop-filter over the fixed, animated
+          AmbientBackground layer fails to render within the safe-area-inset
+          region on iOS Safari, showing through as a flat gap instead of the
+          tile's own background — solid color there sidesteps it. Restored
+          on desktop (sm+), which has no notch/safe-area to trigger it. */}
+      <div className="absolute inset-0 bg-surface/80 sm:backdrop-blur-sm" />
       <div
         className="absolute inset-x-0 bottom-0 h-px"
         style={{
