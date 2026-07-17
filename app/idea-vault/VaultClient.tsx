@@ -111,8 +111,8 @@ export function VaultClient() {
     if (!selectedIdea) return;
     const result =
       type === "quest" && questlineId
-        ? await convertIdeaToQuest(selectedIdea, questlineId, title, description)
-        : await convertIdeaToSideQuest(selectedIdea, title, description);
+        ? await convertIdeaToQuest(selectedIdea.id, questlineId, title, description)
+        : await convertIdeaToSideQuest(selectedIdea.id, title, description);
     const updated: Idea = {
       ...selectedIdea,
       title,

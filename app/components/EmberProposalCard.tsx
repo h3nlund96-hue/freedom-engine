@@ -2,10 +2,12 @@
 
 import { useEffect, useState } from "react";
 import type { EmberProposal } from "../lib/emberConversation";
-import { createIdea, deleteIdea } from "../lib/ideaService";
+import { createIdea, deleteIdea, convertIdeaToQuest, convertIdeaToSideQuest } from "../lib/ideaService";
 import {
   createQuest,
+  createQuestline,
   createBuild,
+  createSideQuest,
   getQuestlineOptions,
   updateQuestline,
   updateQuest,
@@ -38,12 +40,20 @@ function proposalHeading(proposal: EmberProposal): string {
       return "Proposed Quest";
     case "create_idea":
       return "Proposed Idea";
+    case "create_side_quest":
+      return "Proposed Side Quest";
+    case "create_questline":
+      return "Proposed Questline";
     case "activate_quest":
       return "Proposed: Activate Quest";
     case "complete_build":
       return "Proposed: Complete Build";
     case "create_build":
       return "Proposed Build";
+    case "create_builds_batch":
+      return "Proposed Builds";
+    case "convert_idea":
+      return proposal.targetType === "quest" ? "Proposed: Convert Idea → Quest" : "Proposed: Convert Idea → Side Quest";
     case "update_status":
       return proposal.status === "completed"
         ? "Proposed: Mark Complete"
@@ -59,7 +69,13 @@ function proposalTitle(proposal: EmberProposal): string {
   switch (proposal.action) {
     case "create_quest":
     case "create_idea":
+    case "create_side_quest":
+    case "create_questline":
     case "create_build":
+      return proposal.title;
+    case "create_builds_batch":
+      return `${proposal.builds.length} Build${proposal.builds.length === 1 ? "" : "s"} for ${proposal.questTitle}`;
+    case "convert_idea":
       return proposal.title;
     case "activate_quest":
       return proposal.questTitle;
@@ -75,8 +91,13 @@ function approveLabel(proposal: EmberProposal): string {
   switch (proposal.action) {
     case "create_quest":
     case "create_idea":
+    case "create_side_quest":
+    case "create_questline":
     case "create_build":
+    case "create_builds_batch":
       return "Approve & Create";
+    case "convert_idea":
+      return "Approve & Convert";
     case "activate_quest":
       return "Approve & Activate";
     case "complete_build":
@@ -98,12 +119,20 @@ export function successLabel(proposal: EmberProposal): string {
       return `✓ Created Quest — "${proposal.title}"`;
     case "create_idea":
       return `✓ Created Idea — "${proposal.title}"`;
+    case "create_side_quest":
+      return `✓ Created Side Quest — "${proposal.title}"`;
+    case "create_questline":
+      return `✓ Created Questline — "${proposal.title}"`;
     case "activate_quest":
       return `✓ Activated Quest — "${proposal.questTitle}"`;
     case "complete_build":
       return `✓ Completed Build — "${proposal.buildTitle}"`;
     case "create_build":
       return `✓ Created Build — "${proposal.title}"`;
+    case "create_builds_batch":
+      return `✓ Created ${proposal.builds.length} Build${proposal.builds.length === 1 ? "" : "s"} for "${proposal.questTitle}"`;
+    case "convert_idea":
+      return `✓ Converted "${proposal.ideaTitle}" → ${proposal.targetType === "quest" ? "Quest" : "Side Quest"} — "${proposal.title}"`;
     case "update_status":
       return `✓ "${proposal.entityTitle}" is now ${proposal.status}`;
     case "delete_item":
@@ -118,15 +147,24 @@ export function ProposalCard({
   proposal: EmberProposal;
   onResolve: (status: "created" | "dismissed") => void;
 }) {
+  // Both create_quest and a convert_idea-to-Quest proposal need The Founder
+  // to confirm (or change) which Questline the result lands in.
+  const needsQuestlinePicker =
+    proposal.action === "create_quest" || (proposal.action === "convert_idea" && proposal.targetType === "quest");
+
   const [questlineOptions, setQuestlineOptions] = useState<QuestlineSummary[]>([]);
   const [questlineId, setQuestlineId] = useState(
-    proposal.action === "create_quest" ? proposal.questlineId ?? "" : ""
+    proposal.action === "create_quest"
+      ? proposal.questlineId ?? ""
+      : proposal.action === "convert_idea"
+      ? proposal.questlineId ?? ""
+      : ""
   );
   const [working, setWorking] = useState(false);
   const [actionError, setActionError] = useState<string | null>(null);
 
   useEffect(() => {
-    if (proposal.action !== "create_quest") return;
+    if (!needsQuestlinePicker) return;
     getQuestlineOptions()
       .then((options) => {
         setQuestlineOptions(options);
@@ -135,7 +173,7 @@ export function ProposalCard({
       .catch(() => {
         // Leave the picker empty — the "no Questlines" message below covers it.
       });
-  }, [proposal.action]);
+  }, [needsQuestlinePicker]);
 
   async function handleApprove() {
     setWorking(true);
@@ -146,12 +184,30 @@ export function ProposalCard({
       } else if (proposal.action === "create_quest") {
         if (!questlineId) throw new Error("Choose a Questline first.");
         await createQuest(questlineId, proposal.title, proposal.description);
+      } else if (proposal.action === "create_side_quest") {
+        await createSideQuest(proposal.title, proposal.description);
+      } else if (proposal.action === "create_questline") {
+        await createQuestline(proposal.title, proposal.description);
       } else if (proposal.action === "activate_quest") {
         await updateQuest(proposal.questId, proposal.questlineId, { status: "active" });
       } else if (proposal.action === "complete_build") {
         await updateBuild(proposal.buildId, proposal.questId, { status: "completed" });
       } else if (proposal.action === "create_build") {
         await createBuild(proposal.questId, proposal.title, proposal.description);
+      } else if (proposal.action === "create_builds_batch") {
+        // Sequential, not Promise.all — each createBuild call reads the
+        // current max sort_order/build_number before inserting, so
+        // concurrent calls would race and could collide on the same values.
+        for (const build of proposal.builds) {
+          await createBuild(proposal.questId, build.title, build.description);
+        }
+      } else if (proposal.action === "convert_idea") {
+        if (proposal.targetType === "quest") {
+          if (!questlineId) throw new Error("Choose a Questline first.");
+          await convertIdeaToQuest(proposal.ideaId, questlineId, proposal.title, proposal.description);
+        } else {
+          await convertIdeaToSideQuest(proposal.ideaId, proposal.title, proposal.description);
+        }
       } else if (proposal.action === "update_status") {
         if (proposal.entityType === "questline") {
           await updateQuestline(proposal.entityId, { status: proposal.status });
@@ -188,7 +244,12 @@ export function ProposalCard({
   }
 
   const description =
-    proposal.action === "create_quest" || proposal.action === "create_idea" || proposal.action === "create_build"
+    proposal.action === "create_quest" ||
+    proposal.action === "create_idea" ||
+    proposal.action === "create_side_quest" ||
+    proposal.action === "create_questline" ||
+    proposal.action === "create_build" ||
+    proposal.action === "convert_idea"
       ? proposal.description
       : "";
 
@@ -197,6 +258,8 @@ export function ProposalCard({
       ? ENTITY_LABELS[proposal.entityType]
       : proposal.action === "create_build"
       ? `For ${proposal.questTitle}`
+      : proposal.action === "convert_idea"
+      ? `From Idea: ${proposal.ideaTitle}`
       : null;
 
   const isDestructive = proposal.action === "delete_item";
@@ -226,7 +289,21 @@ export function ProposalCard({
         )}
       </div>
 
-      {proposal.action === "create_quest" &&
+      {proposal.action === "create_builds_batch" && (
+        <ol className="space-y-1.5 border-t border-accent-glow/[0.08] pt-3">
+          {proposal.builds.map((build, i) => (
+            <li key={i} className="flex gap-2">
+              <span className="shrink-0 font-display text-[0.65rem] tabular-nums text-muted/40">{i + 1}.</span>
+              <div className="min-w-0">
+                <p className="text-xs font-medium text-foreground/85">{build.title}</p>
+                {build.description && <p className="text-[0.7rem] leading-relaxed text-muted/55">{build.description}</p>}
+              </div>
+            </li>
+          ))}
+        </ol>
+      )}
+
+      {needsQuestlinePicker &&
         (questlineOptions.length > 0 ? (
           <select
             value={questlineId}
@@ -249,7 +326,7 @@ export function ProposalCard({
         <button
           type="button"
           onClick={() => void handleApprove()}
-          disabled={working || (proposal.action === "create_quest" && !questlineId)}
+          disabled={working || (needsQuestlinePicker && !questlineId)}
           className="rounded-sm px-3.5 py-1.5 font-display text-[0.6rem] tracking-[0.12em] uppercase transition-colors duration-300 disabled:cursor-not-allowed disabled:opacity-40"
           style={
             isDestructive

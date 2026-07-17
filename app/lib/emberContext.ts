@@ -29,6 +29,10 @@ export interface EmberContext {
   allBuilds: { id: string; title: string; status: string; questId: string; questTitle: string }[];
   allSideQuests: { id: string; title: string; status: string }[];
   allIdeas: { id: string; title: string; status: string }[];
+  /** Ideas not yet converted to a Quest or Side Quest — the only ones Ember
+   * can propose converting; the Idea Vault UI blocks re-converting one that
+   * already has, so her proposals follow the same rule. */
+  convertibleIdeas: { id: string; title: string }[];
 }
 
 export async function getEmberContext(): Promise<EmberContext> {
@@ -40,7 +44,7 @@ export async function getEmberContext(): Promise<EmberContext> {
 
   const { data: ideaRows, error: ideaRowsError } = await supabase
     .from("ideas")
-    .select("id, title, status")
+    .select("id, title, status, converted_to_type")
     .order("created_at", { ascending: false })
     .limit(30);
   if (ideaRowsError) throw new Error(ideaRowsError.message);
@@ -79,7 +83,12 @@ export async function getEmberContext(): Promise<EmberContext> {
 
   const allSideQuests = progress.sideQuests.map((sq) => ({ id: sq.id, title: sq.title, status: sq.status }));
 
-  const allIdeas = ((ideaRows ?? []) as { id: string; title: string; status: string }[]).slice(0, 30);
+  const ideaRowsTyped = (ideaRows ?? []) as { id: string; title: string; status: string; converted_to_type: string | null }[];
+  const allIdeas = ideaRowsTyped.slice(0, 30).map(({ id, title, status }) => ({ id, title, status }));
+  const convertibleIdeas = ideaRowsTyped
+    .filter((i) => i.converted_to_type === null)
+    .slice(0, 20)
+    .map(({ id, title }) => ({ id, title }));
 
   return {
     mainQuest: progress.mainQuest,
@@ -99,5 +108,6 @@ export async function getEmberContext(): Promise<EmberContext> {
     allBuilds,
     allSideQuests,
     allIdeas,
+    convertibleIdeas,
   };
 }
