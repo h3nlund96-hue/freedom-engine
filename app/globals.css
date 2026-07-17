@@ -20,6 +20,18 @@
    * mode has to darken instead, since there's no headroom to go brighter
    * than an already near-white surface. */
   --chip-tint: rgba(255, 255, 255, 0.04);
+  /* How much accent pigment the ambient background's color-mix() layers pull
+   * in — kept as its own token because dark mode's bright accent colors read
+   * clearly at a light mix, while light mode's deliberately dark, desaturated
+   * accent colors (see --accent above) wash out to gray at that same mix
+   * against a near-white background and need substantially more to read as
+   * a warm/cool tint instead of a flat smudge. */
+  --ambient-fog-mix: 20%;
+  --ambient-ember-mix-1: 65%;
+  --ambient-ember-mix-2: 45%;
+  --panel-atmosphere-mix: 10%;
+  --ambient-ember-blur: 6px;
+  --ambient-ember-opacity: 0.6;
 }
 
 /* Light mode — set by ThemeToggle (Profile > Options) via a data-theme
@@ -48,6 +60,16 @@
   --card-border: rgba(32, 26, 18, 0.16);
   --surface-sunken: rgba(32, 26, 18, 0.05);
   --chip-tint: rgba(32, 26, 18, 0.035);
+  --ambient-fog-mix: 42%;
+  --ambient-ember-mix-1: 100%;
+  --ambient-ember-mix-2: 80%;
+  --panel-atmosphere-mix: 24%;
+  /* Less blur and a higher opacity ceiling than dark mode — even fully
+   * opaque pigment (mix 100%) still reads faint once blurred and capped by
+   * the wrapper opacity, and light mode has far less contrast margin to
+   * spare than dark mode does against near-black. */
+  --ambient-ember-blur: 3px;
+  --ambient-ember-opacity: 0.85;
 }
 
 @theme inline {
@@ -307,11 +329,11 @@
   border-radius: 9999px;
   background: radial-gradient(
     circle,
-    color-mix(in srgb, var(--accent) 65%, transparent) 0%,
-    color-mix(in srgb, var(--accent-glow) 45%, transparent) 45%,
+    color-mix(in srgb, var(--accent) var(--ambient-ember-mix-1), transparent) 0%,
+    color-mix(in srgb, var(--accent-glow) var(--ambient-ember-mix-2), transparent) 45%,
     transparent 75%
   );
-  filter: blur(6px);
+  filter: blur(var(--ambient-ember-blur));
   animation-name: ember-bloom-rise;
   animation-timing-function: ease-in-out;
   animation-iteration-count: infinite;
