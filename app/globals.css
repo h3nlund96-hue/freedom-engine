@@ -26,7 +26,7 @@
    * accent colors (see --accent above) wash out to gray at that same mix
    * against a near-white background and need substantially more to read as
    * a warm/cool tint instead of a flat smudge. */
-  --ambient-fog-mix: 20%;
+  --ambient-fog-mix: 34%;
   --ambient-ember-mix-1: 65%;
   --ambient-ember-mix-2: 45%;
   --panel-atmosphere-mix: 10%;
@@ -61,15 +61,15 @@
   --surface-sunken: rgba(32, 26, 18, 0.05);
   --chip-tint: rgba(32, 26, 18, 0.035);
   --ambient-fog-mix: 42%;
-  --ambient-ember-mix-1: 100%;
-  --ambient-ember-mix-2: 80%;
+  --ambient-ember-mix-1: 76%;
+  --ambient-ember-mix-2: 56%;
   --panel-atmosphere-mix: 24%;
-  /* Less blur and a higher opacity ceiling than dark mode — even fully
-   * opaque pigment (mix 100%) still reads faint once blurred and capped by
-   * the wrapper opacity, and light mode has far less contrast margin to
-   * spare than dark mode does against near-black. */
-  --ambient-ember-blur: 3px;
-  --ambient-ember-opacity: 0.85;
+  /* Slightly less blur than dark mode — fully opaque pigment still reads
+   * faint once blurred and capped by the wrapper opacity, and light mode
+   * has far less contrast margin to spare than dark mode does against
+   * near-black — but pull back from full punch, tuned too strong at first. */
+  --ambient-ember-blur: 5px;
+  --ambient-ember-opacity: 0.58;
 }
 
 @theme inline {
