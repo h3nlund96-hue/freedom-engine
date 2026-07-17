@@ -36,7 +36,7 @@ export default async function ProfilePage() {
   const barPercent = Math.round(xpData.fraction * 100);
 
   return (
-    <div className="relative flex min-h-full flex-1 flex-col overflow-hidden">
+    <div className="relative flex min-h-full flex-1 flex-col overflow-hidden pt-[env(safe-area-inset-top)]">
       <main className="relative mx-auto flex w-full max-w-2xl flex-1 flex-col gap-12 px-6 py-20 sm:px-8 sm:py-28 lg:max-w-3xl xl:max-w-4xl">
 
         <LocationHeader

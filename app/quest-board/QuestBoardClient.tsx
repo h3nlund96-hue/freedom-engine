@@ -281,33 +281,44 @@ function BuildRow({ build, questId, onChanged }: { build: Build; questId: string
             aria-hidden
           />
           <div className="min-w-0 flex-1">
-            <div className="flex items-center gap-2">
+            <div className="flex items-baseline gap-2">
               <span className="shrink-0 font-display text-[0.65rem] tabular-nums text-muted/40">
                 #{build.buildNumber}
               </span>
               <p
-                className={`text-xs leading-relaxed ${
+                className={`min-w-0 text-xs leading-relaxed ${
                   build.status === "completed" ? "text-foreground/45 line-through" : "text-foreground/80"
                 }`}
               >
                 {build.title}
               </p>
-              <StatusPill status={build.status} />
             </div>
           </div>
-          <div className="flex shrink-0 gap-1.5">
-            {build.status !== "completed" && (
-              <button
-                type="button"
-                onClick={() => updateBuild(build.id, questId, { status: "completed" }).then(onChanged).catch(() => {})}
-                className={`${smallBtn} text-accent/60 hover:text-accent/85`}
-              >
-                Complete
+          <div className="flex shrink-0 flex-col items-end gap-1.5">
+            <div className="flex gap-1.5">
+              {build.status === "available" && (
+                <button
+                  type="button"
+                  onClick={() => updateBuild(build.id, questId, { status: "active" }).then(onChanged).catch(() => {})}
+                  className={`${smallBtn} text-accent-glow/70 hover:text-accent-glow`}
+                >
+                  Activate
+                </button>
+              )}
+              {build.status === "active" && (
+                <button
+                  type="button"
+                  onClick={() => updateBuild(build.id, questId, { status: "completed" }).then(onChanged).catch(() => {})}
+                  className={`${smallBtn} text-accent/60 hover:text-accent/85`}
+                >
+                  Complete
+                </button>
+              )}
+              <button type="button" onClick={() => setEditing(true)} className={`${smallBtn} text-muted/50 hover:text-foreground/75`}>
+                Edit
               </button>
-            )}
-            <button type="button" onClick={() => setEditing(true)} className={`${smallBtn} text-muted/50 hover:text-foreground/75`}>
-              Edit
-            </button>
+            </div>
+            <StatusPill status={build.status} />
           </div>
         </li>
       )}
@@ -352,6 +363,7 @@ function QuestCard({
   const builds = quest.builds ?? [];
   const openBuilds = builds.filter((b) => b.status !== "completed");
   const completedBuilds = builds.filter((b) => b.status === "completed");
+  const hasActiveBuild = builds.some((b) => b.status === "active");
 
   async function handleDelete() {
     setDeleting(true);
@@ -390,7 +402,7 @@ function QuestCard({
             <p className="mb-1 text-[0.65rem] uppercase tracking-wide text-muted/35">{questlineTitle}</p>
           )}
           <div className="flex items-center gap-2">
-            <h4 className="font-display text-sm tracking-wide text-foreground/90">{quest.title}</h4>
+            <h4 className="min-w-0 font-display text-sm tracking-wide text-foreground/90">{quest.title}</h4>
             <StatusPill status={quest.status} />
           </div>
           {quest.description && <p className="mt-1 text-xs leading-relaxed text-muted/60">{quest.description}</p>}
@@ -405,7 +417,7 @@ function QuestCard({
               Activate
             </button>
           )}
-          {quest.status !== "completed" && (
+          {quest.status !== "completed" && !hasActiveBuild && (
             <button
               type="button"
               onClick={() => updateQuest(quest.id, questlineId, { status: "completed" }).then(onChanged).catch(() => {})}
