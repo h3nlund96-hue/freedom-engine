@@ -110,6 +110,25 @@ export function parseProposal(raw: unknown): EmberProposal | null {
         builds,
       };
     }
+    case "convert_idea": {
+      if (
+        !isNonEmptyString(r.ideaId) ||
+        !isNonEmptyString(r.ideaTitle) ||
+        (r.targetType !== "quest" && r.targetType !== "side_quest") ||
+        !isNonEmptyString(r.title)
+      ) {
+        return null;
+      }
+      return {
+        action: "convert_idea",
+        ideaId: r.ideaId,
+        ideaTitle: r.ideaTitle,
+        targetType: r.targetType,
+        title: r.title,
+        description: typeof r.description === "string" ? r.description : "",
+        questlineId: nonEmptyOrNull(r.questlineId),
+      };
+    }
     case "update_status":
       if (!isEntityType(r.entityType) || !isStatusValue(r.status) || !isNonEmptyString(r.entityId) || !isNonEmptyString(r.entityTitle)) {
         return null;
@@ -268,6 +287,26 @@ export const EMBER_FUNCTION_TOOLS = [
         },
       },
       required: ["questId", "questTitle", "builds"],
+    },
+  },
+  {
+    type: "function",
+    name: "propose_convert_idea",
+    description: `Propose converting an existing, not-yet-converted Idea into a new Quest or a new Side Quest. Only use an Idea listed under IDEAS YOU CAN PROPOSE CONVERTING, with its exact id — never invent one, and never one already converted. ${PROPOSAL_NOTE}`,
+    parameters: {
+      type: "object",
+      properties: {
+        ideaId: { type: "string", description: "Exact id from IDEAS YOU CAN PROPOSE CONVERTING." },
+        ideaTitle: { type: "string", description: "That Idea's title." },
+        targetType: { type: "string", enum: ["quest", "side_quest"] },
+        title: { type: "string", description: "Title for the resulting Quest or Side Quest — the Idea's title, refined if useful." },
+        description: { type: "string", description: "One sentence description." },
+        questlineId: {
+          type: "string",
+          description: 'Required only when targetType is "quest" — the best-fitting Questline id from AVAILABLE QUESTLINES, or an empty string if none fit well.',
+        },
+      },
+      required: ["ideaId", "ideaTitle", "targetType", "title", "description", "questlineId"],
     },
   },
   {

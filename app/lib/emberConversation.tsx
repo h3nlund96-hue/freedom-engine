@@ -33,6 +33,15 @@ export type EmberProposal =
       builds: { title: string; description: string }[];
     }
   | {
+      action: "convert_idea";
+      ideaId: string;
+      ideaTitle: string;
+      targetType: "quest" | "side_quest";
+      title: string;
+      description: string;
+      questlineId: string | null;
+    }
+  | {
       action: "update_status";
       entityType: EmberEntityType;
       entityId: string;

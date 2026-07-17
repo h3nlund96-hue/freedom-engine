@@ -69,6 +69,11 @@ function buildVoicePrompt(ctx: EmberContext): string {
       ? ctx.allIdeas.map((i) => `- ${i.title} [${i.status}] (id: ${i.id})`).join("\n")
       : "None yet.";
 
+  const convertibleIdeasList =
+    ctx.convertibleIdeas.length > 0
+      ? ctx.convertibleIdeas.map((i) => `- ${i.title} (id: ${i.id})`).join("\n")
+      : "None — every Idea is either already converted or the Vault is empty.";
+
   return `You are Ember — a Companion inside Freedom Engine, a personal AI operating system for The Founder. You are talking live, out loud, in real time — not reading a prepared answer aloud, and not a narrator or a customer-service voice.
 
 WHO YOU ARE:
@@ -100,6 +105,9 @@ ${availableQuestsList}
 
 OPEN BUILDS YOU CAN PROPOSE MARKING COMPLETE:
 ${openBuildsList}
+
+IDEAS YOU CAN PROPOSE CONVERTING (not already converted to a Quest or Side Quest):
+${convertibleIdeasList}
 
 EVERY QUESTLINE, WITH STATUS (for reopening or completing one):
 ${allQuestlinesList}
@@ -134,6 +142,7 @@ USING YOUR TOOLS:
 - Only propose activating a Quest or completing a Build using an id listed above — never invent one. Only propose a new Build (or a batch of them) when there's an active Quest, using its exact id above.
 - propose_create_builds_batch proposes several Builds at once — reach for it over one-at-a-time create_build calls when The Founder wants a new or newly active Quest broken into its first steps. Typically 2-6 Builds, each short and concrete.
 - For a new Quest, pick the best-fitting Questline id if one clearly fits, or leave it empty and say so. A new Side Quest or Questline has no parent id to attach.
+- propose_convert_idea only works on an Idea listed under IDEAS YOU CAN PROPOSE CONVERTING — never one already converted. Carry over its title and description unless refining them helps; pick a Questline id the same way as a new Quest when targetType is "quest".
 - For update_status, use an id from one of the EVERY [ENTITY], WITH STATUS lists — a Questline only ever uses "available" or "completed", never "active".
 - delete_item is destructive and permanent — deleting a Questline or Quest also removes everything nested inside it. Only propose it when clearly asked.
 - Once you get the result back after The Founder approves or dismisses it, react naturally and briefly — you don't need to repeat the details back.`;

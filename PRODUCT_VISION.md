@@ -74,7 +74,7 @@ Freedom Engine ships with one Companion for now — more will wake up in future 
 |---|---|---|
 | Ember | Direction, decisions, prioritization, protection of the vision — a single confident ally across all of Freedom Engine | Awake |
 
-Ember talks two ways — typed, or live and out loud in Presence mode (a real spoken back-and-forth, not text-to-speech bolted onto chat) — and either way it's the same ongoing conversation and the same ally. She can see the real state of the Quest System and propose ten kinds of action: creating a Quest, capturing an Idea, creating a Side Quest, creating a Questline, activating a Quest, completing a Build, creating a Build (one at a time or several at once, to break a Quest into its first steps), changing an item's status, or deleting one. Calling one of those only ever proposes it — nothing is written until The Founder approves the card on screen. Ember never acts on her own, in either channel.
+Ember talks two ways — typed, or live and out loud in Presence mode (a real spoken back-and-forth, not text-to-speech bolted onto chat) — and either way it's the same ongoing conversation and the same ally. She can see the real state of the Quest System and propose eleven kinds of action: creating a Quest, capturing an Idea, creating a Side Quest, creating a Questline, converting an existing Idea into a Quest or Side Quest, activating a Quest, completing a Build, creating a Build (one at a time or several at once, to break a Quest into its first steps), changing an item's status, or deleting one. Calling one of those only ever proposes it — nothing is written until The Founder approves the card on screen. Ember never acts on her own, in either channel.
 
 ### Companion Design Rules
 

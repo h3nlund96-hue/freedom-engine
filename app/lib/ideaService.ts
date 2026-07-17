@@ -144,7 +144,7 @@ export async function deleteIdea(id: string): Promise<void> {
 
 /** Convert an idea into a new Quest inside the given Questline. */
 export async function convertIdeaToQuest(
-  idea: Idea,
+  ideaId: string,
   questlineId: string,
   title: string,
   description: string
@@ -185,7 +185,7 @@ export async function convertIdeaToQuest(
       converted_to_type: "quest",
       converted_to_id: quest.id,
     })
-    .eq("id", idea.id);
+    .eq("id", ideaId);
 
   if (ideaError) throw new Error(ideaError.message);
 
@@ -194,7 +194,7 @@ export async function convertIdeaToQuest(
 
 /** Convert an idea into a new standalone Side Quest. */
 export async function convertIdeaToSideQuest(
-  idea: Idea,
+  ideaId: string,
   title: string,
   description: string
 ): Promise<{ id: string }> {
@@ -232,7 +232,7 @@ export async function convertIdeaToSideQuest(
       converted_to_type: "side_quest",
       converted_to_id: sideQuest.id,
     })
-    .eq("id", idea.id);
+    .eq("id", ideaId);
 
   if (ideaError) throw new Error(ideaError.message);
 
