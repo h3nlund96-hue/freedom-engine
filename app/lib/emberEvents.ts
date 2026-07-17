@@ -10,7 +10,8 @@
 export type EmberEventDetail =
   | { kind: "quest_completed"; title: string }
   | { kind: "build_completed"; title: string }
-  | { kind: "idea_created"; title: string };
+  | { kind: "idea_created"; title: string }
+  | { kind: "quest_system_changed" };
 
 const EVENT_NAME = "ember:event";
 

@@ -1,9 +1,5 @@
-import { ActiveQuest } from "./components/ActiveQuest";
-import { EmberGreeting } from "./components/EmberGreeting";
-import { FounderStatusBar } from "./components/FounderStatusBar";
-import { HQHeader } from "./components/HQHeader";
+import { HQLiveProgress } from "./components/HQLiveProgress";
 import { WorldCard } from "./components/WorldCard";
-import { getActiveQuest, getCurrentBuild } from "./data/freedomEngineProgress";
 import { getProgress } from "./lib/questService";
 
 const worldPlaces = [
@@ -39,49 +35,37 @@ const worldPlaces = [
 
 export default async function Home() {
   const progress = await getProgress();
-  const activeQuest = getActiveQuest(progress);
-  const currentBuild = activeQuest ? getCurrentBuild(activeQuest) : undefined;
 
   return (
-    <div className="relative flex min-h-full flex-1 flex-col overflow-hidden">
-      <FounderStatusBar progress={progress} />
+    <HQLiveProgress initialProgress={progress}>
+      {/* World navigation */}
+      <section className="space-y-8">
+        <div
+          className="animate-fade-up space-y-2"
+          style={{ animationDelay: "0.3s" }}
+        >
+          <h2 className="font-display text-2xl tracking-wide text-foreground/90">
+            Explore the World
+          </h2>
+        </div>
 
-      <main className="relative mx-auto flex w-full max-w-2xl flex-1 flex-col gap-14 px-6 py-14 sm:px-8 sm:py-20 lg:max-w-3xl xl:max-w-4xl">
-        <HQHeader title="AI Mastery HQ" />
-
-        <EmberGreeting activeQuestTitle={activeQuest?.title} activeBuildTitle={currentBuild?.title} />
-
-        <ActiveQuest progress={progress} />
-
-        {/* World navigation */}
-        <section className="space-y-8">
-          <div
-            className="animate-fade-up space-y-2"
-            style={{ animationDelay: "0.3s" }}
-          >
-            <h2 className="font-display text-2xl tracking-wide text-foreground/90">
-              Explore the World
-            </h2>
-          </div>
-
-          <nav
-            className="grid gap-5 sm:grid-cols-2"
-            aria-label="World navigation"
-          >
-            {worldPlaces.map((place, index) => (
-              <WorldCard
-                key={place.title}
-                icon={place.icon}
-                title={place.title}
-                description={place.description}
-                href={place.href}
-                glow={place.glow}
-                delay={0.42 + index * 0.1}
-              />
-            ))}
-          </nav>
-        </section>
-      </main>
-    </div>
+        <nav
+          className="grid gap-5 sm:grid-cols-2"
+          aria-label="World navigation"
+        >
+          {worldPlaces.map((place, index) => (
+            <WorldCard
+              key={place.title}
+              icon={place.icon}
+              title={place.title}
+              description={place.description}
+              href={place.href}
+              glow={place.glow}
+              delay={0.42 + index * 0.1}
+            />
+          ))}
+        </nav>
+      </section>
+    </HQLiveProgress>
   );
 }

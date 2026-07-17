@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import type {
   FreedomEngineProgress,
   Questline,
@@ -25,6 +25,7 @@ import {
   updateSideQuest,
   deleteSideQuest,
 } from "../lib/questMutationService";
+import { onEmberEvent } from "../lib/emberEvents";
 import { ConfirmDialog } from "../components/ConfirmDialog";
 
 /* ── SHARED BITS ──────────────────────────────────────────────────────────── */
@@ -1141,6 +1142,16 @@ export function QuestBoardClient({ initialProgress }: { initialProgress: Freedom
     const fresh = await getProgressClient();
     setProgress(fresh);
   }
+
+  // Ember can approve the exact same mutations from the floating widget or
+  // Hall of Embers, entirely outside this component's own buttons — this is
+  // the only way this page hears about it and refetches instead of showing
+  // stale state until a manual reload.
+  useEffect(() => {
+    return onEmberEvent((detail) => {
+      if (detail.kind === "quest_system_changed") onChanged();
+    });
+  }, []);
 
   const activeQuest = getActiveQuest(progress);
   const activeQuestline = activeQuest ? getActiveQuestline(progress, activeQuest) : undefined;
