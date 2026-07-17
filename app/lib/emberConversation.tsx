@@ -21,9 +21,17 @@ export type EmberDeletableEntityType = EmberEntityType | "idea";
 export type EmberProposal =
   | { action: "create_quest"; title: string; description: string; questlineId: string | null }
   | { action: "create_idea"; title: string; description: string }
+  | { action: "create_side_quest"; title: string; description: string }
+  | { action: "create_questline"; title: string; description: string }
   | { action: "activate_quest"; questId: string; questlineId: string; questTitle: string }
   | { action: "complete_build"; buildId: string; questId: string; buildTitle: string }
   | { action: "create_build"; questId: string; questTitle: string; title: string; description: string }
+  | {
+      action: "create_builds_batch";
+      questId: string;
+      questTitle: string;
+      builds: { title: string; description: string }[];
+    }
   | {
       action: "update_status";
       entityType: EmberEntityType;

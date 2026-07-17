@@ -5,7 +5,9 @@ import type { EmberProposal } from "../lib/emberConversation";
 import { createIdea, deleteIdea } from "../lib/ideaService";
 import {
   createQuest,
+  createQuestline,
   createBuild,
+  createSideQuest,
   getQuestlineOptions,
   updateQuestline,
   updateQuest,
@@ -38,12 +40,18 @@ function proposalHeading(proposal: EmberProposal): string {
       return "Proposed Quest";
     case "create_idea":
       return "Proposed Idea";
+    case "create_side_quest":
+      return "Proposed Side Quest";
+    case "create_questline":
+      return "Proposed Questline";
     case "activate_quest":
       return "Proposed: Activate Quest";
     case "complete_build":
       return "Proposed: Complete Build";
     case "create_build":
       return "Proposed Build";
+    case "create_builds_batch":
+      return "Proposed Builds";
     case "update_status":
       return proposal.status === "completed"
         ? "Proposed: Mark Complete"
@@ -59,8 +67,12 @@ function proposalTitle(proposal: EmberProposal): string {
   switch (proposal.action) {
     case "create_quest":
     case "create_idea":
+    case "create_side_quest":
+    case "create_questline":
     case "create_build":
       return proposal.title;
+    case "create_builds_batch":
+      return `${proposal.builds.length} Build${proposal.builds.length === 1 ? "" : "s"} for ${proposal.questTitle}`;
     case "activate_quest":
       return proposal.questTitle;
     case "complete_build":
@@ -75,7 +87,10 @@ function approveLabel(proposal: EmberProposal): string {
   switch (proposal.action) {
     case "create_quest":
     case "create_idea":
+    case "create_side_quest":
+    case "create_questline":
     case "create_build":
+    case "create_builds_batch":
       return "Approve & Create";
     case "activate_quest":
       return "Approve & Activate";
@@ -98,12 +113,18 @@ export function successLabel(proposal: EmberProposal): string {
       return `✓ Created Quest — "${proposal.title}"`;
     case "create_idea":
       return `✓ Created Idea — "${proposal.title}"`;
+    case "create_side_quest":
+      return `✓ Created Side Quest — "${proposal.title}"`;
+    case "create_questline":
+      return `✓ Created Questline — "${proposal.title}"`;
     case "activate_quest":
       return `✓ Activated Quest — "${proposal.questTitle}"`;
     case "complete_build":
       return `✓ Completed Build — "${proposal.buildTitle}"`;
     case "create_build":
       return `✓ Created Build — "${proposal.title}"`;
+    case "create_builds_batch":
+      return `✓ Created ${proposal.builds.length} Build${proposal.builds.length === 1 ? "" : "s"} for "${proposal.questTitle}"`;
     case "update_status":
       return `✓ "${proposal.entityTitle}" is now ${proposal.status}`;
     case "delete_item":
@@ -146,12 +167,23 @@ export function ProposalCard({
       } else if (proposal.action === "create_quest") {
         if (!questlineId) throw new Error("Choose a Questline first.");
         await createQuest(questlineId, proposal.title, proposal.description);
+      } else if (proposal.action === "create_side_quest") {
+        await createSideQuest(proposal.title, proposal.description);
+      } else if (proposal.action === "create_questline") {
+        await createQuestline(proposal.title, proposal.description);
       } else if (proposal.action === "activate_quest") {
         await updateQuest(proposal.questId, proposal.questlineId, { status: "active" });
       } else if (proposal.action === "complete_build") {
         await updateBuild(proposal.buildId, proposal.questId, { status: "completed" });
       } else if (proposal.action === "create_build") {
         await createBuild(proposal.questId, proposal.title, proposal.description);
+      } else if (proposal.action === "create_builds_batch") {
+        // Sequential, not Promise.all — each createBuild call reads the
+        // current max sort_order/build_number before inserting, so
+        // concurrent calls would race and could collide on the same values.
+        for (const build of proposal.builds) {
+          await createBuild(proposal.questId, build.title, build.description);
+        }
       } else if (proposal.action === "update_status") {
         if (proposal.entityType === "questline") {
           await updateQuestline(proposal.entityId, { status: proposal.status });
@@ -188,7 +220,11 @@ export function ProposalCard({
   }
 
   const description =
-    proposal.action === "create_quest" || proposal.action === "create_idea" || proposal.action === "create_build"
+    proposal.action === "create_quest" ||
+    proposal.action === "create_idea" ||
+    proposal.action === "create_side_quest" ||
+    proposal.action === "create_questline" ||
+    proposal.action === "create_build"
       ? proposal.description
       : "";
 
@@ -225,6 +261,20 @@ export function ProposalCard({
           </p>
         )}
       </div>
+
+      {proposal.action === "create_builds_batch" && (
+        <ol className="space-y-1.5 border-t border-accent-glow/[0.08] pt-3">
+          {proposal.builds.map((build, i) => (
+            <li key={i} className="flex gap-2">
+              <span className="shrink-0 font-display text-[0.65rem] tabular-nums text-muted/40">{i + 1}.</span>
+              <div className="min-w-0">
+                <p className="text-xs font-medium text-foreground/85">{build.title}</p>
+                {build.description && <p className="text-[0.7rem] leading-relaxed text-muted/55">{build.description}</p>}
+              </div>
+            </li>
+          ))}
+        </ol>
+      )}
 
       {proposal.action === "create_quest" &&
         (questlineOptions.length > 0 ? (

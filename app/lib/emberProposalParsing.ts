@@ -49,6 +49,20 @@ export function parseProposal(raw: unknown): EmberProposal | null {
         title: r.title,
         description: typeof r.description === "string" ? r.description : "",
       };
+    case "create_side_quest":
+      if (!isNonEmptyString(r.title)) return null;
+      return {
+        action: "create_side_quest",
+        title: r.title,
+        description: typeof r.description === "string" ? r.description : "",
+      };
+    case "create_questline":
+      if (!isNonEmptyString(r.title)) return null;
+      return {
+        action: "create_questline",
+        title: r.title,
+        description: typeof r.description === "string" ? r.description : "",
+      };
     case "activate_quest":
       if (!isNonEmptyString(r.questId) || !isNonEmptyString(r.questlineId) || !isNonEmptyString(r.questTitle)) {
         return null;
@@ -80,6 +94,22 @@ export function parseProposal(raw: unknown): EmberProposal | null {
         title: r.title,
         description: typeof r.description === "string" ? r.description : "",
       };
+    case "create_builds_batch": {
+      if (!isNonEmptyString(r.questId) || !isNonEmptyString(r.questTitle) || !Array.isArray(r.builds)) return null;
+      const builds = r.builds
+        .filter((b): b is Record<string, unknown> => !!b && typeof b === "object" && isNonEmptyString((b as Record<string, unknown>).title))
+        .map((b) => ({
+          title: b.title as string,
+          description: typeof b.description === "string" ? b.description : "",
+        }));
+      if (builds.length === 0) return null;
+      return {
+        action: "create_builds_batch",
+        questId: r.questId,
+        questTitle: r.questTitle,
+        builds,
+      };
+    }
     case "update_status":
       if (!isEntityType(r.entityType) || !isStatusValue(r.status) || !isNonEmptyString(r.entityId) || !isNonEmptyString(r.entityTitle)) {
         return null;
@@ -148,6 +178,32 @@ export const EMBER_FUNCTION_TOOLS = [
   },
   {
     type: "function",
+    name: "propose_create_side_quest",
+    description: `Propose creating a new Side Quest — a standalone item, not nested under any Questline or Quest. ${PROPOSAL_NOTE}`,
+    parameters: {
+      type: "object",
+      properties: {
+        title: { type: "string", description: "Short, concrete Side Quest title." },
+        description: { type: "string", description: "One sentence description." },
+      },
+      required: ["title", "description"],
+    },
+  },
+  {
+    type: "function",
+    name: "propose_create_questline",
+    description: `Propose creating a new Questline — a container Quests can later be added to. ${PROPOSAL_NOTE}`,
+    parameters: {
+      type: "object",
+      properties: {
+        title: { type: "string", description: "Short, concrete Questline title." },
+        description: { type: "string", description: "One sentence description." },
+      },
+      required: ["title", "description"],
+    },
+  },
+  {
+    type: "function",
     name: "propose_activate_quest",
     description: `Propose activating a Quest that isn't already active or completed. Only use a Quest listed under QUESTS YOU CAN PROPOSE ACTIVATING, with its exact id — never invent one. ${PROPOSAL_NOTE}`,
     parameters: {
@@ -187,6 +243,31 @@ export const EMBER_FUNCTION_TOOLS = [
         description: { type: "string", description: "One sentence description." },
       },
       required: ["questId", "questTitle", "title", "description"],
+    },
+  },
+  {
+    type: "function",
+    name: "propose_create_builds_batch",
+    description: `Propose several new Builds at once for the active Quest — useful when breaking a freshly created or newly active Quest into its first concrete steps. Only use this when there is an active Quest, using its exact id — never invent one. Typically 2-6 Builds; each one short and concrete. ${PROPOSAL_NOTE}`,
+    parameters: {
+      type: "object",
+      properties: {
+        questId: { type: "string", description: "The Active Quest's exact id." },
+        questTitle: { type: "string", description: "The Active Quest's title." },
+        builds: {
+          type: "array",
+          description: "The proposed Builds, in the order they should be worked.",
+          items: {
+            type: "object",
+            properties: {
+              title: { type: "string", description: "Short, concrete Build title." },
+              description: { type: "string", description: "One sentence description." },
+            },
+            required: ["title", "description"],
+          },
+        },
+      },
+      required: ["questId", "questTitle", "builds"],
     },
   },
   {
