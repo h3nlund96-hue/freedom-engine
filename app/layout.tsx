@@ -20,6 +20,15 @@ export const metadata: Metadata = {
   title: "AI Mastery HQ — Freedom Engine",
   description:
     "Your personal headquarters in the Freedom Engine world. Build, explore, return.",
+  // Lets "Add to Home Screen" launch as a real standalone app (no Safari
+  // chrome at all) instead of a bookmarked tab — that's the only mode where
+  // iOS actually hands the notch/status-bar area to the page's own content
+  // instead of drawing its own legibility scrim over it.
+  appleWebApp: {
+    capable: true,
+    statusBarStyle: "black-translucent",
+    title: "Freedom Engine",
+  },
 };
 
 // Pinch-zoom disabled by explicit choice, on top of the input font-size fix
@@ -51,6 +60,10 @@ export default function RootLayout({
       className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
     >
       <head>
+        {/* Next's appleWebApp metadata field emits the newer unprefixed
+            mobile-web-app-capable tag; iOS's home-screen standalone mode has
+            historically required this apple-prefixed one specifically. */}
+        <meta name="apple-mobile-web-app-capable" content="yes" />
         {/* Applies the stored light/dark preference before first paint —
             avoids a flash of the wrong theme while React hydrates. */}
         <script dangerouslySetInnerHTML={{ __html: THEME_INIT_SCRIPT }} />
