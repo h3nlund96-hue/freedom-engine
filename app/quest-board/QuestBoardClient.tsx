@@ -281,7 +281,7 @@ function BuildRow({ build, questId, onChanged }: { build: Build; questId: string
             aria-hidden
           />
           <div className="min-w-0 flex-1">
-            <div className="flex items-center gap-2">
+            <div className="flex items-baseline gap-2">
               <span className="shrink-0 font-display text-[0.65rem] tabular-nums text-muted/40">
                 #{build.buildNumber}
               </span>
@@ -292,31 +292,33 @@ function BuildRow({ build, questId, onChanged }: { build: Build; questId: string
               >
                 {build.title}
               </p>
-              <StatusPill status={build.status} />
             </div>
           </div>
-          <div className="flex shrink-0 gap-1.5">
-            {build.status === "available" && (
-              <button
-                type="button"
-                onClick={() => updateBuild(build.id, questId, { status: "active" }).then(onChanged).catch(() => {})}
-                className={`${smallBtn} text-accent-glow/70 hover:text-accent-glow`}
-              >
-                Activate
+          <div className="flex shrink-0 flex-col items-end gap-1.5">
+            <div className="flex gap-1.5">
+              {build.status === "available" && (
+                <button
+                  type="button"
+                  onClick={() => updateBuild(build.id, questId, { status: "active" }).then(onChanged).catch(() => {})}
+                  className={`${smallBtn} text-accent-glow/70 hover:text-accent-glow`}
+                >
+                  Activate
+                </button>
+              )}
+              {build.status === "active" && (
+                <button
+                  type="button"
+                  onClick={() => updateBuild(build.id, questId, { status: "completed" }).then(onChanged).catch(() => {})}
+                  className={`${smallBtn} text-accent/60 hover:text-accent/85`}
+                >
+                  Complete
+                </button>
+              )}
+              <button type="button" onClick={() => setEditing(true)} className={`${smallBtn} text-muted/50 hover:text-foreground/75`}>
+                Edit
               </button>
-            )}
-            {build.status === "active" && (
-              <button
-                type="button"
-                onClick={() => updateBuild(build.id, questId, { status: "completed" }).then(onChanged).catch(() => {})}
-                className={`${smallBtn} text-accent/60 hover:text-accent/85`}
-              >
-                Complete
-              </button>
-            )}
-            <button type="button" onClick={() => setEditing(true)} className={`${smallBtn} text-muted/50 hover:text-foreground/75`}>
-              Edit
-            </button>
+            </div>
+            <StatusPill status={build.status} />
           </div>
         </li>
       )}
