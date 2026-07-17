@@ -182,7 +182,7 @@ export function EmberPanel() {
               }}
               disabled={!connected}
               placeholder={connected ? "Or type instead of talking…" : "Connecting…"}
-              className="flex-1 bg-transparent text-sm text-foreground/85 placeholder:text-muted/35 focus:outline-none disabled:opacity-50"
+              className="flex-1 bg-transparent text-base sm:text-sm text-foreground/85 placeholder:text-muted/35 focus:outline-none disabled:opacity-50"
             />
           </div>
 
@@ -298,7 +298,7 @@ export function EmberPanel() {
                 }}
                 disabled={loading}
                 placeholder="Ask Ember, or just start talking…"
-                className="flex-1 bg-transparent text-sm text-foreground/85 placeholder:text-muted/35 focus:outline-none disabled:opacity-50"
+                className="flex-1 bg-transparent text-base sm:text-sm text-foreground/85 placeholder:text-muted/35 focus:outline-none disabled:opacity-50"
               />
               <button
                 type="button"

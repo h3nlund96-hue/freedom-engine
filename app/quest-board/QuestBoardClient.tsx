@@ -30,8 +30,11 @@ import { ConfirmDialog } from "../components/ConfirmDialog";
 
 /* ── SHARED BITS ──────────────────────────────────────────────────────────── */
 
+// text-base (16px) on mobile — iOS Safari force-zooms the page on focus for
+// any text input/textarea/select under that size. sm: restores the
+// original compact size once the viewport is wide enough that this can't happen.
 const inputClass =
-  "w-full rounded-sm border border-card-border bg-surface-sunken px-3 py-2 text-xs text-foreground/90 placeholder:text-muted/35 focus:outline-none focus:ring-1 focus:ring-accent/30";
+  "w-full rounded-sm border border-card-border bg-surface-sunken px-3 py-2 text-base sm:text-xs text-foreground/90 placeholder:text-muted/35 focus:outline-none focus:ring-1 focus:ring-accent/30";
 const smallBtn =
   "rounded-sm px-2.5 py-1 font-display text-[0.58rem] tracking-[0.1em] uppercase transition-colors duration-300 disabled:cursor-not-allowed disabled:opacity-40";
 
@@ -862,7 +865,7 @@ function QuestsTab({ questlines, onChanged }: { questlines: Questline[]; onChang
           <select
             value={filterQuestlineId}
             onChange={(e) => setFilterQuestlineId(e.target.value)}
-            className="cursor-pointer rounded-sm border border-card-border bg-surface-sunken px-2.5 py-1 font-display text-[0.58rem] uppercase tracking-wide text-muted/60 focus:outline-none focus:ring-1 focus:ring-accent/30"
+            className="cursor-pointer rounded-sm border border-card-border bg-surface-sunken px-2.5 py-1 font-display text-base sm:text-[0.58rem] uppercase tracking-wide text-muted/60 focus:outline-none focus:ring-1 focus:ring-accent/30"
           >
             <option value="all">All Questlines</option>
             {questlineOptions.map((ql) => (
