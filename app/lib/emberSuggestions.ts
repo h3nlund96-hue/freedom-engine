@@ -14,16 +14,16 @@ export interface ActiveInfo {
 export function buildSuggestedQuestions(info: ActiveInfo | null): string[] {
   if (info?.questTitle && info?.buildTitle) {
     return [
-      `What's blocking ${info.buildTitle}?`,
-      `Mark ${info.buildTitle} as complete`,
-      `Generate the next Build for ${info.questTitle}`,
+      `What's blocking "${info.buildTitle}"?`,
+      `Mark "${info.buildTitle}" as complete`,
+      `Generate the next Build for "${info.questTitle}"`,
       "Capture this as an idea",
     ];
   }
 
   if (info?.questTitle) {
     return [
-      `Generate the next Build for ${info.questTitle}`,
+      `Generate the next Build for "${info.questTitle}"`,
       "Activate a different Quest",
       "What is the smallest useful next step?",
       "Capture this as an idea",
