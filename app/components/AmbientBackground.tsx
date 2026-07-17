@@ -65,7 +65,7 @@ export function AmbientBackground() {
             left: bank.left,
             width: bank.size,
             height: bank.size,
-            background: `radial-gradient(ellipse at center, color-mix(in srgb, var(--${bank.tint}) 16%, transparent) 0%, transparent 70%)`,
+            background: `radial-gradient(ellipse at center, color-mix(in srgb, var(--${bank.tint}) var(--ambient-fog-mix), transparent) 0%, transparent 70%)`,
             opacity: `calc(var(--ambient-intensity) * ${bank.peak})`,
             animationDuration: bank.duration,
             animationDelay: bank.delay,
@@ -73,7 +73,7 @@ export function AmbientBackground() {
         />
       ))}
 
-      <div className="absolute inset-0" style={{ opacity: "calc(var(--ambient-intensity) * 0.6)" }}>
+      <div className="absolute inset-0" style={{ opacity: "calc(var(--ambient-intensity) * var(--ambient-ember-opacity))" }}>
         {EMBER_BLOOMS.map((bloom, i) => (
           <div
             key={i}
