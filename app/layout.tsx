@@ -27,11 +27,17 @@ export const metadata: Metadata = {
 // iOS auto-zoom-on-focus — this additionally blocks intentional pinch
 // gestures, which is a real accessibility tradeoff (WCAG 1.4.4 expects
 // users to be able to zoom) accepted knowingly for this personal app.
+// viewportFit: "cover" lets the page's own background extend under the
+// notch/status bar instead of Safari reserving that strip with its own
+// chrome color — paired with the safe-area padding on <body> below so
+// visible content still lands exactly where it did before, just with the
+// ambient background now filling in behind it.
 export const viewport: Viewport = {
   width: "device-width",
   initialScale: 1,
   maximumScale: 1,
   userScalable: false,
+  viewportFit: "cover",
 };
 
 export default function RootLayout({
@@ -49,7 +55,7 @@ export default function RootLayout({
             avoids a flash of the wrong theme while React hydrates. */}
         <script dangerouslySetInnerHTML={{ __html: THEME_INIT_SCRIPT }} />
       </head>
-      <body className="min-h-full flex flex-col bg-background text-foreground">
+      <body className="min-h-full flex flex-col bg-background pt-[env(safe-area-inset-top)] text-foreground">
         <AmbientBackground />
         <EmberProvider>
           {children}
