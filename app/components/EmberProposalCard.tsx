@@ -18,6 +18,7 @@ import {
   type QuestlineSummary,
 } from "../lib/questMutationService";
 import { CornerMarks } from "./CornerMarks";
+import { emitEmberEvent } from "../lib/emberEvents";
 
 /** The proposal card Ember attaches to a message — reused in both the
  * floating widget and the Hall of Embers room. Nothing is ever written to
@@ -174,6 +175,11 @@ export function ProposalCard({
           await deleteIdea(proposal.entityId);
         }
       }
+      // Ember's approved actions write straight to Supabase from this card —
+      // wherever the Quest Board or Ember's own context is already mounted,
+      // this is the only signal they get to refetch instead of showing
+      // stale state until the next full page load.
+      emitEmberEvent({ kind: "quest_system_changed" });
       onResolve("created");
     } catch (err) {
       setActionError(err instanceof Error ? err.message : "Could not do this. Try again.");

@@ -13,6 +13,7 @@ import {
   convertIdeaToSideQuest,
 } from "../lib/ideaService";
 import { getQuestlineOptions, type QuestlineSummary } from "../lib/questMutationService";
+import { onEmberEvent } from "../lib/emberEvents";
 import { ConfirmDialog } from "../components/ConfirmDialog";
 import { IdeaDetailModal } from "./IdeaDetailModal";
 
@@ -64,6 +65,24 @@ export function VaultClient() {
       })
       .catch(() => setError("The Vault could not be opened. Try again in a moment."))
       .finally(() => setLoading(false));
+  }, []);
+
+  // Ember can capture an Idea (or convert one into a Quest/Side Quest) from
+  // the floating widget or Hall of Embers — entirely outside this
+  // component's own buttons. No loading state here: this is a silent
+  // background refresh, not the initial open.
+  useEffect(() => {
+    return onEmberEvent((detail) => {
+      if (detail.kind !== "quest_system_changed") return;
+      Promise.all([getIdeas(), getQuestlineOptions().catch(() => [])])
+        .then(([ideaList, questlines]) => {
+          setIdeas(ideaList);
+          setQuestlineOptions(questlines);
+        })
+        .catch(() => {
+          // Keep showing the last known state — the next successful event will catch up.
+        });
+    });
   }, []);
 
   async function handleSeal(title: string, description: string, status: IdeaStatus): Promise<boolean> {

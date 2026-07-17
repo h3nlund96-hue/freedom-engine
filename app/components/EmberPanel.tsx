@@ -6,6 +6,7 @@ import { getProgressClient } from "../lib/questMutationService";
 import { getActiveQuest, getCurrentBuild } from "../data/freedomEngineProgress";
 import { buildSuggestedQuestions, type ActiveInfo } from "../lib/emberSuggestions";
 import { pairHistory } from "../lib/emberHistory";
+import { onEmberEvent } from "../lib/emberEvents";
 import { ProposalCard, successLabel } from "./EmberProposalCard";
 import { EmberGlyph } from "./EmberGlyph";
 import { useTypewriterReveal } from "../lib/useTypewriterReveal";
@@ -55,15 +56,25 @@ export function EmberPanel() {
   }, [presenceMode, connect, disconnect]);
 
   useEffect(() => {
-    getProgressClient()
-      .then((progress) => {
-        const quest = getActiveQuest(progress);
-        const build = quest ? getCurrentBuild(quest) : undefined;
-        setActiveInfo({ questTitle: quest?.title, buildTitle: build?.title });
-      })
-      .catch(() => {
-        // Leave null — the generic suggestions below still work fine.
-      });
+    function refreshActiveInfo() {
+      getProgressClient()
+        .then((progress) => {
+          const quest = getActiveQuest(progress);
+          const build = quest ? getCurrentBuild(quest) : undefined;
+          setActiveInfo({ questTitle: quest?.title, buildTitle: build?.title });
+        })
+        .catch(() => {
+          // Leave the previous value — the generic suggestions below still work fine.
+        });
+    }
+    refreshActiveInfo();
+    // Ember's own approved proposals (activate a Quest, complete a Build)
+    // change what "active" means mid-conversation — without this, the next
+    // suggested question keeps referencing whatever was active when this
+    // panel first mounted.
+    return onEmberEvent((detail) => {
+      if (detail.kind === "quest_system_changed") refreshActiveInfo();
+    });
   }, []);
 
   const lastMsg = messages[messages.length - 1];
