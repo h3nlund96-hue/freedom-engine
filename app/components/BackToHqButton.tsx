@@ -21,9 +21,8 @@ export function BackToHqButton() {
       href="/"
       aria-label="Return to AI Mastery HQ"
       title="AI Mastery HQ"
-      className="group fixed bottom-8 left-8 z-40 flex size-14 items-center justify-center rounded-full border border-accent/35 bg-surface shadow-[0_8px_28px_rgba(0,0,0,0.6)] transition-colors duration-300 hover:border-accent/55"
+      className="group fixed bottom-8 left-8 z-40 flex size-14 items-center justify-center rounded-full border border-accent/35 bg-surface/40 shadow-[0_8px_28px_rgba(0,0,0,0.5)] backdrop-blur-sm transition-colors duration-300 hover:border-accent/55"
     >
-      <div className="pointer-events-none absolute inset-0 rounded-full bg-black/25" aria-hidden />
       <svg
         viewBox="0 0 24 24"
         fill="none"
