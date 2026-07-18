@@ -19,8 +19,8 @@ import { isProactiveEnabled, onProactiveChange } from "../lib/emberPreferences";
  */
 
 // Only shown on these routes — Hall of Embers already has Ember front and
-// center, and the widget would be noise on Constitution/Profile/Login.
-const WIDGET_PATHS = new Set(["/", "/quest-board", "/idea-vault"]);
+// center, and the widget would be noise on Profile/Login.
+const WIDGET_PATHS = new Set(["/", "/quest-board", "/idea-vault", "/constitution"]);
 
 // Short, punchy — praise, not a paragraph.
 const QUEST_COMPLETE_NOTES = ["Quest complete.", "Well done, Founder.", "Nice work.", "Quest closed. On to the next."];
@@ -176,12 +176,17 @@ export function EmberWidget() {
 
       {hasOpenedOnce && (
         <div
-          className={`fixed bottom-28 right-8 z-40 w-[min(480px,calc(100vw-3rem))] max-h-[75vh] origin-bottom-right overflow-hidden rounded-md border border-card-border transition-all duration-300 ease-out ${
-            open ? "scale-100 opacity-100" : "pointer-events-none scale-75 opacity-0"
+          className={`fixed bottom-28 right-8 z-40 max-h-[75vh] overflow-hidden rounded-md border border-card-border transition-all duration-500 ease-out ${
+            open ? "max-w-[min(480px,calc(100vw-3rem))] opacity-100" : "pointer-events-none max-w-0 opacity-0"
           }`}
           aria-hidden={!open}
         >
-          <div className="relative flex max-h-[75vh] flex-col overflow-hidden">
+          {/* Fixed-width inner box — the outer wrapper's max-w-0 → max-w-[...]
+              transition is what stretches the panel open, the same way the
+              orb's message bubble stretches its own max-width; this inner
+              box just needs to render at full size throughout, not squeeze
+              itself during the animation. */}
+          <div className="relative flex max-h-[75vh] w-[min(480px,calc(100vw-3rem))] flex-col overflow-hidden">
             <div className="absolute inset-0 bg-linear-to-br from-surface-raised to-surface" />
             <div
               className="pointer-events-none absolute inset-0 rounded-md"
