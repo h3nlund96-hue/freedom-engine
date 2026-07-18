@@ -21,14 +21,23 @@ export function BackToHqButton() {
       href="/"
       aria-label="Return to AI Mastery HQ"
       title="AI Mastery HQ"
-      className="group fixed bottom-8 left-8 z-40 flex size-14 items-center justify-center rounded-full border border-accent/25 bg-surface shadow-[0_8px_28px_rgba(0,0,0,0.5)] transition-colors duration-300 hover:border-accent/45"
+      className="group fixed bottom-8 left-8 z-40 flex size-14 items-center justify-center rounded-full border border-accent/35 bg-surface shadow-[0_8px_28px_rgba(0,0,0,0.6)] transition-colors duration-300 hover:border-accent/55"
     >
-      <span
-        className="font-display text-lg text-accent/80 transition-transform duration-300 group-hover:-translate-x-0.5 group-hover:text-accent"
+      <div className="pointer-events-none absolute inset-0 rounded-full bg-black/25" aria-hidden />
+      <svg
+        viewBox="0 0 24 24"
+        fill="none"
         aria-hidden
+        className="relative h-6 w-6 text-accent/85 transition-transform duration-300 group-hover:-translate-x-0.5 group-hover:text-accent"
       >
-        ←
-      </span>
+        <path
+          d="M19 12H5M5 12L11 6M5 12L11 18"
+          stroke="currentColor"
+          strokeWidth="2.75"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+        />
+      </svg>
     </Link>
   );
 }
