@@ -40,9 +40,10 @@ const COLLAPSE_DURATION_MS = 450;
 export function EmberWidget() {
   const pathname = usePathname();
   const [open, setOpen] = useState(false);
-  // The panel stays mounted once opened (rather than unmounting on close) so
-  // the fold-out/fold-in transition has something to animate — closing it
-  // just scales/fades it back down into the orb instead of vanishing.
+  // The panel content stays mounted once opened (rather than unmounting on
+  // close) so its own state — draft text, history drawer, Presence mode —
+  // survives closing and reopening, and so it's ready to fade in the moment
+  // the orb finishes morphing into the panel shape.
   const [hasOpenedOnce, setHasOpenedOnce] = useState(false);
   const [bubbleText, setBubbleText] = useState<string | null>(null);
   const [expanded, setExpanded] = useState(false);
@@ -135,58 +136,66 @@ export function EmberWidget() {
   }
 
   return (
-    <>
-      <div className="fixed bottom-8 right-8 z-40 flex justify-end">
-        <div className="flex h-16 items-center rounded-full border border-accent-glow/25 bg-surface shadow-[0_8px_28px_rgba(0,0,0,0.5)]">
+    <div className="fixed bottom-8 right-8 z-40 flex items-center justify-end gap-3">
+      {/* Message pill — a separate, secondary bit of chrome next to the orb;
+          only ever shown while closed. */}
+      {showBubble && (
+        <div className="flex h-12 items-center rounded-full border border-accent-glow/20 bg-surface pl-4 shadow-[0_8px_20px_rgba(0,0,0,0.45)]">
           <button
             type="button"
-            onClick={toggleOpen}
-            aria-label={open ? "Close Ember" : "Ask Ember"}
-            aria-expanded={open}
-            className="flex size-16 shrink-0 items-center justify-center rounded-full"
+            onClick={handleOpenPanel}
+            className={`truncate text-left text-sm leading-relaxed text-foreground/85 transition-all duration-500 ease-out ${
+              expanded ? "max-w-[min(300px,calc(100vw-11rem))] pr-2 opacity-100" : "max-w-0 pr-0 opacity-0"
+            }`}
           >
-            {open ? <span className="font-display text-base text-muted/70">✕</span> : <EmberGlyph className="h-14 w-14" />}
+            {bubbleText}
           </button>
-
-          {showBubble && (
-            <>
-              <button
-                type="button"
-                onClick={handleOpenPanel}
-                className={`truncate text-left text-sm leading-relaxed text-foreground/85 transition-all duration-500 ease-out ${
-                  expanded ? "max-w-[min(340px,calc(100vw-8rem))] pr-2 opacity-100" : "max-w-0 pr-0 opacity-0"
-                }`}
-              >
-                {bubbleText}
-              </button>
-              <button
-                type="button"
-                onClick={collapseThenClear}
-                aria-label="Dismiss"
-                className={`shrink-0 overflow-hidden font-display text-xs text-muted/40 transition-all duration-500 ease-out hover:text-foreground/70 ${
-                  expanded ? "mr-4 max-w-4 opacity-100" : "mr-0 max-w-0 opacity-0"
-                }`}
-              >
-                ✕
-              </button>
-            </>
-          )}
+          <button
+            type="button"
+            onClick={collapseThenClear}
+            aria-label="Dismiss"
+            className={`shrink-0 overflow-hidden font-display text-xs text-muted/40 transition-all duration-500 ease-out hover:text-foreground/70 ${
+              expanded ? "mr-4 max-w-4 opacity-100" : "mr-0 max-w-0 opacity-0"
+            }`}
+          >
+            ✕
+          </button>
         </div>
-      </div>
+      )}
 
-      {hasOpenedOnce && (
-        <div
-          className={`fixed bottom-28 right-8 z-40 max-h-[75vh] overflow-hidden rounded-md border border-card-border transition-all duration-500 ease-out ${
-            open ? "max-w-[min(480px,calc(100vw-3rem))] opacity-100" : "pointer-events-none max-w-0 opacity-0"
+      {/* The orb itself — this same box morphs directly into the panel when
+          opened (width/height/border-radius all transition together)
+          instead of a separate panel appearing next to it. */}
+      <div
+        className={`relative overflow-hidden border bg-surface shadow-[0_8px_28px_rgba(0,0,0,0.5)] transition-all duration-500 ease-out ${
+          open
+            ? "h-[70vh] max-h-[70vh] w-[min(480px,calc(100vw-3rem))] rounded-md border-card-border"
+            : "h-16 w-16 rounded-full border-accent-glow/25"
+        }`}
+      >
+        {/* Orb face — hidden as soon as opening starts. */}
+        <button
+          type="button"
+          onClick={toggleOpen}
+          aria-label="Ask Ember"
+          aria-expanded={open}
+          className={`absolute inset-0 flex items-center justify-center transition-opacity duration-200 ${
+            open ? "pointer-events-none opacity-0" : "opacity-100"
           }`}
-          aria-hidden={!open}
         >
-          {/* Fixed-width inner box — the outer wrapper's max-w-0 → max-w-[...]
-              transition is what stretches the panel open, the same way the
-              orb's message bubble stretches its own max-width; this inner
-              box just needs to render at full size throughout, not squeeze
-              itself during the animation. */}
-          <div className="relative flex max-h-[75vh] w-[min(480px,calc(100vw-3rem))] flex-col overflow-hidden">
+          <EmberGlyph className="h-14 w-14" />
+        </button>
+
+        {/* Panel face — mounted once opened the first time and left mounted
+            afterward, so conversation state (draft text, history drawer,
+            Presence mode) survives closing and reopening; fades in once
+            there's room to actually show it. */}
+        {hasOpenedOnce && (
+          <div
+            className={`absolute inset-0 flex w-[min(480px,calc(100vw-3rem))] flex-col overflow-hidden transition-opacity duration-200 ${
+              open ? "opacity-100" : "pointer-events-none opacity-0"
+            }`}
+          >
             <div className="absolute inset-0 bg-linear-to-br from-surface-raised to-surface" />
             <div
               className="pointer-events-none absolute inset-0 rounded-md"
@@ -196,13 +205,21 @@ export function EmberWidget() {
             <div className="relative flex items-center gap-2.5 border-b border-card-border px-5 py-4">
               <EmberGlyph className="h-7 w-7" />
               <span className="font-display text-base tracking-wide text-foreground/90">Ember</span>
+              <button
+                type="button"
+                onClick={toggleOpen}
+                aria-label="Close Ember"
+                className="ml-auto font-display text-xs text-muted/50 transition-colors duration-300 hover:text-foreground/80"
+              >
+                ✕
+              </button>
             </div>
-            <div className="relative overflow-y-auto px-5 py-5">
+            <div className="relative flex-1 overflow-y-auto px-5 py-5">
               <EmberPanel />
             </div>
           </div>
-        </div>
-      )}
-    </>
+        )}
+      </div>
+    </div>
   );
 }
