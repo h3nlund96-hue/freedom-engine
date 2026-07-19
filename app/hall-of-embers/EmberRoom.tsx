@@ -138,7 +138,7 @@ export function EmberRoom() {
 
   return (
     <div
-      className={`relative mx-auto flex w-full max-w-3xl flex-1 flex-col items-center gap-7 px-6 py-10 sm:px-8 ${
+      className={`relative mx-auto flex w-full max-w-3xl flex-1 flex-col items-center gap-7 px-6 pt-10 pb-28 sm:px-8 sm:pb-10 ${
         presenceMode ? "justify-center" : ""
       }`}
     >
