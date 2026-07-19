@@ -19,8 +19,8 @@ import { isProactiveEnabled, onProactiveChange } from "../lib/emberPreferences";
  */
 
 // Only shown on these routes — Hall of Embers already has Ember front and
-// center, and the widget would be noise on Constitution/Profile/Login.
-const WIDGET_PATHS = new Set(["/", "/quest-board", "/idea-vault"]);
+// center, and the widget would be noise on Profile/Login.
+const WIDGET_PATHS = new Set(["/", "/quest-board", "/idea-vault", "/constitution"]);
 
 // Short, punchy — praise, not a paragraph.
 const QUEST_COMPLETE_NOTES = ["Quest complete.", "Well done, Founder.", "Nice work.", "Quest closed. On to the next."];
@@ -40,6 +40,10 @@ const COLLAPSE_DURATION_MS = 450;
 export function EmberWidget() {
   const pathname = usePathname();
   const [open, setOpen] = useState(false);
+  // The panel stays mounted once opened (rather than unmounting on close) so
+  // the fold-out/fold-in transition has something to animate — closing it
+  // just scales/fades it back down into the orb instead of vanishing.
+  const [hasOpenedOnce, setHasOpenedOnce] = useState(false);
   const [bubbleText, setBubbleText] = useState<string | null>(null);
   const [expanded, setExpanded] = useState(false);
   const [lastBubbleText, setLastBubbleText] = useState<string | null>(null);
@@ -121,7 +125,13 @@ export function EmberWidget() {
 
   function handleOpenPanel() {
     setOpen(true);
+    setHasOpenedOnce(true);
     collapseThenClear();
+  }
+
+  function toggleOpen() {
+    setOpen((v) => !v);
+    setHasOpenedOnce(true);
   }
 
   return (
@@ -130,7 +140,7 @@ export function EmberWidget() {
         <div className="flex h-16 items-center rounded-full border border-accent-glow/25 bg-surface shadow-[0_8px_28px_rgba(0,0,0,0.5)]">
           <button
             type="button"
-            onClick={() => setOpen((v) => !v)}
+            onClick={toggleOpen}
             aria-label={open ? "Close Ember" : "Ask Ember"}
             aria-expanded={open}
             className="flex size-16 shrink-0 items-center justify-center rounded-full"
@@ -164,9 +174,19 @@ export function EmberWidget() {
         </div>
       </div>
 
-      {open && (
-        <div className="fixed bottom-28 right-8 z-40 w-[min(480px,calc(100vw-3rem))] max-h-[75vh] overflow-hidden rounded-md border border-card-border">
-          <div className="relative flex max-h-[75vh] flex-col overflow-hidden">
+      {hasOpenedOnce && (
+        <div
+          className={`fixed bottom-28 right-8 z-40 max-h-[75vh] overflow-hidden rounded-md border border-card-border transition-all duration-500 ease-out ${
+            open ? "max-w-[min(480px,calc(100vw-3rem))] opacity-100" : "pointer-events-none max-w-0 opacity-0"
+          }`}
+          aria-hidden={!open}
+        >
+          {/* Fixed-width inner box — the outer wrapper's max-w-0 → max-w-[...]
+              transition is what stretches the panel open, the same way the
+              orb's message bubble stretches its own max-width; this inner
+              box just needs to render at full size throughout, not squeeze
+              itself during the animation. */}
+          <div className="relative flex max-h-[75vh] w-[min(480px,calc(100vw-3rem))] flex-col overflow-hidden">
             <div className="absolute inset-0 bg-linear-to-br from-surface-raised to-surface" />
             <div
               className="pointer-events-none absolute inset-0 rounded-md"

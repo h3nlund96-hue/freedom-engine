@@ -3,6 +3,7 @@ import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import { EmberProvider } from "./lib/emberConversation";
 import { EmberWidget } from "./components/EmberWidget";
+import { BackToHqButton } from "./components/BackToHqButton";
 import { AmbientBackground } from "./components/AmbientBackground";
 import { THEME_INIT_SCRIPT } from "./lib/theme";
 
@@ -73,6 +74,7 @@ export default function RootLayout({
         <EmberProvider>
           {children}
           <EmberWidget />
+          <BackToHqButton />
         </EmberProvider>
       </body>
     </html>

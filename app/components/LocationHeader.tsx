@@ -1,5 +1,3 @@
-import Link from "next/link";
-
 type LocationHeaderProps = {
   icon?: string;
   eyebrow: string;
@@ -9,49 +7,34 @@ type LocationHeaderProps = {
 };
 
 /**
- * Compact location header — icon, title and back-link share one row so
- * real content starts sooner on small screens. Replaces the old tall
- * hero (eyebrow above title, divider, separate description block).
+ * Compact location header — icon and title share one row so real content
+ * starts sooner on small screens. The back-to-HQ link that used to sit
+ * above this is now BackToHqButton, floating and fixed to the screen
+ * instead of costing space at the top of every page.
  */
 export function LocationHeader({ icon, eyebrow, title, description, lore }: LocationHeaderProps) {
   return (
-    <>
-      {/* Back navigation */}
-      <nav className="animate-fade-up" aria-label="Back to headquarters">
-        <Link
-          href="/"
-          className="group inline-flex items-center gap-2.5 rounded text-sm text-muted/70 transition-colors duration-300 hover:text-accent focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-accent/40"
-        >
-          <span className="inline-block transition-transform duration-300 group-hover:-translate-x-1" aria-hidden>
-            ←
-          </span>
-          <span className="font-display text-xs tracking-[0.22em] uppercase">AI Mastery HQ</span>
-        </Link>
-      </nav>
+    <header className="animate-fade-up flex items-start gap-3.5">
+      {icon && (
+        <span className="icon-pulse-glow mt-1 inline-block w-fit shrink-0 font-display text-3xl leading-none text-accent">
+          {icon}
+        </span>
+      )}
 
-      {/* Location header */}
-      <header className="animate-fade-up flex items-start gap-3.5" style={{ animationDelay: "0.06s" }}>
-        {icon && (
-          <span className="icon-pulse-glow mt-1 inline-block w-fit shrink-0 font-display text-3xl leading-none text-accent">
-            {icon}
+      <div className="min-w-0 space-y-1">
+        <h1 className="flex flex-wrap items-baseline gap-x-2.5 gap-y-1">
+          <span className="font-display text-2xl font-medium tracking-wide text-foreground sm:text-3xl">
+            {title}
           </span>
+          <span className="font-display text-[0.55rem] tracking-[0.22em] uppercase text-accent/85">
+            {eyebrow}
+          </span>
+        </h1>
+        <p className="text-sm leading-relaxed text-muted sm:text-base">{description}</p>
+        {lore && (
+          <p className="pt-0.5 text-xs italic leading-relaxed text-muted/55">{lore}</p>
         )}
-
-        <div className="min-w-0 space-y-1">
-          <h1 className="flex flex-wrap items-baseline gap-x-2.5 gap-y-1">
-            <span className="font-display text-2xl font-medium tracking-wide text-foreground sm:text-3xl">
-              {title}
-            </span>
-            <span className="font-display text-[0.55rem] tracking-[0.22em] uppercase text-accent/85">
-              {eyebrow}
-            </span>
-          </h1>
-          <p className="text-sm leading-relaxed text-muted sm:text-base">{description}</p>
-          {lore && (
-            <p className="pt-0.5 text-xs italic leading-relaxed text-muted/55">{lore}</p>
-          )}
-        </div>
-      </header>
-    </>
+      </div>
+    </header>
   );
 }

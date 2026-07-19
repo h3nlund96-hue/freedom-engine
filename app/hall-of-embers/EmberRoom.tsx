@@ -1,7 +1,6 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import Link from "next/link";
 import { useEmberConversation, type EmberMessage } from "../lib/emberConversation";
 import { EmberGlyph } from "../components/EmberGlyph";
 import { ProposalCard, successLabel } from "../components/EmberProposalCard";
@@ -139,7 +138,7 @@ export function EmberRoom() {
 
   return (
     <div
-      className={`relative mx-auto flex w-full max-w-3xl flex-1 flex-col items-center gap-7 px-6 py-10 sm:px-8 ${
+      className={`relative mx-auto flex w-full max-w-3xl flex-1 flex-col items-center gap-7 px-6 pt-10 pb-28 sm:px-8 sm:pb-10 ${
         presenceMode ? "justify-center" : ""
       }`}
     >
@@ -153,21 +152,12 @@ export function EmberRoom() {
         </button>
       )}
 
-      {/* chrome: back link + wordmark — recedes in presence mode */}
+      {/* chrome: wordmark — recedes in presence mode */}
       <div
         className={`flex w-full flex-col items-start gap-1 transition-opacity duration-300 ${
           presenceMode ? "pointer-events-none h-0 overflow-hidden opacity-0" : "opacity-100"
         }`}
       >
-        <Link
-          href="/"
-          className="group inline-flex items-center gap-2 text-xs text-muted/60 transition-colors duration-300 hover:text-accent-glow"
-        >
-          <span className="inline-block transition-transform duration-300 group-hover:-translate-x-1" aria-hidden>
-            ←
-          </span>
-          <span className="font-display tracking-[0.18em] uppercase">AI Mastery HQ</span>
-        </Link>
         <span className="font-display text-[0.6rem] tracking-[0.24em] uppercase text-muted/35">
           Hall of Embers · Council Chamber
         </span>
