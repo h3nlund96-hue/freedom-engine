@@ -331,7 +331,7 @@ function CaptureConsole({
             onKeyDown={handleKeyDown}
             placeholder="Write the idea before it disappears..."
             disabled={sealed || submitting}
-            className="w-full bg-transparent text-base font-medium text-foreground/90 placeholder:text-muted/30 placeholder:font-normal focus:outline-none"
+            className="w-full bg-transparent text-base font-medium text-foreground/90 placeholder:text-muted/50 placeholder:font-normal focus:outline-none"
           />
 
           <label htmlFor="idea-capture-description" className="sr-only">
@@ -345,7 +345,7 @@ function CaptureConsole({
             onKeyDown={handleKeyDown}
             placeholder="Add more detail (optional)..."
             disabled={sealed || submitting}
-            className="w-full resize-none bg-transparent text-base sm:text-xs leading-relaxed text-foreground/70 placeholder:text-muted/25 focus:outline-none"
+            className="w-full resize-none border-t border-accent/[0.07] bg-transparent pt-3 text-base sm:text-xs leading-relaxed text-foreground/80 placeholder:text-muted/40 focus:outline-none"
           />
 
           {/* Console footer */}
@@ -359,7 +359,7 @@ function CaptureConsole({
                 value={status}
                 onChange={(e) => setStatus(e.target.value as IdeaStatus)}
                 disabled={sealed || submitting}
-                className="cursor-pointer rounded-sm bg-[rgba(255,171,74,0.05)] px-2.5 py-1 font-display text-base sm:text-[0.6rem] tracking-[0.1em] uppercase text-accent/60 outline-none transition-colors duration-300 hover:bg-[rgba(255,171,74,0.08)] hover:text-accent/80 focus:outline-none disabled:opacity-50"
+                className="cursor-pointer rounded-sm bg-[rgba(255,171,74,0.05)] px-2 py-0.5 font-display text-base sm:text-[0.6rem] tracking-[0.05em] sm:tracking-[0.1em] uppercase text-accent/60 outline-none transition-colors duration-300 hover:bg-[rgba(255,171,74,0.08)] hover:text-accent/80 focus:outline-none disabled:opacity-50"
               >
                 {STATUS_ORDER.map((s) => (
                   <option key={s} value={s}>
