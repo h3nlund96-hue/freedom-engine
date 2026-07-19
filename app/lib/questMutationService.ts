@@ -90,7 +90,13 @@ function toPatch(fields: EditableFields): Record<string, unknown> {
   const patch: Record<string, unknown> = { updated_at: new Date().toISOString() };
   if (fields.title !== undefined) patch.title = fields.title.trim();
   if (fields.description !== undefined) patch.description = fields.description.trim() || null;
-  if (fields.status !== undefined) patch.status = fields.status;
+  if (fields.status !== undefined) {
+    patch.status = fields.status;
+    // The Observatory reads completed_at (not updated_at, which shifts on
+    // any edit) to know when something actually finished — set it exactly
+    // on the "completed" transition, clear it if reopened.
+    patch.completed_at = fields.status === "completed" ? new Date().toISOString() : null;
+  }
   return patch;
 }
 

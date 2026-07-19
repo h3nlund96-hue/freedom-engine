@@ -18,6 +18,7 @@ export interface QuestlineRow {
   description: string | null;
   status: string;
   sort_order: number;
+  completed_at: string | null;
 }
 
 export interface QuestRow {
@@ -27,6 +28,7 @@ export interface QuestRow {
   description: string | null;
   status: string;
   sort_order: number;
+  completed_at: string | null;
 }
 
 export interface BuildRow {
@@ -37,6 +39,7 @@ export interface BuildRow {
   status: string;
   sort_order: number;
   build_number: number;
+  completed_at: string | null;
 }
 
 export interface SideQuestRow {
@@ -45,6 +48,7 @@ export interface SideQuestRow {
   description: string | null;
   status: string;
   sort_order: number;
+  completed_at: string | null;
 }
 
 export function mapProgressRows(
@@ -61,6 +65,7 @@ export function mapProgressRows(
       title: ql.title,
       status: ql.status as QuestStatus,
       description: ql.description ?? "",
+      completedAt: ql.completed_at,
       quests: questRows
         .filter((q) => q.questline_id === ql.id)
         .map((q) => ({
@@ -68,6 +73,7 @@ export function mapProgressRows(
           title: q.title,
           status: q.status as QuestStatus,
           description: q.description ?? "",
+          completedAt: q.completed_at,
           builds: buildRows
             .filter((b) => b.quest_id === q.id)
             .map((b) => ({
@@ -76,6 +82,7 @@ export function mapProgressRows(
               title: b.title,
               status: b.status as QuestStatus,
               description: b.description ?? undefined,
+              completedAt: b.completed_at,
             })),
         })),
     })),
@@ -84,6 +91,7 @@ export function mapProgressRows(
       title: sq.title,
       status: sq.status as QuestStatus,
       description: sq.description ?? "",
+      completedAt: sq.completed_at,
     })),
   };
 }

@@ -8,6 +8,9 @@ export interface Build {
   title: string;
   status: QuestStatus;
   description?: string;
+  /** Set the moment status becomes "completed"; cleared if reopened. Null for
+   * anything never completed. See questMutationService.ts's toPatch(). */
+  completedAt: string | null;
 }
 
 export interface Quest {
@@ -16,6 +19,7 @@ export interface Quest {
   status: QuestStatus;
   description: string;
   builds?: Build[];
+  completedAt: string | null;
 }
 
 export interface Questline {
@@ -24,6 +28,7 @@ export interface Questline {
   status: QuestStatus;
   description: string;
   quests?: Quest[];
+  completedAt: string | null;
 }
 
 export interface SideQuest {
@@ -31,6 +36,7 @@ export interface SideQuest {
   title: string;
   status: QuestStatus;
   description: string;
+  completedAt: string | null;
 }
 
 export interface FreedomEngineProgress {

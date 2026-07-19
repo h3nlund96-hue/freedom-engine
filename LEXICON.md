@@ -105,6 +105,14 @@ A principle and daily reminder that small progress is enough. It is not a separa
 
 ---
 
+## The Observatory
+
+The location where The Founder sees patterns in their own momentum: Builds shipped per week, XP earned over time, and which Questlines are getting attention versus going quiet. It shows trends, not a log of individual items — for that, look at Quest Board.
+
+Route: `/observatory`
+
+---
+
 ## Companions
 
 AI specialists inside Freedom Engine. They understand The Founder, the Constitution, and the current Quest. They are not generic chatbots. They have roles, personalities, and context.

@@ -124,4 +124,5 @@ Real photographic/illustrated background art and HUD framing elements beyond the
 | Constitution Hall | Command deck, moral authority | Deep amber |
 | Quest Board | Mission control, clarity | Amber + cyan |
 | Idea Vault | Protected archive, encrypted | Cool cyan |
+| The Observatory | Analysis deck, clear-eyed reflection | Cool cyan |
 | Tend the Fire | Life-support / hearth system, emotional support | Deep amber |

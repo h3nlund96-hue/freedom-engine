@@ -31,6 +31,13 @@ const worldPlaces = [
     href: "/hall-of-embers",
     glow: "ember" as const,
   },
+  {
+    icon: "✦",
+    title: "The Observatory",
+    description: "Patterns in momentum — what's moving, what's gone quiet.",
+    href: "/observatory",
+    glow: "amber" as const,
+  },
 ];
 
 export default async function Home() {
