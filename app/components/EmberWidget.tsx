@@ -176,7 +176,7 @@ export function EmberWidget() {
 
       {hasOpenedOnce && (
         <div
-          className={`fixed bottom-28 right-8 z-40 max-h-[75vh] overflow-hidden rounded-md border border-card-border transition-all duration-500 ease-out ${
+          className={`fixed bottom-28 right-8 z-40 h-[75vh] overflow-hidden rounded-md border border-card-border transition-all duration-500 ease-out ${
             open ? "max-w-[min(480px,calc(100vw-3rem))] opacity-100" : "pointer-events-none max-w-0 opacity-0"
           }`}
           aria-hidden={!open}
@@ -186,7 +186,7 @@ export function EmberWidget() {
               orb's message bubble stretches its own max-width; this inner
               box just needs to render at full size throughout, not squeeze
               itself during the animation. */}
-          <div className="relative flex max-h-[75vh] w-[min(480px,calc(100vw-3rem))] flex-col overflow-hidden">
+          <div className="relative flex h-[75vh] w-[min(480px,calc(100vw-3rem))] flex-col overflow-hidden">
             <div className="absolute inset-0 bg-linear-to-br from-surface-raised to-surface" />
             <div
               className="pointer-events-none absolute inset-0 rounded-md"
